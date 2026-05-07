@@ -918,6 +918,31 @@ table { border-collapse: collapse; width: 100%; }
 }
 .dp-dot.active { background: white; }
 
+/* ===== 전화번호 링크 ===== */
+.phone-link {
+  color: var(--primary);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+.phone-link:hover { color: var(--accent); text-decoration-color: var(--accent); }
+.phone-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  padding: 1px 5px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text-light);
+  vertical-align: middle;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.phone-copy-btn:hover { background: var(--primary-light); color: var(--primary); }
+
 /* ===== 반응형 ===== */
 @media (max-width: 768px) {
   .tab-btn { font-size: 12px; min-width: 70px; padding: 0 8px; }

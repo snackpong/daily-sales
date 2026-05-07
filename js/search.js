@@ -50,7 +50,7 @@ const search = (() => {
               <div class="search-result-main">
                 ${e.busCompany || ''}
                 ${e.driverName ? '· ' + e.driverName : ''}
-                ${e.phoneNumber ? '· ' + e.phoneNumber : ''}
+                ${e.phoneNumber ? '· ' + phoneLink(e.phoneNumber) : ''}
               </div>
               <div class="search-result-detail">
                 ${e.departureFrom ? '출발지: ' + e.departureFrom : ''}

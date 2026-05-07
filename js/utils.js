@@ -105,6 +105,13 @@ function confirmDialog(msg) {
   return new Promise(resolve => resolve(confirm(msg)));
 }
 
+// ===== 전화번호 링크 (모바일 통화 + 복사 버튼) =====
+function phoneLink(phone) {
+  if (!phone) return '-';
+  const clean = phone.replace(/\s/g, '');
+  return `<a href="tel:${clean}" class="phone-link" onclick="event.stopPropagation()" title="전화하기">${phone}</a><button class="phone-copy-btn" onclick="event.stopPropagation();navigator.clipboard.writeText('${phone}').then(()=>showToast('번호 복사됨'))" title="복사">📋</button>`;
+}
+
 // ===== 이미지 압축 후 base64로 반환 (Firebase Storage 불필요) =====
 function uploadPhoto(file, _path) {
   return new Promise((resolve, reject) => {

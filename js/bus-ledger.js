@@ -78,7 +78,7 @@ const busLedger = (() => {
         ? `<span class="driver-link" onclick="busLedger.openDriverProfile('${p}','${n}')">${e.driverName}</span>`
         : '-';
       const phoneHTML = e.phoneNumber
-        ? `<span class="driver-link" onclick="busLedger.openDriverProfile('${p}','${n}')">${e.phoneNumber}</span>`
+        ? `<span class="driver-link" onclick="busLedger.openDriverProfile('${p}','${n}')">${e.phoneNumber}</span><button class="phone-copy-btn" onclick="event.stopPropagation();navigator.clipboard.writeText('${e.phoneNumber}').then(()=>showToast('번호 복사됨'))" title="복사">📋</button>`
         : '-';
 
       return `
@@ -435,7 +435,7 @@ const busLedger = (() => {
 
           <div class="dp-info-section">
             <div class="dp-name">${displayName}</div>
-            ${phone ? `<div class="dp-phone">📞 ${phone}</div>` : ''}
+            ${phone ? `<div class="dp-phone">📞 ${phoneLink(phone)}</div>` : ''}
             <div class="dp-stats">
               총 ${totalVisits}회 방문 &nbsp;·&nbsp;
               누적 판매 ${formatWon(totalSales)} &nbsp;·&nbsp;

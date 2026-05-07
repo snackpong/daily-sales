@@ -123,7 +123,7 @@ const reservation = (() => {
       <div class="res-item res-item-clickable" onclick="reservation.showDetail('${r.id}')">
         <div class="res-info">
           <div class="res-main">${r.time ? r.time + ' · ' : ''}${[r.driverName, r.busCompany].filter(Boolean).join(' / ') || '기사 미정'} ${r.estimatedPassengers ? r.estimatedPassengers + '명' : ''}</div>
-          ${r.phoneNumber ? `<div class="res-sub">📞 ${r.phoneNumber}</div>` : ''}
+          ${r.phoneNumber ? `<div class="res-sub">📞 ${phoneLink(r.phoneNumber)}</div>` : ''}
           ${r.requests ? `<div class="res-sub">${r.requests}</div>` : ''}
         </div>
         <div class="res-actions" onclick="event.stopPropagation()">
@@ -270,7 +270,7 @@ const reservation = (() => {
       ['시간', r.time || '-'],
       ['기사명', r.driverName || '-'],
       ['버스회사', r.busCompany || '-'],
-      ['전화번호', r.phoneNumber || '-'],
+      ['전화번호', r.phoneNumber ? phoneLink(r.phoneNumber) : '-'],
       ['예상 인원', r.estimatedPassengers ? r.estimatedPassengers + '명' : '-'],
       ['요청사항', r.requests || '-'],
     ];
