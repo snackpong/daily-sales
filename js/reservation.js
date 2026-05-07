@@ -120,13 +120,13 @@ const reservation = (() => {
     }
 
     listEl.innerHTML = dayRes.map(r => `
-      <div class="res-item">
+      <div class="res-item res-item-clickable" onclick="reservation.showDetail('${r.id}')">
         <div class="res-info">
           <div class="res-main">${r.time ? r.time + ' · ' : ''}${[r.driverName, r.busCompany].filter(Boolean).join(' / ') || '기사 미정'} ${r.estimatedPassengers ? r.estimatedPassengers + '명' : ''}</div>
           ${r.phoneNumber ? `<div class="res-sub">📞 ${r.phoneNumber}</div>` : ''}
           ${r.requests ? `<div class="res-sub">${r.requests}</div>` : ''}
         </div>
-        <div class="res-actions">
+        <div class="res-actions" onclick="event.stopPropagation()">
           <div class="res-status-group">
             <button class="res-status-btn${r.status === 'pending' ? ' active pending' : ''}" onclick="reservation.setStatus('${r.id}','pending')">예약중</button>
             <button class="res-status-btn${r.status === 'visited' ? ' active visited' : ''}" onclick="reservation.setStatus('${r.id}','visited')">방문완료</button>
@@ -257,5 +257,47 @@ const reservation = (() => {
     }
   }
 
-  return { load, selectDate, openModal: openForm, save, setStatus, remove };
+  function showDetail(resId) {
+    const r = _allReservations.find(x => x.id === resId);
+    if (!r) return;
+
+    const statusLabel = { pending: '예약중', visited: '방문완료', noshow: '미방문' };
+    const statusColor = { pending: '#856404', visited: '#0a3622', noshow: '#383d41' };
+    const statusBg = { pending: '#fff3cd', visited: '#d1e7dd', noshow: '#e2e3e5' };
+
+    const rows = [
+      ['날짜', formatDateKo(r.date)],
+      ['시간', r.time || '-'],
+      ['기사명', r.driverName || '-'],
+      ['버스회사', r.busCompany || '-'],
+      ['전화번호', r.phoneNumber || '-'],
+      ['예상 인원', r.estimatedPassengers ? r.estimatedPassengers + '명' : '-'],
+      ['요청사항', r.requests || '-'],
+    ];
+
+    const body = `
+      <div style="margin-bottom:14px">
+        <span style="display:inline-block;padding:4px 14px;border-radius:12px;font-weight:700;font-size:14px;background:${statusBg[r.status]};color:${statusColor[r.status]}">
+          ${statusLabel[r.status] || '예약중'}
+        </span>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:14px">
+        ${rows.map(([label, val]) => `
+          <tr>
+            <td style="padding:8px 12px;color:var(--text-light);font-weight:600;width:90px;border-bottom:1px solid var(--border)">${label}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid var(--border)">${val}</td>
+          </tr>
+        `).join('')}
+      </table>
+    `;
+
+    const footer = `
+      <button class="btn-outline" onclick="closeModal()">닫기</button>
+      <button class="btn-primary" onclick="closeModal();reservation.openModal('${r.date}','${r.id}')">수정</button>
+    `;
+
+    openModal('예약 상세', body, footer);
+  }
+
+  return { load, selectDate, openModal: openForm, save, setStatus, remove, showDetail };
 })();

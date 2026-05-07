@@ -566,6 +566,9 @@ table { border-collapse: collapse; width: 100%; }
   margin-bottom: 8px;
   background: var(--bg);
 }
+.res-item-clickable { cursor: pointer; transition: background 0.15s; }
+.res-item-clickable:hover { background: var(--primary-light); }
+
 .res-status-group {
   display: flex;
   gap: 4px;
