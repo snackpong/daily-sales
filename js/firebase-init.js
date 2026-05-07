@@ -43,3 +43,6 @@ firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 const db = firebase.firestore();
+
+// 모바일 브라우저 호환성: localStorage 기반 인증 유지
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});

@@ -1,7 +1,35 @@
 // ===== 메인 앱 초기화 =====
 let _tabInitialized = {};
 
+function _checkInAppBrowser() {
+  const ua = navigator.userAgent || '';
+  const isInApp = /KAKAOTALK|NAVER|Line\/|Instagram|FBAN|FBAV/i.test(ua);
+  if (!isInApp) return;
+
+  const box = document.querySelector('.login-box');
+  box.insertAdjacentHTML('afterbegin', `
+    <div class="inapp-warning">
+      <strong>⚠️ 카카오톡 브라우저에서는 로그인이 되지 않습니다.</strong><br>
+      아래 버튼을 눌러 외부 브라우저(Chrome / Safari)에서 열어주세요.
+      <button class="btn-open-browser" onclick="_openInSystemBrowser()">외부 브라우저로 열기</button>
+    </div>
+  `);
+}
+
+function _openInSystemBrowser() {
+  const url = location.href;
+  // Android: intent scheme으로 Chrome 강제 실행
+  const intentUrl = 'intent://' + url.replace(/https?:\/\//, '') +
+    '#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end;';
+  location.href = intentUrl;
+  // iOS는 intent가 안 되므로 일정 시간 후 안내 toast
+  setTimeout(() => {
+    alert('iOS의 경우: 화면 하단 메뉴(···) → "Safari로 열기" 를 선택해 주세요.');
+  }, 1500);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  _checkInAppBrowser();
   // 탭 전환
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));

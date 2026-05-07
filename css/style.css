@@ -918,6 +918,32 @@ table { border-collapse: collapse; width: 100%; }
 }
 .dp-dot.active { background: white; }
 
+/* ===== 인앱브라우저 경고 ===== */
+.inapp-warning {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: left;
+  color: #5a4200;
+}
+.btn-open-browser {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 /* ===== 홈 대시보드 ===== */
 .header-title { cursor: pointer; transition: opacity 0.15s; }
 .header-title:hover { opacity: 0.75; }
