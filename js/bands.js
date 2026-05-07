@@ -165,10 +165,10 @@ const bands = (() => {
     try {
       const snap = await userCol('busEntries')
         .where('bandIds', 'array-contains', bandId)
-        .orderBy('date', 'desc')
         .get();
 
-      const all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const all = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
       const monthVisits = all.filter(v => v.date.startsWith(thisMonth));
       const yearVisits = all.filter(v => v.date.startsWith(thisYear));
 
