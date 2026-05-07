@@ -47,6 +47,8 @@ async function _onSignIn() {
   // 버스 기사 장부 초기화
   await busLedger.init();
   _tabInitialized['bus'] = true;
+  // 밴드 추가 버튼
+  document.getElementById('btn-add-band').addEventListener('click', () => bands.openModal(null));
   // 검색 초기화
   search.init();
 }
