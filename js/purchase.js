@@ -24,7 +24,7 @@ const purchase = (() => {
       _fetch();
     };
     el.onchange = e => { _month = e.target.value; _fetch(); };
-    document.getElementById('btn-add-purchase').onclick = () => openModal(null);
+    document.getElementById('btn-add-purchase').onclick = () => openForm(null);
 
     _qs = await loadQuickSelect();
     await _fetch();
@@ -94,7 +94,7 @@ const purchase = (() => {
     }).join('');
   }
 
-  function openModal(entryId) {
+  function openForm(entryId) {
     const isEdit = !!entryId;
     const e = isEdit ? _entries.find(x => x.id === entryId) : null;
     const items = e?.items?.length > 0 ? e.items : [{ name: '', unit: '', quantity: '', unitPrice: '', amount: '' }];
@@ -147,7 +147,7 @@ const purchase = (() => {
       </button>
     `;
 
-    openModal(isEdit ? '사입 기록 수정' : '사입 추가', body, footer);
+    openModal(isEdit ? '사입 기록 수정' : '사입 추가', body, footer); // global openModal (utils.js)
 
     // 빠른선택 칩
     const chipsEl = document.getElementById('pur-quick-chips');
@@ -274,5 +274,5 @@ const purchase = (() => {
     }
   }
 
-  return { load, openModal, addItemRow, _calcRowAmount, _calcTotal, save, remove };
+  return { load, openModal: openForm, addItemRow, _calcRowAmount, _calcTotal, save, remove };
 })();

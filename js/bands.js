@@ -53,7 +53,7 @@ const bands = (() => {
     `).join('');
   }
 
-  async function openModal(bandId) {
+  async function openForm(bandId) {
     const isEdit = !!bandId;
     const b = isEdit ? _all.find(x => x.id === bandId) : null;
 
@@ -216,5 +216,5 @@ const bands = (() => {
   function getById(id) { return _all.find(b => b.id === id); }
   function invalidate() { _loaded = false; }
 
-  return { load, ensureLoaded, openModal, save, remove, showStats, getAll, getById, invalidate };
+  return { load, ensureLoaded, openModal: openForm, save, remove, showStats, getAll, getById, invalidate };
 })();

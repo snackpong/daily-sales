@@ -21,7 +21,7 @@ const reservation = (() => {
       load();
     };
     document.getElementById('btn-add-reservation').onclick = () => {
-      openModal(_selectedDate || getTodayStr());
+      openForm(_selectedDate || getTodayStr());
     };
   }
 
@@ -139,7 +139,7 @@ const reservation = (() => {
     listEl.innerHTML += `<button class="btn-outline btn-sm" style="margin-top:8px" onclick="reservation.openModal('${dateStr}')">+ 이날 예약 추가</button>`;
   }
 
-  function openModal(dateStr, resId) {
+  function openForm(dateStr, resId) {
     const isEdit = !!resId;
     const r = isEdit ? _allReservations.find(x => x.id === resId) : null;
 
@@ -189,7 +189,7 @@ const reservation = (() => {
       </button>
     `;
 
-    openModal(isEdit ? '예약 수정' : '예약 추가', body, footer);
+    openModal(isEdit ? '예약 수정' : '예약 추가', body, footer); // global openModal (utils.js)
   }
 
   async function save(resId) {
@@ -250,5 +250,5 @@ const reservation = (() => {
     }
   }
 
-  return { load, selectDate, openModal, save, setStatus, remove };
+  return { load, selectDate, openModal: openForm, save, setStatus, remove };
 })();

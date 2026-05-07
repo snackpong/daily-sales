@@ -25,7 +25,7 @@ const cashflow = (() => {
       document.getElementById('cf-date').value = _date;
       _fetch();
     };
-    document.getElementById('btn-add-cf').onclick = () => openModal(null);
+    document.getElementById('btn-add-cf').onclick = () => openForm(null);
 
     _qs = await loadQuickSelect();
     await _fetch();
@@ -83,7 +83,7 @@ const cashflow = (() => {
     `).join('')}</div>`;
   }
 
-  function openModal(entryId) {
+  function openForm(entryId) {
     const isEdit = !!entryId;
     const e = isEdit ? _entries.find(x => x.id === entryId) : null;
 
@@ -128,7 +128,7 @@ const cashflow = (() => {
       </button>
     `;
 
-    openModal(isEdit ? '수입/지출 수정' : '수입/지출 추가', body, footer);
+    openModal(isEdit ? '수입/지출 수정' : '수입/지출 추가', body, footer); // global openModal (utils.js)
 
     function _renderCategoryChips() {
       const type = document.getElementById('cf-type-select').value;
@@ -196,5 +196,5 @@ const cashflow = (() => {
     }
   }
 
-  return { load, openModal, save, remove, _onTypeChange: () => {} };
+  return { load, openModal: openForm, save, remove, _onTypeChange: () => {} };
 })();
