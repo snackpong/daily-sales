@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>목포 건어물 장부</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-background": "#1b1c1d",
+                "primary-container": "#1a2e44",
+                "on-primary-fixed": "#061d32",
+                "surface-tint": "#4c6078",
+                "secondary-fixed": "#ffdbce",
+                "outline": "#74777d",
+                "surface-container-high": "#e9e7ea",
+                "surface-container-low": "#f5f3f5",
+                "tertiary-fixed": "#ffddb0",
+                "on-tertiary-container": "#ae8f64",
+                "surface-container-lowest": "#ffffff",
+                "on-tertiary-fixed-variant": "#5a431f",
+                "tertiary-fixed-dim": "#e3c193",
+                "secondary-container": "#fed8ca",
+                "on-surface": "#1b1c1d",
+                "on-secondary-fixed-variant": "#5a4137",
+                "tertiary-container": "#3d2907",
+                "inverse-primary": "#b4c8e4",
+                "on-primary": "#ffffff",
+                "secondary": "#74584e",
+                "inverse-on-surface": "#f2f0f2",
+                "on-tertiary-fixed": "#281800",
+                "primary-fixed": "#d1e4ff",
+                "surface-bright": "#fbf9fb",
+                "surface-dim": "#dbd9db",
+                "secondary-fixed-dim": "#e3bfb2",
+                "primary": "#03192e",
+                "on-tertiary": "#ffffff",
+                "on-surface-variant": "#43474d",
+                "on-error-container": "#93000a",
+                "primary-fixed-dim": "#b4c8e4",
+                "on-error": "#ffffff",
+                "surface-container": "#efedef",
+                "surface": "#fbf9fb",
+                "on-secondary-container": "#795c52",
+                "on-primary-fixed-variant": "#35485f",
+                "error-container": "#ffdad6",
+                "surface-variant": "#e4e2e4",
+                "background": "#fbf9fb",
+                "on-secondary-fixed": "#2a170f",
+                "outline-variant": "#c4c6cd",
+                "inverse-surface": "#303032",
+                "error": "#ba1a1a",
+                "on-secondary": "#ffffff",
+                "on-primary-container": "#8296b0",
+                "surface-container-highest": "#e4e2e4",
+                "tertiary": "#241500"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "spacing": {
+                "notebook-max-width": "1200px",
+                "tab-protrusion": "12px",
+                "page-margin": "48px",
+                "gutter": "24px",
+                "line-height-unit": "32px"
+            },
+            "fontFamily": {
+                "label-tab": ["Noto Serif KR"],
+                "h2-penned": ["Noto Serif KR"],
+                "body-ledger": ["Inter"],
+                "table-header": ["Inter"],
+                "table-data": ["Inter"],
+                "h1-penned": ["Noto Serif KR"]
+            },
+            "fontSize": {
+                "label-tab": ["13px", {"lineHeight": "1.0", "fontWeight": "500"}],
+                "h2-penned": ["22px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                "body-ledger": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "table-header": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                "table-data": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                "h1-penned": ["28px", {"lineHeight": "1.4", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>body {
+    background-color: #d2b48c;
+    /* Kraft base */
+    background-image: radial-gradient(#bc9a70 1px, transparent 1px), radial-gradient(#bc9a70 1px, #d2b48c 1px);
+    background-size: 40px 40px;
+    background-position: 0 0, 20px 20px;
+    min-height: 100vh
+    }
+.notebook-surface {
+    background-color: #fdfaf5;
+    background-image: linear-gradient(#e5e0d8 1px, transparent 1px);
+    background-size: 100% 32px;
+    /* strict baseline grid */
+    position: relative
+    }
+.grain-overlay {
+    pointer-events: none;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuD8ggtEIlVbiYL_DzaTp74L9PFIqlvKhg00mJ6olORL8z2gEvtL35bJvaqDwRKKrHxJ5UclmRwOoG9v6-BLzIoGD-bdptGWiZ6USv6-sQWgHgpOMs4h4FT6DXW4t7PGvzz8fosv__ZgSl-1IGj26QvYMMV3Iexgomp01_sAIWu9p_QLShJKs8Ao87yHLTDS5XMqTyWK8HC7aXdBpw1Do4G9KNArQ3eQoYgve9YDn_fU73yqQvQQFX_gsUB2j8kJCfpgzRIwie5QkCE);
+    opacity: 0.15
+    }
+.spine-gradient {
+    background: linear-gradient(to right, #2c1810 0%, #3e2418 50%, #2c1810 100%);
+    box-shadow: inset 2px 0 5px rgba(0, 0, 0, 0.3), inset -2px 0 5px rgba(0, 0, 0, 0.3)
+    }
+.paper-fold-shadow {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.1) 0%, transparent 10%, transparent 90%, rgba(0, 0, 0, 0.1) 100%)
+    }
+.stamp-effect {
+    transform: rotate(-12deg);
+    border: 3px double currentColor;
+    opacity: 0.7;
+    font-family: "Noto Serif KR", serif
+    }</style>
+</head>
+<body class="flex items-center justify-center py-10 px-16 font-body-ledger">
+<!-- Top App Bar -->
+<header class="fixed top-0 left-0 w-full h-12 flex justify-between items-center px-gutter bg-primary dark:bg-primary text-on-primary dark:text-on-primary font-h2-penned text-h2-penned shadow-md z-50">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined">menu</span>
+<span class="font-h1-penned text-h1-penned text-on-primary">목포 건어물 장부</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined hover:opacity-80 transition-opacity cursor-pointer active:scale-95">search</span>
+<span class="material-symbols-outlined hover:opacity-80 transition-opacity cursor-pointer active:scale-95">account_circle</span>
+</div>
+</header>
+<!-- Navigation Shell: SideNavBar (Left) -->
+<nav class="fixed left-0 top-12 bottom-0 flex flex-col items-end py-page-margin space-y-4 z-40 bg-secondary dark:bg-tertiary shadow-[-5px_0_15px_rgba(0,0,0,0.3)] border-r-4 border-primary-container w-16">
+<!-- 버스장부 (Active) -->
+<div class="bg-primary text-on-primary -mr-tab-protrusion z-20 shadow-sm rounded-l-xl pr-4 py-3 cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 group flex flex-col items-center">
+<span class="material-symbols-outlined">directions_bus</span>
+<span class="font-label-tab text-label-tab mt-1 [writing-mode:vertical-rl]">버스장부</span>
+</div>
+<!-- 예약일정 -->
+<div class="bg-surface-container-high text-on-surface-variant rounded-l-lg hover:bg-surface-variant py-3 pr-2 cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 flex flex-col items-center w-12">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-label-tab text-label-tab mt-1 [writing-mode:vertical-rl]">예약일정</span>
+</div>
+<!-- 사입장부 -->
+<div class="bg-surface-container-high text-on-surface-variant rounded-l-lg hover:bg-surface-variant py-3 pr-2 cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 flex flex-col items-center w-12">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-tab text-label-tab mt-1 [writing-mode:vertical-rl]">사입장부</span>
+</div>
+<!-- 수입지출 -->
+<div class="bg-surface-container-high text-on-surface-variant rounded-l-lg hover:bg-surface-variant py-3 pr-2 cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 flex flex-col items-center w-12">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-tab text-label-tab mt-1 [writing-mode:vertical-rl]">수입지출</span>
+</div>
+<!-- 밴드관리 -->
+<div class="bg-surface-container-high text-on-surface-variant rounded-l-lg hover:bg-surface-variant py-3 pr-2 cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 flex flex-col items-center w-12">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-tab text-label-tab mt-1 [writing-mode:vertical-rl]">밴드관리</span>
+</div>
+</nav>
+<!-- Main Notebook Container -->
+<main class="relative w-full max-w-notebook-max-width min-h-[850px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] rounded-sm flex overflow-visible">
+<!-- The Book Base -->
+<div class="absolute inset-0 bg-[#2c1810] -m-2 rounded-lg -z-10 shadow-2xl"></div>
+<!-- Left Page Shell (Background only) -->
+<div class="hidden md:block w-1/2 notebook-surface rounded-l-sm border-r border-[#d4cfc7]">
+<div class="grain-overlay absolute inset-0"></div>
+<div class="paper-fold-shadow absolute inset-0"></div>
+</div>
+<!-- Central Spine -->
+<div class="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-8 spine-gradient z-30">
+<div class="h-full w-px bg-black/10 mx-auto"></div>
+</div>
+<!-- Right Page (Active Content Area) -->
+<div class="w-full md:w-1/2 notebook-surface rounded-r-sm p-page-margin relative z-10 overflow-hidden">
+<div class="grain-overlay absolute inset-0"></div>
+<div class="paper-fold-shadow absolute inset-0"></div>
+<!-- Page Content Layer -->
+<div class="relative z-20">
+<!-- Page Header -->
+<header class="mb-8 border-b-2 border-primary pb-2">
+<h1 class="font-h1-penned text-h1-penned text-primary flex items-center gap-3">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+                        2026년 5월 7일 (목) — 버스 기사 장부
+                    </h1>
+</header>
+<!-- Summary Bar -->
+<section class="grid grid-cols-3 gap-4 mb-10">
+<div class="bg-secondary-container p-4 rounded-xl shadow-sm border border-secondary/20">
+<p class="text-table-header font-table-header uppercase opacity-60">오늘의 차량</p>
+<p class="text-h2-penned font-h2-penned text-on-secondary-container">버스 4대</p>
+</div>
+<div class="bg-primary-container p-4 rounded-xl shadow-sm border border-primary/20 text-on-primary">
+<p class="text-table-header font-table-header uppercase opacity-80">총 판매 금액</p>
+<p class="text-h2-penned font-h2-penned">₩4,170,000</p>
+</div>
+<div class="bg-tertiary-fixed p-4 rounded-xl shadow-sm border border-tertiary/20">
+<p class="text-table-header font-table-header uppercase opacity-60">총 수고비</p>
+<p class="text-h2-penned font-h2-penned text-on-tertiary-fixed">₩410,000</p>
+</div>
+</section>
+<!-- Ledger Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="text-table-header font-table-header text-on-surface-variant border-b-2 border-outline-variant">
+<tr>
+<th class="py-4 px-2">#</th>
+<th class="py-4 px-2">밴드/소속</th>
+<th class="py-4 px-2">회사/기사명</th>
+<th class="py-4 px-2 text-right">판매금액</th>
+<th class="py-4 px-2 text-right">수고비</th>
+<th class="py-4 px-2">관리</th>
+</tr>
+</thead>
+<tbody class="text-table-data font-table-data text-on-surface">
+<tr class="border-b border-outline-variant/30 hover:bg-surface-variant/10">
+<td class="py-4 px-2">01</td>
+<td class="py-4 px-2">목포투어 밴드</td>
+<td class="py-4 px-2">금호고속 / 김철수</td>
+<td class="py-4 px-2 text-right font-semibold">1,250,000</td>
+<td class="py-4 px-2 text-right text-error font-medium">120,000</td>
+<td class="py-4 px-2"><span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">more_vert</span></td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-variant/10">
+<td class="py-4 px-2">02</td>
+<td class="py-4 px-2">섬마을 산악회</td>
+<td class="py-4 px-2">전남관광 / 이영희</td>
+<td class="py-4 px-2 text-right font-semibold">980,000</td>
+<td class="py-4 px-2 text-right text-error font-medium">95,000</td>
+<td class="py-4 px-2"><span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">more_vert</span></td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-variant/10">
+<td class="py-4 px-2">03</td>
+<td class="py-4 px-2">건어물 친구들</td>
+<td class="py-4 px-2">대원고속 / 박상면</td>
+<td class="py-4 px-2 text-right font-semibold">1,120,000</td>
+<td class="py-4 px-2 text-right text-error font-medium =">110,000</td>
+<td class="py-4 px-2"><span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">more_vert</span></td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-variant/10">
+<td class="py-4 px-2">04</td>
+<td class="py-4 px-2">목포수산 밴드</td>
+<td class="py-4 px-2">삼화고속 / 최동식</td>
+<td class="py-4 px-2 text-right font-semibold">820,000</td>
+<td class="py-4 px-2 text-right text-error font-medium">85,000</td>
+<td class="py-4 px-2"><span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">more_vert</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer Actions -->
+<footer class="mt-12 flex justify-between items-end">
+<button class="bg-primary text-on-primary px-6 py-3 rounded-xl shadow-md font-h2-penned text-h2-penned flex items-center gap-2 hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined">add_circle</span>
+                        버스 추가
+                    </button>
+<!-- Approved Stamp -->
+<div class="stamp-effect text-error px-4 py-2 border-4 border-error/50 rounded-sm font-bold flex flex-col items-center">
+<span class="text-xs tracking-tighter opacity-70">CONFIRMED</span>
+<span class="text-2xl leading-none">결제승인</span>
+<span class="text-[10px] opacity-70">2026.05.07</span>
+</div>
+</footer>
+</div>
+</div>
+<!-- Right Side Tabs (Supplier Tags) -->
+<aside class="fixed right-0 top-12 bottom-0 flex flex-col items-start py-page-margin space-y-4 z-40 w-16">
+<div class="bg-primary-container text-on-primary-container -ml-tab-protrusion z-20 shadow-sm rounded-r-xl pl-4 py-3 cursor-pointer transition-all duration-300 ease-in-out hover:-translate-x-1 flex flex-col items-center">
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-label-tab text-label-tab mt-1 [writing-mode:vertical-rl]">강원상사</span>
+</div>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-r-lg hover:bg-surface-variant py-3 pl-2 cursor-pointer transition-all duration-300 ease-in-out hover:-translate-x-1 flex flex-col items-center w-12">
+<span class="material-symbols-outlined">waves</span>
+<span class="font-label-tab text-label-tab mt-1 [writing-mode:vertical-rl]">완도명가</span>
+</div>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-r-lg hover:bg-surface-variant py-3 pl-2 cursor-pointer transition-all duration-300 ease-in-out hover:-translate-x-1 flex flex-col items-center w-12">
+<span class="material-symbols-outlined">water_drop</span>
+<span class="font-label-tab text-label-tab mt-1 [writing-mode:vertical-rl]">강경신안상회</span>
+</div>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-r-lg hover:bg-surface-variant py-3 pl-2 cursor-pointer transition-all duration-300 ease-in-out hover:-translate-x-1 flex flex-col items-center w-12">
+<span class="material-symbols-outlined">sailing</span>
+<span class="font-label-tab text-label-tab mt-1 [writing-mode:vertical-rl]">목포수산</span>
+</div>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-r-lg hover:bg-surface-variant py-3 pl-2 cursor-pointer transition-all duration-300 ease-in-out hover:-translate-x-1 flex flex-col items-center w-12">
+<span class="material-symbols-outlined">agriculture</span>
+<span class="font-label-tab text-label-tab mt-1 [writing-mode:vertical-rl]">해남건어물</span>
+</div>
+</aside>
+</main>
+<!-- Visual Embellishments -->
+<div class="fixed bottom-8 left-8 opacity-40">
+<img class="w-32 h-auto filter sepia" data-alt="A vintage fountain pen with a gold nib resting casually on a piece of high-quality, aged parchment paper. The lighting is warm and directional, casting a soft shadow that emphasizes the metallic texture of the pen and the organic grain of the paper. The scene feels timeless and professional, rooted in a tradition of meticulous documentation and heritage business practices." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6s5QVZ84muhgaK1FeEmRxBzx44pxf7DTAnEFPwgYoPnL0u1MuABGQcnQ1QwctYl7FDKhYUPI07mh0Ak3ndbuwZ-fhVweuZPeJBbIZOlfs3XrYu5cTzxNdp7bkpx-tGcqAXH7surWIHjXaeUgCRuXk9_eDhocDDEgjPti2jQcX3tnjE1USk8odBVPQFG91z_67uKU6CHMLe_0H0HhAswrstF_bpGp_leF85jsUhz4we3fQS_-fEGmR06wVRewjWhLy3-ITAM7dDh8"/>
+</div>
+</body></html>

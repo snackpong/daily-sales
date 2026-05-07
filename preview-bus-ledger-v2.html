@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#1b1b1e",
+                    "on-error": "#ffffff",
+                    "surface-container": "#efedf0",
+                    "surface-dim": "#dbd9dc",
+                    "primary-fixed-dim": "#b4c7eb",
+                    "on-primary": "#ffffff",
+                    "on-surface-variant": "#44474d",
+                    "on-primary-container": "#8296b7",
+                    "secondary-fixed": "#d8e2ff",
+                    "surface-bright": "#fbf9fb",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "inverse-primary": "#b4c7eb",
+                    "inverse-surface": "#303033",
+                    "background": "#fbf9fb",
+                    "surface-variant": "#e3e2e5",
+                    "surface-container-highest": "#e3e2e5",
+                    "on-secondary-fixed-variant": "#004395",
+                    "surface": "#fbf9fb",
+                    "primary-container": "#1a2e4a",
+                    "on-tertiary-fixed-variant": "#5a4317",
+                    "on-tertiary-fixed": "#271900",
+                    "tertiary": "#241700",
+                    "on-primary-fixed": "#051c37",
+                    "on-error-container": "#93000a",
+                    "surface-container-high": "#e9e7ea",
+                    "on-secondary-fixed": "#001a42",
+                    "outline": "#74777e",
+                    "inverse-on-surface": "#f2f0f3",
+                    "tertiary-container": "#3e2a01",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-container": "#fefcff",
+                    "primary": "#021934",
+                    "on-primary-fixed-variant": "#344765",
+                    "surface-container-low": "#f5f3f6",
+                    "error": "#ba1a1a",
+                    "on-background": "#1b1b1e",
+                    "tertiary-fixed-dim": "#e4c28a",
+                    "on-secondary": "#ffffff",
+                    "surface-tint": "#4c5f7e",
+                    "secondary": "#0058be",
+                    "on-tertiary-container": "#af915d",
+                    "on-tertiary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed": "#ffdea9",
+                    "outline-variant": "#c4c6ce",
+                    "primary-fixed": "#d5e3ff",
+                    "secondary-container": "#2170e4"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "md": "16px",
+                    "xs": "4px",
+                    "base": "4px",
+                    "gutter": "20px",
+                    "xl": "32px",
+                    "sm": "8px",
+                    "lg": "24px",
+                    "container-max": "1200px"
+            },
+            "fontFamily": {
+                    "label-bold": ["Noto Sans KR"],
+                    "h1": ["Noto Sans KR"],
+                    "body-sm": ["Noto Sans KR"],
+                    "body-base": ["Noto Sans KR"],
+                    "label-sm": ["Noto Sans KR"],
+                    "h3": ["Noto Sans KR"],
+                    "h2": ["Noto Sans KR"]
+            },
+            "fontSize": {
+                    "label-bold": ["14px", {"lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "h1": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["13px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "body-base": ["15px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "h3": ["18px", {"lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "600"}],
+                    "h2": ["22px", {"lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f5f7fa; }
+        .material-symbols-outlined { font-size: 20px; vertical-align: middle; }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 right-0 z-50 h-[56px] bg-primary text-on-primary flex justify-between items-center px-lg border-b border-outline-variant/20 shadow-sm">
+<div class="flex items-center gap-2 font-h2 text-h2 font-bold text-on-primary">
+<span class="material-symbols-outlined">flatware</span>
+            목포 건어물 장부
+        </div>
+<div class="flex items-center gap-md">
+<span class="font-body-base">김어머니</span>
+<span class="text-on-primary-fixed-variant">|</span>
+<button class="font-label-bold hover:opacity-80 transition-opacity">로그아웃</button>
+</div>
+</header>
+<div class="flex pt-[56px] min-h-screen">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-[56px] h-[calc(100vh-56px)] w-64 bg-surface border-r border-outline-variant flex flex-col gap-base p-md pt-xl z-40">
+<!-- Active Tab: 홈 -->
+<a class="flex items-center gap-md px-md py-sm bg-secondary-fixed text-secondary font-label-bold rounded-lg translate-x-1 transition-transform duration-150 shadow-sm" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-label-bold">홈</span>
+</a>
+<!-- Inactive Tabs -->
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant font-label-sm hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="directions_bus">directions_bus</span>
+<span class="text-label-bold">버스 장부</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant font-label-sm hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="text-label-bold">매입 장부</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant font-label-sm hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="text-label-bold">수입/지출</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant font-label-sm hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="text-label-bold">밴드 관리</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant font-label-sm hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="text-label-bold">검색</span>
+</a>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-64 w-full p-lg overflow-y-auto">
+<!-- Row 1: Header Controls -->
+<div class="flex justify-between items-center mb-lg">
+<div class="flex items-center gap-md">
+<button class="p-xs hover:bg-surface-dim rounded-full flex items-center">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<h1 class="font-h1 text-h1">2026년 5월 7일 (목)</h1>
+<button class="p-xs hover:bg-surface-dim rounded-full flex items-center">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+<button class="ml-sm px-md py-xs border border-outline rounded-lg font-label-bold bg-white hover:bg-surface-container-low">오늘</button>
+</div>
+<button class="flex items-center gap-xs bg-primary text-on-primary px-lg py-md rounded-xl font-label-bold hover:opacity-90 shadow-md">
+<span class="material-symbols-outlined">add</span>
+                    버스 추가
+                </button>
+</div>
+<!-- Row 2: Summary Cards -->
+<div class="grid grid-cols-4 gap-gutter mb-lg">
+<div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col gap-xs">
+<span class="text-on-surface-variant font-label-sm">운행 버스</span>
+<span class="font-h1 text-h1 text-primary">버스 4대</span>
+</div>
+<div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col gap-xs">
+<span class="text-on-surface-variant font-label-sm">총 판매액</span>
+<span class="font-h1 text-h1 text-primary">4,170,000원</span>
+</div>
+<div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col gap-xs">
+<span class="text-on-surface-variant font-label-sm">총 수고비</span>
+<span class="font-h1 text-h1 text-primary">410,000원</span>
+</div>
+<div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col gap-xs">
+<span class="text-on-surface-variant font-label-sm">총 방문객</span>
+<span class="font-h1 text-h1 text-primary">130명</span>
+</div>
+</div>
+<!-- Row 3: Ledger Table -->
+<div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden mb-lg">
+<table class="w-full text-left font-body-base border-collapse">
+<thead class="bg-primary-container text-on-primary">
+<tr>
+<th class="px-md py-md border-r border-on-primary-container/20 font-label-bold">#</th>
+<th class="px-md py-md border-r border-on-primary-container/20 font-label-bold">버스회사</th>
+<th class="px-md py-md border-r border-on-primary-container/20 font-label-bold">기사명</th>
+<th class="px-md py-md border-r border-on-primary-container/20 font-label-bold">연락처</th>
+<th class="px-md py-md border-r border-on-primary-container/20 font-label-bold">소속밴드</th>
+<th class="px-md py-md border-r border-on-primary-container/20 font-label-bold">판매액</th>
+<th class="px-md py-md border-r border-on-primary-container/20 font-label-bold">수고비</th>
+<th class="px-md py-md border-r border-on-primary-container/20 font-label-bold">메모</th>
+<th class="px-md py-md font-label-bold">관리</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-md py-md text-on-surface-variant">1</td>
+<td class="px-md py-md">금화고속</td>
+<td class="px-md py-md"><a class="text-secondary underline decoration-secondary-container font-label-bold" href="#">홍길동</a></td>
+<td class="px-md py-md"><a class="text-secondary underline decoration-secondary-container" href="#">010-1234-5678</a></td>
+<td class="px-md py-md"><span class="px-sm py-xs bg-success-green/10 text-success-green text-label-sm rounded bg-green-50 text-green-700">우송</span></td>
+<td class="px-md py-md text-right font-label-bold">1,200,000</td>
+<td class="px-md py-md text-right text-error font-label-bold">120,000</td>
+<td class="px-md py-md text-on-surface-variant">-</td>
+<td class="px-md py-md"><button class="p-xs hover:bg-surface-dim rounded"><span class="material-symbols-outlined">edit</span></button></td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-md py-md text-on-surface-variant">2</td>
+<td class="px-md py-md">우성여행사</td>
+<td class="px-md py-md"><a class="text-secondary underline decoration-secondary-container font-label-bold" href="#">김철수</a></td>
+<td class="px-md py-md"><a class="text-secondary underline decoration-secondary-container" href="#">010-9876-5432</a></td>
+<td class="px-md py-md"><span class="px-sm py-xs bg-surface-container-high text-on-surface-variant text-label-sm rounded">처음처럼</span></td>
+<td class="px-md py-md text-right font-label-bold">850,000</td>
+<td class="px-md py-md text-right text-error font-label-bold">85,000</td>
+<td class="px-md py-md text-on-surface-variant font-label-sm">홍어1마리</td>
+<td class="px-md py-md"><button class="p-xs hover:bg-surface-dim rounded"><span class="material-symbols-outlined">edit</span></button></td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-md py-md text-on-surface-variant">3</td>
+<td class="px-md py-md">남도관광</td>
+<td class="px-md py-md"><a class="text-secondary underline decoration-secondary-container font-label-bold" href="#">이민호</a></td>
+<td class="px-md py-md"><a class="text-secondary underline decoration-secondary-container" href="#">010-5555-7777</a></td>
+<td class="px-md py-md text-on-surface-variant text-label-sm">무소속</td>
+<td class="px-md py-md text-right font-label-bold">1,500,000</td>
+<td class="px-md py-md text-right text-error font-label-bold">150,000</td>
+<td class="px-md py-md text-on-surface-variant">-</td>
+<td class="px-md py-md"><button class="p-xs hover:bg-surface-dim rounded"><span class="material-symbols-outlined">edit</span></button></td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-md py-md text-on-surface-variant">4</td>
+<td class="px-md py-md">한빛여행</td>
+<td class="px-md py-md"><a class="text-secondary underline decoration-secondary-container font-label-bold" href="#">박영수</a></td>
+<td class="px-md py-md"><a class="text-secondary underline decoration-secondary-container" href="#">010-3333-9999</a></td>
+<td class="px-md py-md"><span class="px-sm py-xs bg-success-green/10 text-success-green text-label-sm rounded bg-green-50 text-green-700">우송</span></td>
+<td class="px-md py-md text-right font-label-bold">620,000</td>
+<td class="px-md py-md text-right text-error font-label-bold">55,000</td>
+<td class="px-md py-md text-on-surface-variant font-label-sm">갈치2마리</td>
+<td class="px-md py-md"><button class="p-xs hover:bg-surface-dim rounded"><span class="material-symbols-outlined">edit</span></button></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Row 4: Settlement Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm">
+<h3 class="font-h3 text-h3 mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined">calculate</span>
+                        정산 입력 및 계산
+                    </h3>
+<div class="space-y-sm">
+<div class="flex justify-between items-center py-sm border-b border-outline-variant/30">
+<span class="text-on-surface-variant">포스 매출</span>
+<input class="w-40 text-right font-label-bold border-outline-variant rounded-lg focus:ring-primary focus:border-primary" type="text" value="3,920,000"/>
+</div>
+<div class="flex justify-between items-center py-sm border-b border-outline-variant/30">
+<span class="text-on-surface-variant">현금 미등록</span>
+<input class="w-40 text-right font-label-bold border-outline-variant rounded-lg focus:ring-primary focus:border-primary" type="text" value="250,000"/>
+</div>
+<div class="flex justify-between items-center py-md mt-md bg-surface-container-low px-md rounded-lg">
+<span class="font-label-bold text-primary">실제 총매출</span>
+<span class="text-h2 font-h2 text-primary">4,170,000원</span>
+</div>
+</div>
+</div>
+<div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div>
+<h3 class="font-h3 text-h3 mb-md">세부 합계</h3>
+<div class="space-y-base text-body-base">
+<div class="flex justify-between">
+<span class="text-on-surface-variant">버스 합계</span>
+<span class="font-label-bold">3,850,000원</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">개인/워크인</span>
+<span class="font-label-bold">320,000원</span>
+</div>
+</div>
+</div>
+<div class="pt-lg flex gap-md">
+<button class="flex-1 py-md border border-outline rounded-xl font-label-bold hover:bg-surface-container-low transition-colors">데이터 내보내기</button>
+<button class="flex-1 py-md bg-primary text-on-primary rounded-xl font-label-bold shadow-md hover:opacity-90">일일 정산 마감</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Modal Overlay -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+<div class="bg-white w-[600px] max-h-[921px] rounded-xl shadow-2xl flex flex-col overflow-hidden">
+<!-- Modal Header -->
+<div class="px-lg py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+<h2 class="font-h2 text-h2 flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">person</span>
+                    홍길동 기사님 · 010-1234-5678
+                </h2>
+<button class="p-xs hover:bg-surface-dim rounded-full">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Modal Content -->
+<div class="p-lg overflow-y-auto space-y-lg">
+<!-- Stats Grid -->
+<div class="grid grid-cols-3 gap-md p-md bg-surface-container-lowest border border-outline-variant rounded-xl text-center">
+<div>
+<div class="text-label-sm text-on-surface-variant mb-xs">총 방문</div>
+<div class="font-label-bold text-h3">13회</div>
+</div>
+<div class="border-x border-outline-variant">
+<div class="text-label-sm text-on-surface-variant mb-xs">누적 판매</div>
+<div class="font-label-bold text-h3">15.6M</div>
+</div>
+<div>
+<div class="text-label-sm text-on-surface-variant mb-xs">평균 수고비</div>
+<div class="font-label-bold text-h3">110k</div>
+</div>
+</div>
+<!-- History Table -->
+<div>
+<h4 class="font-label-bold mb-sm text-on-surface-variant">최근 방문 이력</h4>
+<div class="border border-outline-variant rounded-lg overflow-hidden">
+<table class="w-full text-left font-body-sm">
+<thead class="bg-surface-container-high">
+<tr>
+<th class="px-sm py-xs border-r border-outline-variant">날짜</th>
+<th class="px-sm py-xs border-r border-outline-variant">버스회사</th>
+<th class="px-sm py-xs border-r border-outline-variant text-right">판매액</th>
+<th class="px-sm py-xs text-right">수고비</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr><td class="px-sm py-xs">26-05-01</td><td class="px-sm py-xs">금화고속</td><td class="px-sm py-xs text-right">1,200k</td><td class="px-sm py-xs text-right text-error">120k</td></tr>
+<tr><td class="px-sm py-xs">26-04-20</td><td class="px-sm py-xs">금화고속</td><td class="px-sm py-xs text-right">850k</td><td class="px-sm py-xs text-right text-error">85k</td></tr>
+<tr><td class="px-sm py-xs">26-04-05</td><td class="px-sm py-xs">금화고속</td><td class="px-sm py-xs text-right">1,500k</td><td class="px-sm py-xs text-right text-error">150k</td></tr>
+<tr><td class="px-sm py-xs">26-03-22</td><td class="px-sm py-xs">경기대원</td><td class="px-sm py-xs text-right">980k</td><td class="px-sm py-xs text-right text-error">98k</td></tr>
+<tr><td class="px-sm py-xs">26-03-10</td><td class="px-sm py-xs">금화고속</td><td class="px-sm py-xs text-right">1,100k</td><td class="px-sm py-xs text-right text-error">110k</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Notes Area -->
+<div>
+<label class="font-label-bold mb-sm block text-on-surface-variant">기사님 특이사항 메모</label>
+<textarea class="w-full h-24 p-md border-outline-variant rounded-xl focus:ring-primary focus:border-primary resize-none font-body-base" placeholder="중요한 정보를 메모하세요..."></textarea>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="p-lg bg-surface-container-low border-t border-outline-variant flex justify-end gap-md">
+<button class="px-lg py-md font-label-bold hover:bg-surface-dim transition-colors rounded-xl border border-outline">닫기</button>
+<button class="px-lg py-md bg-primary text-on-primary font-label-bold rounded-xl shadow-md flex items-center gap-xs hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">chat</span>
+                    밴드 문구 생성
+                </button>
+</div>
+</div>
+</div>
+</body></html>

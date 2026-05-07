@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#dbd9db",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#303032",
+                    "secondary-fixed-dim": "#e3bfb2",
+                    "background": "#fbf9fb",
+                    "tertiary-fixed": "#ffddb0",
+                    "surface-tint": "#4c6078",
+                    "inverse-primary": "#b4c8e4",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed": "#061d32",
+                    "surface-container": "#efedef",
+                    "on-tertiary-container": "#ae8f64",
+                    "secondary-fixed": "#ffdbce",
+                    "tertiary-container": "#3d2907",
+                    "primary-container": "#1a2e44",
+                    "on-background": "#1b1c1d",
+                    "on-surface": "#1b1c1d",
+                    "surface-container-high": "#e9e7ea",
+                    "secondary": "#74584e",
+                    "outline-variant": "#c4c6cd",
+                    "primary-fixed": "#d1e4ff",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#03192e",
+                    "on-tertiary-fixed-variant": "#5a431f",
+                    "on-secondary-fixed-variant": "#5a4137",
+                    "on-secondary-container": "#795c52",
+                    "error-container": "#ffdad6",
+                    "surface-container-highest": "#e4e2e4",
+                    "on-surface-variant": "#43474d",
+                    "on-primary-container": "#8296b0",
+                    "surface-variant": "#e4e2e4",
+                    "secondary-container": "#fed8ca",
+                    "on-error-container": "#93000a",
+                    "tertiary": "#241500",
+                    "surface-container-low": "#f5f3f5",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed": "#281800",
+                    "on-primary": "#ffffff",
+                    "outline": "#74777d",
+                    "on-secondary-fixed": "#2a170f",
+                    "inverse-on-surface": "#f2f0f2",
+                    "surface-bright": "#fbf9fb",
+                    "surface": "#fbf9fb",
+                    "primary-fixed-dim": "#b4c8e4",
+                    "tertiary-fixed-dim": "#e3c193",
+                    "on-primary-fixed-variant": "#35485f",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "page-margin": "48px",
+                    "notebook-max-width": "1200px",
+                    "line-height-unit": "32px",
+                    "tab-protrusion": "12px"
+            },
+            "fontFamily": {
+                    "table-header": ["Inter"],
+                    "table-data": ["Inter"],
+                    "label-tab": ["Noto Serif KR"],
+                    "h1-penned": ["Noto Serif KR"],
+                    "body-ledger": ["Inter"],
+                    "h2-penned": ["Noto Serif KR"]
+            },
+            "fontSize": {
+                    "table-header": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "table-data": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "label-tab": ["13px", {"lineHeight": "1.0", "fontWeight": "500"}],
+                    "h1-penned": ["28px", {"lineHeight": "1.4", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-ledger": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "h2-penned": ["22px", {"lineHeight": "1.4", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .kraft-bg {
+            background-color: #e5d5c0;
+            background-image: radial-gradient(#d3c1a5 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .notebook-page {
+            background: #fffdfa;
+            background-image: linear-gradient(#f1e9d2 1px, transparent 1px);
+            background-size: 100% 32px;
+            position: relative;
+        }
+        .spine-texture {
+            background: linear-gradient(to right, #2c1810, #3e271a 30%, #2c1810 60%, #1a0d08);
+            box-shadow: inset -2px 0 5px rgba(0,0,0,0.5);
+        }
+        .grain-overlay {
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.05;
+        }
+    </style>
+</head>
+<body class="kraft-bg min-h-screen font-body-ledger text-on-surface selection:bg-secondary-container">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 left-0 w-full h-12 flex justify-between items-center px-gutter bg-primary dark:bg-primary text-on-primary dark:text-on-primary z-50 shadow-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-primary">menu_book</span>
+<h1 class="font-h1-penned text-h1-penned text-on-primary">목포 건어물 장부</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="cursor-pointer hover:opacity-80 transition-opacity active:scale-95">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-12 flex justify-center items-start min-h-screen relative px-12">
+<!-- Left SideNavBar (Index) -->
+<nav class="fixed left-0 top-12 bottom-0 flex flex-col items-end py-page-margin space-y-4 z-40 w-16">
+<!-- Active Tab: 버스장부 -->
+<div class="bg-primary text-on-primary -mr-tab-protrusion z-20 shadow-sm rounded-l-xl pr-4 py-3 flex flex-col items-center gap-1 cursor-pointer transition-all duration-300 ease-in-out">
+<span class="material-symbols-outlined" data-icon="directions_bus">directions_bus</span>
+<span class="font-label-tab text-label-tab [writing-mode:vertical-lr] rotate-180">버스장부</span>
+</div>
+<!-- Inactive Tabs -->
+<div class="bg-surface-container-high text-on-surface-variant rounded-l-lg hover:translate-x-1 transition-transform py-3 px-2 flex flex-col items-center gap-1 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-label-tab text-label-tab [writing-mode:vertical-lr] rotate-180">예약일정</span>
+</div>
+<div class="bg-surface-container-high text-on-surface-variant rounded-l-lg hover:translate-x-1 transition-transform py-3 px-2 flex flex-col items-center gap-1 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-tab text-label-tab [writing-mode:vertical-lr] rotate-180">사입장부</span>
+</div>
+<div class="bg-surface-container-high text-on-surface-variant rounded-l-lg hover:translate-x-1 transition-transform py-3 px-2 flex flex-col items-center gap-1 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-tab text-label-tab [writing-mode:vertical-lr] rotate-180">수입지출</span>
+</div>
+<div class="bg-surface-container-high text-on-surface-variant rounded-l-lg hover:translate-x-1 transition-transform py-3 px-2 flex flex-col items-center gap-1 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-tab text-label-tab [writing-mode:vertical-lr] rotate-180">밴드관리</span>
+</div>
+<div class="bg-surface-container-high text-on-surface-variant rounded-l-lg hover:translate-x-1 transition-transform py-3 px-2 flex flex-col items-center gap-1 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-label-tab text-label-tab [writing-mode:vertical-lr] rotate-180">검색</span>
+</div>
+</nav>
+<!-- Right SideNavBar (Suppliers) -->
+<nav class="fixed right-0 top-12 bottom-0 flex flex-col items-start py-page-margin space-y-4 z-40 w-16">
+<div class="bg-surface-container-highest text-on-surface-variant rounded-r-lg hover:-translate-x-1 transition-transform py-3 px-2 flex flex-col items-center gap-1 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span class="font-label-tab text-label-tab [writing-mode:vertical-lr]">강원상사</span>
+</div>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-r-lg hover:-translate-x-1 transition-transform py-3 px-2 flex flex-col items-center gap-1 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="waves">waves</span>
+<span class="font-label-tab text-label-tab [writing-mode:vertical-lr]">완도명가</span>
+</div>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-r-lg hover:-translate-x-1 transition-transform py-3 px-2 flex flex-col items-center gap-1 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="water_drop">water_drop</span>
+<span class="font-label-tab text-label-tab [writing-mode:vertical-lr]">강경신안상회</span>
+</div>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-r-lg hover:-translate-x-1 transition-transform py-3 px-2 flex flex-col items-center gap-1 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="sailing">sailing</span>
+<span class="font-label-tab text-label-tab [writing-mode:vertical-lr]">목포수산</span>
+</div>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-r-lg hover:-translate-x-1 transition-transform py-3 px-2 flex flex-col items-center gap-1 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="agriculture">agriculture</span>
+<span class="font-label-tab text-label-tab [writing-mode:vertical-lr]">해남건어물</span>
+</div>
+</nav>
+<!-- The Notebook Ledger -->
+<div class="max-w-notebook-max-width w-full flex bg-background rounded-sm shadow-[0_30px_60px_-12px_rgba(0,0,0,0.3)] min-h-[900px] overflow-hidden relative">
+<div class="grain-overlay absolute inset-0"></div>
+<!-- Left Page Spine -->
+<div class="w-12 spine-texture h-full flex-shrink-0 z-10"></div>
+<!-- Content Area (The Paper) -->
+<div class="flex-grow p-page-margin notebook-page shadow-inner">
+<!-- Date Header Section -->
+<header class="mb-8 border-b-2 border-primary-container pb-2">
+<h2 class="font-h2-penned text-h2-penned text-primary mb-2">2026년 5월 7일 (목) — 버스 기사 장부</h2>
+<div class="flex gap-6 text-on-surface-variant font-medium">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">directions_bus</span>
+<span>버스 <span class="text-primary font-bold">4</span>대</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span>총판매 <span class="text-primary font-bold">4,170,000</span>원</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">card_giftcard</span>
+<span>수고비 <span class="text-error font-bold">410,000</span>원</span>
+</div>
+</div>
+</header>
+<!-- Data Table -->
+<div class="overflow-hidden bg-transparent">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-primary text-on-primary">
+<th class="px-4 py-3 font-table-header text-table-header uppercase first:rounded-tl-sm">#</th>
+<th class="px-4 py-3 font-table-header text-table-header">밴드</th>
+<th class="px-4 py-3 font-table-header text-table-header">버스회사</th>
+<th class="px-4 py-3 font-table-header text-table-header">기사명</th>
+<th class="px-4 py-3 font-table-header text-table-header">판매금액</th>
+<th class="px-4 py-3 font-table-header text-table-header">수고비</th>
+<th class="px-4 py-3 font-table-header text-table-header">메모</th>
+<th class="px-4 py-3 font-table-header text-table-header last:rounded-tr-sm">관리</th>
+</tr>
+</thead>
+<tbody class="font-table-data text-table-data">
+<tr class="hover:bg-surface-container-low transition-colors border-b border-surface-dim group">
+<td class="px-4 py-4 text-on-surface-variant">01</td>
+<td class="px-4 py-4 font-bold">목포투어 밴드</td>
+<td class="px-4 py-4 italic">금호고속</td>
+<td class="px-4 py-4">김철수 기사님</td>
+<td class="px-4 py-4 text-right">1,250,000원</td>
+<td class="px-4 py-4 text-right text-error font-medium">120,000원</td>
+<td class="px-4 py-4 text-on-surface-variant text-xs">단골 단체 손님 24명</td>
+<td class="px-4 py-4">
+<button class="text-primary hover:underline font-semibold">수정</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors border-b border-surface-dim group">
+<td class="px-4 py-4 text-on-surface-variant">02</td>
+<td class="px-4 py-4 font-bold">남도여행의 모든것</td>
+<td class="px-4 py-4 italic">경기대원</td>
+<td class="px-4 py-4">박영희 기사님</td>
+<td class="px-4 py-4 text-right">980,000원</td>
+<td class="px-4 py-4 text-right text-error font-medium">95,000원</td>
+<td class="px-4 py-4 text-on-surface-variant text-xs">멸치세트 다량 구매</td>
+<td class="px-4 py-4">
+<button class="text-primary hover:underline font-semibold">수정</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors border-b border-surface-dim group">
+<td class="px-4 py-4 text-on-surface-variant">03</td>
+<td class="px-4 py-4 font-bold">건어물매니아</td>
+<td class="px-4 py-4 italic">중앙고속</td>
+<td class="px-4 py-4">이정훈 기사님</td>
+<td class="px-4 py-4 text-right">1,450,000원</td>
+<td class="px-4 py-4 text-right text-error font-medium text-lg font-bold">140,000원</td>
+<td class="px-4 py-4 text-on-surface-variant text-xs">선물용 황태채 위주</td>
+<td class="px-4 py-4">
+<button class="text-primary hover:underline font-semibold">수정</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors border-b border-surface-dim group">
+<td class="px-4 py-4 text-on-surface-variant">04</td>
+<td class="px-4 py-4 font-bold">목포투어 밴드</td>
+<td class="px-4 py-4 italic">천일고속</td>
+<td class="px-4 py-4">최민수 기사님</td>
+<td class="px-4 py-4 text-right">490,000원</td>
+<td class="px-4 py-4 text-right text-error font-medium">55,000원</td>
+<td class="px-4 py-4 text-on-surface-variant text-xs">오후 4시 도착</td>
+<td class="px-4 py-4">
+<button class="text-primary hover:underline font-semibold">수정</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer Summary / Action -->
+<footer class="mt-12 flex justify-between items-center">
+<div class="flex gap-4">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold border border-secondary/20">
+<span class="material-symbols-outlined text-[14px] mr-1">history</span> 지난주 대비 +12%
+                        </span>
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-xs font-bold border border-tertiary/20">
+<span class="material-symbols-outlined text-[14px] mr-1">task_alt</span> 기사 4명 정산 완료
+                        </span>
+</div>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-sm shadow-md hover:shadow-lg hover:translate-y-[-2px] transition-all active:scale-95">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-bold">+ 버스 추가</span>
+</button>
+</footer>
+<!-- Visual Stamp Decorations -->
+<div class="absolute bottom-10 left-10 opacity-40 rotate-[-15deg] pointer-events-none">
+<div class="border-4 border-error/50 p-2 rounded-lg text-error/50 font-extrabold text-2xl uppercase tracking-widest">
+                        APPROVED
+                    </div>
+</div>
+</div>
+</div>
+<!-- Decorative Floating Image (Merchant Profile) -->
+<div class="fixed bottom-12 left-12 w-32 h-32 rounded-full border-8 border-background shadow-xl overflow-hidden z-40 grayscale-[0.2]">
+<img alt="Merchant Profile" class="w-full h-full object-cover" data-alt="A warm, close-up portrait of a veteran Korean merchant in his late 50s, smiling kindly while wearing a professional apron. The background features a blurred traditional marketplace with stacks of dried seafood. The lighting is soft and golden, creating a nostalgic and reliable atmosphere that complements the leather-bound ledger UI theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7PKErzAuwCtyv63d9eV5IJY-TzoPXubfX6i7LMbxuE0Mxel8MubnFsIYu_VOFEEJf2oVnUFnMeVCly989PihdJqfpMECcQo6LT8DQhkRQ_7CbzK3BKTvLcO62Ror_N2gfQQbTx2yswOIuKE0EqL5iHNreR1HSf_PuwGucf5LjXQwLoJAL8_yCEIWTs5mT15vXuuDrK1MOK2GFMRRwkaxoQGZw_fHvT4mSi9FWawOsutNZcvqBlqkgqyPA22sIgGFIAei1Ek9n8DU"/>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile Only Shell) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container flex justify-around items-center h-16 shadow-[0_-5px_15px_rgba(0,0,0,0.1)] z-50">
+<div class="flex flex-col items-center text-primary">
+<span class="material-symbols-outlined">directions_bus</span>
+<span class="text-[10px] font-label-tab">버스장부</span>
+</div>
+<div class="flex flex-col items-center text-on-surface-variant">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-[10px] font-label-tab">일정</span>
+</div>
+<div class="flex flex-col items-center text-on-surface-variant">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-[10px] font-label-tab">사입</span>
+</div>
+<div class="flex flex-col items-center text-on-surface-variant">
+<span class="material-symbols-outlined">groups</span>
+<span class="text-[10px] font-label-tab">밴드</span>
+</div>
+</nav>
+</body></html>
