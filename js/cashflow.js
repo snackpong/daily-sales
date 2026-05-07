@@ -37,9 +37,9 @@ const cashflow = (() => {
     try {
       const snap = await userCol('cashflowEntries')
         .where('date', '==', _date)
-        .orderBy('createdAt', 'asc')
         .get();
-      _entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      _entries = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (a.createdAt?.toMillis?.() || 0) - (b.createdAt?.toMillis?.() || 0));
       _render();
     } catch (e) {
       list.innerHTML = `<p class="error-msg">오류: ${e.message}</p>`;
