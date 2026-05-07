@@ -123,6 +123,7 @@ const reservation = (() => {
       <div class="res-item">
         <div class="res-info">
           <div class="res-main">${r.time ? r.time + ' · ' : ''}${[r.driverName, r.busCompany].filter(Boolean).join(' / ') || '기사 미정'} ${r.estimatedPassengers ? r.estimatedPassengers + '명' : ''}</div>
+          ${r.phoneNumber ? `<div class="res-sub">📞 ${r.phoneNumber}</div>` : ''}
           ${r.requests ? `<div class="res-sub">${r.requests}</div>` : ''}
         </div>
         <div class="res-actions">
@@ -164,6 +165,10 @@ const reservation = (() => {
             <input type="text" name="busCompany" value="${r?.busCompany || ''}" placeholder="예: 금화고속">
           </div>
           <div class="form-group">
+            <label>기사 전화번호</label>
+            <input type="tel" name="phoneNumber" value="${r?.phoneNumber || ''}" placeholder="010-0000-0000">
+          </div>
+          <div class="form-group">
             <label>예상 손님 수 (명)</label>
             <input type="number" name="estimatedPassengers" value="${r?.estimatedPassengers || ''}" placeholder="0" min="0">
           </div>
@@ -202,6 +207,7 @@ const reservation = (() => {
       time: form.querySelector('[name="time"]').value,
       driverName: form.querySelector('[name="driverName"]').value.trim(),
       busCompany: form.querySelector('[name="busCompany"]').value.trim(),
+      phoneNumber: form.querySelector('[name="phoneNumber"]').value.trim(),
       estimatedPassengers: Number(form.querySelector('[name="estimatedPassengers"]').value) || 0,
       status: form.querySelector('[name="status"]').value,
       requests: form.querySelector('[name="requests"]').value.trim(),
