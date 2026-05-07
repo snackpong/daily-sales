@@ -68,7 +68,12 @@ const home = (() => {
       .sort((a, b) => b.count - a.count);
 
     const bandHTML = bandItems.length > 0
-      ? bandItems.map(b => `<span class="home-band-chip">${b.name} <strong>${b.count}대</strong></span>`).join('')
+      ? bandItems.map(b => {
+          const logo = b.logoURL
+            ? `<img src="${b.logoURL}" class="home-band-logo" alt="${b.name}">`
+            : `<span class="home-band-initials">${b.name.slice(0, 2)}</span>`;
+          return `<span class="home-band-chip">${logo}${b.name} <strong>${b.count}대</strong></span>`;
+        }).join('')
       : '<span style="color:var(--text-light);font-size:13px">이번달 밴드 기록 없음</span>';
 
     document.getElementById('home-stats').innerHTML = `
