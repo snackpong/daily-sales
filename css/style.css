@@ -566,6 +566,26 @@ table { border-collapse: collapse; width: 100%; }
   margin-bottom: 8px;
   background: var(--bg);
 }
+.res-status-group {
+  display: flex;
+  gap: 4px;
+}
+.res-status-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: white;
+  color: var(--text-light);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.res-status-btn:hover { border-color: var(--primary); color: var(--primary); }
+.res-status-btn.active.pending { background: #fff3cd; color: #856404; border-color: #ffc107; }
+.res-status-btn.active.visited { background: #d1e7dd; color: #0a3622; border-color: #5cb85c; }
+.res-status-btn.active.noshow { background: #e2e3e5; color: #383d41; border-color: #aaa; }
+
 .res-status-badge {
   font-size: 11px;
   padding: 3px 8px;

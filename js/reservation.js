@@ -67,9 +67,11 @@ const reservation = (() => {
       const isSelected = dateStr === _selectedDate;
       const dayRes = _allReservations.filter(r => r.date === dateStr);
 
-      const dotHTML = dayRes.slice(0, 3).map(r =>
-        `<div class="cal-res-dot ${r.status}" title="${r.driverName || r.busCompany || '예약'}">${r.time || ''} ${r.driverName || r.busCompany || '예약'}</div>`
-      ).join('');
+      const dotHTML = dayRes.slice(0, 3).map(r => {
+        const parts = [r.driverName, r.busCompany].filter(Boolean);
+        const label = parts.join('/') || '예약';
+        return `<div class="cal-res-dot ${r.status}" title="${label}">${r.time || ''} ${label}</div>`;
+      }).join('');
 
       cellsHTML += `
         <div class="cal-cell${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}"
@@ -117,19 +119,18 @@ const reservation = (() => {
       return;
     }
 
-    const statusLabel = { pending: '예약중', visited: '방문완료', noshow: '미방문' };
     listEl.innerHTML = dayRes.map(r => `
       <div class="res-item">
-        <span class="res-status-badge status-${r.status}">${statusLabel[r.status] || '예약중'}</span>
         <div class="res-info">
-          <div class="res-main">${r.time ? r.time + ' · ' : ''}${r.driverName || r.busCompany || '기사 미정'} ${r.estimatedPassengers ? r.estimatedPassengers + '명' : ''}</div>
+          <div class="res-main">${r.time ? r.time + ' · ' : ''}${[r.driverName, r.busCompany].filter(Boolean).join(' / ') || '기사 미정'} ${r.estimatedPassengers ? r.estimatedPassengers + '명' : ''}</div>
           ${r.requests ? `<div class="res-sub">${r.requests}</div>` : ''}
         </div>
         <div class="res-actions">
-          ${r.status === 'pending' ? `
-            <button class="btn-sm btn-success" onclick="reservation.setStatus('${r.id}','visited')">방문✓</button>
-            <button class="btn-sm btn-outline" onclick="reservation.setStatus('${r.id}','noshow')">미방문</button>
-          ` : ''}
+          <div class="res-status-group">
+            <button class="res-status-btn${r.status === 'pending' ? ' active pending' : ''}" onclick="reservation.setStatus('${r.id}','pending')">예약중</button>
+            <button class="res-status-btn${r.status === 'visited' ? ' active visited' : ''}" onclick="reservation.setStatus('${r.id}','visited')">방문완료</button>
+            <button class="res-status-btn${r.status === 'noshow' ? ' active noshow' : ''}" onclick="reservation.setStatus('${r.id}','noshow')">미방문</button>
+          </div>
           <button class="btn-sm btn-outline" onclick="reservation.openModal('${r.date}','${r.id}')">수정</button>
           <button class="btn-sm btn-danger" onclick="reservation.remove('${r.id}')">삭제</button>
         </div>
