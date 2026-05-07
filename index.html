@@ -27,7 +27,7 @@
   <header class="app-header">
     <div class="header-left">
       <span class="header-icon">🐟</span>
-      <span class="header-title">목포 건어물 장부</span>
+      <span class="header-title" onclick="switchTab('home')" title="홈으로">목포 건어물 장부</span>
     </div>
     <div class="header-right">
       <span id="user-name" class="user-name"></span>
@@ -36,7 +36,8 @@
   </header>
 
   <nav class="tab-nav">
-    <button class="tab-btn active" data-tab="bus">🚌 버스장부</button>
+    <button class="tab-btn active" data-tab="home">🏠 홈</button>
+    <button class="tab-btn" data-tab="bus">🚌 버스장부</button>
     <button class="tab-btn" data-tab="reservation">📅 예약일정</button>
     <button class="tab-btn" data-tab="purchase">📦 사입장부</button>
     <button class="tab-btn" data-tab="cashflow">💰 수입지출</button>
@@ -46,8 +47,25 @@
 
   <main class="content-area">
 
+    <!-- 홈 대시보드 -->
+    <div id="tab-home" class="tab-panel active">
+      <div class="panel-toolbar">
+        <div class="date-nav">
+          <button class="btn-icon" id="home-prev-month">◀</button>
+          <span id="home-month-label" class="month-label"></span>
+          <button class="btn-icon" id="home-next-month">▶</button>
+        </div>
+      </div>
+      <div id="home-stats" class="home-stats-grid"></div>
+      <div id="home-calendar" class="calendar"></div>
+      <div id="home-day-detail" class="res-day-detail hidden">
+        <h3 id="home-detail-date"></h3>
+        <div id="home-detail-content"></div>
+      </div>
+    </div>
+
     <!-- 버스 기사 장부 -->
-    <div id="tab-bus" class="tab-panel active">
+    <div id="tab-bus" class="tab-panel">
       <div class="panel-toolbar">
         <div class="date-nav">
           <button class="btn-icon" id="bus-prev-day" title="전날">◀</button>
@@ -201,6 +219,7 @@
 <script src="js/firebase-init.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/bands.js"></script>
+<script src="js/home.js"></script>
 <script src="js/bus-ledger.js"></script>
 <script src="js/reservation.js"></script>
 <script src="js/purchase.js"></script>

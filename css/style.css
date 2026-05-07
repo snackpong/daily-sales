@@ -918,6 +918,90 @@ table { border-collapse: collapse; width: 100%; }
 }
 .dp-dot.active { background: white; }
 
+/* ===== 홈 대시보드 ===== */
+.header-title { cursor: pointer; transition: opacity 0.15s; }
+.header-title:hover { opacity: 0.75; }
+
+.home-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.home-stat-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+}
+.home-stat-card.home-stat-bands { grid-column: 1 / -1; }
+.home-stat-label {
+  font-size: 11px;
+  color: var(--text-light);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 8px;
+}
+.home-stat-value {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1;
+}
+.home-stat-unit { font-size: 14px; font-weight: 400; color: var(--text-light); margin-left: 2px; }
+.home-stat-sub { font-size: 11px; color: var(--text-light); margin-top: 5px; }
+.home-band-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.home-band-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 13px;
+}
+.home-band-chip strong { font-weight: 700; }
+
+.cal-res-dot.home-bus-dot { background: var(--primary); color: white; }
+
+.home-detail-section { margin-bottom: 14px; }
+.home-detail-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.home-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.home-detail-item:last-child { border-bottom: none; }
+.home-detail-badge {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text-light);
+}
+.home-res-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.home-res-badge.pending { background: #fff3cd; color: #856404; }
+.home-res-badge.visited { background: #d1e7dd; color: #0a3622; }
+.home-res-badge.noshow { background: #e2e3e5; color: #383d41; }
+
 /* ===== 전화번호 링크 ===== */
 .phone-link {
   color: var(--primary);

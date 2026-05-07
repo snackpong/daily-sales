@@ -42,14 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function _onSignIn() {
-  // 밴드 데이터를 먼저 로드 (다른 모듈에서 참조)
   await bands.ensureLoaded();
-  // 버스 기사 장부 초기화
-  await busLedger.init();
-  _tabInitialized['bus'] = true;
-  // 밴드 추가 버튼
+  await home.load();
+  _tabInitialized['home'] = true;
   document.getElementById('btn-add-band').addEventListener('click', () => bands.openModal(null));
-  // 검색 초기화
   search.init();
 }
 
@@ -58,7 +54,7 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `tab-${tab}`));
 
   if (_tabInitialized[tab]) {
-    // 이미 초기화된 탭: 버스장부는 현재 날짜 데이터 새로고침
+    if (tab === 'home') home.load();
     if (tab === 'bus') busLedger.load();
     return;
   }
@@ -66,6 +62,7 @@ function switchTab(tab) {
   _tabInitialized[tab] = true;
 
   switch (tab) {
+    case 'bus': busLedger.init(); break;
     case 'reservation': reservation.load(); break;
     case 'purchase': purchase.load(); break;
     case 'cashflow': cashflow.load(); break;
