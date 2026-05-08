@@ -466,15 +466,25 @@
 .home-band-logo { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); vertical-align: middle; margin-right: 5px; }
 .home-band-initials { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: white; font-size: 9px; font-weight: 700; vertical-align: middle; margin-right: 5px; }
 
-.home-detail-section { margin-bottom: 14px; }
-.home-detail-title { font-size: 12px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-.home-detail-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-.home-detail-item:last-child { border-bottom: none; }
-.home-detail-badge { font-size: 12px; padding: 2px 8px; border-radius: 10px; background: var(--bg); color: var(--text-light); }
-.home-res-badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 10px; white-space: nowrap; }
-.home-res-badge.pending { background: #fff3cd; color: #856404; }
-.home-res-badge.visited { background: #d1e7dd; color: #0a3622; }
-.home-res-badge.noshow { background: #e2e3e5; color: #383d41; }
+/* 홈 날짜 상세 카드 그리드 */
+.hd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.hd-card { border-radius: var(--radius); padding: 11px 13px; border: 1.5px solid; display: flex; flex-direction: column; gap: 3px; }
+.hd-bus     { border-color: #1a7a46; background: #f0faf5; }
+.hd-res-done{ border-color: #a8d5bb; background: #f6fdf9; opacity: 0.75; }
+.hd-pending { border-color: #f0a800; background: #fffbf0; }
+.hd-noshow  { border-color: #ccc;    background: #f5f5f5; opacity: 0.65; }
+.hd-card-status { font-size: 11px; font-weight: 700; }
+.hd-bus      .hd-card-status { color: #1a7a46; }
+.hd-res-done .hd-card-status { color: #2d8a56; }
+.hd-pending  .hd-card-status { color: #c07a00; }
+.hd-noshow   .hd-card-status { color: #888; }
+.hd-card-time { font-size: 14px; font-weight: 700; color: var(--text); }
+.hd-card-main { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hd-card-meta { display: flex; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--text-light); margin-top: 2px; }
+.hd-card-note { font-size: 11px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+@media (max-width: 600px) {
+  .hd-grid { grid-template-columns: 1fr 1fr; }
+}
 
 /* ===== 전화번호 링크 ===== */
 .phone-link { color: var(--primary); text-decoration: underline; text-decoration-color: transparent; transition: color 0.15s, text-decoration-color 0.15s; }

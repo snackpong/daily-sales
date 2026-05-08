@@ -197,32 +197,44 @@ const home = (() => {
 
     const dayBuses = _busEntries.filter(e => e.date === dateStr);
     const dayRes = _reservations.filter(r => r.date === dateStr);
-    const statusLabel = { pending: '예약중', visited: '방문완료', noshow: '미방문' };
 
-    const busHTML = dayBuses.length > 0
-      ? `<div class="home-detail-section">
-          <div class="home-detail-title">🚌 버스 (${dayBuses.length}대)</div>
-          ${dayBuses.map(e => `
-            <div class="home-detail-item">
-              <span>${[e.busCompany, e.driverName].filter(Boolean).join(' · ') || '기사 미정'}</span>
-              ${e.passengerCount ? `<span class="home-detail-badge">${e.passengerCount}명</span>` : ''}
-            </div>
-          `).join('')}
-        </div>` : '';
+    // 버스장부 카드 (실제 방문 기록)
+    const busCards = dayBuses.map(e => `
+      <div class="hd-card hd-bus">
+        <div class="hd-card-status">✓ 방문완료</div>
+        <div class="hd-card-main">${[e.busCompany, e.driverName].filter(Boolean).join(' · ') || '기사 미정'}</div>
+        <div class="hd-card-meta">
+          ${e.passengerCount ? `<span>👥 ${e.passengerCount}명</span>` : ''}
+          ${e.salesAmount ? `<span>${formatWon(e.salesAmount)}</span>` : ''}
+        </div>
+      </div>
+    `).join('');
 
-    const resHTML = dayRes.length > 0
-      ? `<div class="home-detail-section">
-          <div class="home-detail-title">📅 예약 (${dayRes.length}건)</div>
-          ${dayRes.map(r => `
-            <div class="home-detail-item">
-              <span>${r.time ? r.time + ' · ' : ''}${[r.driverName, r.busCompany].filter(Boolean).join('/') || '기사 미정'}</span>
-              <span class="home-res-badge ${r.status}">${statusLabel[r.status] || '예약중'}</span>
-            </div>
-          `).join('')}
-        </div>` : '';
+    // 예약 카드 (상태별)
+    const resCards = dayRes.map(r => {
+      const cls = r.status === 'visited' ? 'hd-res-done'
+                : r.status === 'noshow'  ? 'hd-noshow'
+                : 'hd-pending';
+      const lbl = r.status === 'visited' ? '방문완료'
+                : r.status === 'noshow'  ? '✗ 미방문'
+                : '📅 예약중';
+      return `
+        <div class="hd-card ${cls}">
+          <div class="hd-card-status">${lbl}</div>
+          ${r.time ? `<div class="hd-card-time">${r.time}</div>` : ''}
+          <div class="hd-card-main">${[r.driverName, r.busCompany].filter(Boolean).join(' / ') || '기사 미정'}</div>
+          <div class="hd-card-meta">
+            ${r.estimatedPassengers ? `<span>👥 예상 ${r.estimatedPassengers}명</span>` : ''}
+          </div>
+          ${r.requests ? `<div class="hd-card-note">${r.requests}</div>` : ''}
+        </div>
+      `;
+    }).join('');
 
-    document.getElementById('home-detail-content').innerHTML =
-      (busHTML + resHTML) || '<p style="color:var(--text-light);font-size:14px">이날 기록이 없습니다.</p>';
+    const allCards = busCards + resCards;
+    document.getElementById('home-detail-content').innerHTML = allCards
+      ? `<div class="hd-grid">${allCards}</div>`
+      : '<p style="color:var(--text-light);font-size:14px">이날 기록이 없습니다.</p>';
   }
 
   function editNote(dateStr) {
