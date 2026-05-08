@@ -47,7 +47,7 @@ table { border-collapse: collapse; width: 100%; }
   max-width: 360px;
   width: 90%;
 }
-.login-logo { width: 150px; max-width: 55%; height: auto; display: block; margin: 0 auto 20px; }
+.login-logo { width: clamp(80px, 42%, 150px); height: auto; display: block; margin: 0 auto 20px; }
 .login-desc { color: var(--text-light); margin-bottom: 32px; font-size: 13px; }
 .btn-google {
   display: inline-flex;
@@ -106,7 +106,7 @@ table { border-collapse: collapse; width: 100%; }
   box-shadow: var(--shadow);
 }
 .header-left { display: flex; align-items: center; gap: 10px; }
-.header-logo { height: 36px; width: auto; max-width: 160px; background: white; border-radius: 6px; padding: 3px 10px; display: block; cursor: pointer; transition: opacity 0.15s; object-fit: contain; }
+.header-logo { height: 36px; width: auto; max-width: min(160px, 40vw); background: white; border-radius: 6px; padding: 3px 8px; display: block; cursor: pointer; transition: opacity 0.15s; object-fit: contain; }
 .header-logo:hover { opacity: 0.85; }
 .header-right { display: flex; align-items: center; gap: 12px; }
 .user-name { font-size: 13px; opacity: 0.85; }
@@ -480,4 +480,19 @@ table { border-collapse: collapse; width: 100%; }
   .summary-item { min-width: 100px; }
   .modal-box { max-width: 100%; }
   .purchase-item-row { grid-template-columns: 1fr 1fr; }
+
+  /* 홈 수입/지출 카드 */
+  .home-cf-val { font-size: 18px; }
+  .home-cf-item { padding: 0 12px 0 0; margin-right: 12px; }
+
+  /* 수입/지출 월별 헤더 */
+  .cf-month-day-header { gap: 6px; }
+  .cf-month-day-totals { gap: 4px; }
+
+  /* 수입/지출 월별 항목 */
+  .cf-month-entry { flex-wrap: wrap; gap: 6px; }
+  .cf-month-entry-info { min-width: 0; flex: 1 1 120px; }
+
+  /* 수입/지출 뷰 토글 + 날짜 네비 */
+  #tab-cashflow .panel-toolbar > div:first-child { flex-wrap: wrap; }
 }

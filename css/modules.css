@@ -422,11 +422,11 @@
 .home-stat-card { background: var(--card); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow-sm); }
 .home-stat-card.home-stat-bands { grid-column: 1 / -1; }
 .home-stat-card.home-stat-cf { grid-column: 1 / -1; }
-.home-cf-row { display: flex; gap: 0; margin-top: 10px; flex-wrap: wrap; }
-.home-cf-item { flex: 1; min-width: 100px; display: flex; flex-direction: column; gap: 4px; padding: 0 20px 0 0; border-right: 1px solid var(--border); margin-right: 20px; }
+.home-cf-row { display: flex; gap: 0; margin-top: 10px; flex-wrap: wrap; row-gap: 10px; }
+.home-cf-item { flex: 1; min-width: 80px; display: flex; flex-direction: column; gap: 4px; padding: 0 20px 0 0; border-right: 1px solid var(--border); margin-right: 20px; }
 .home-cf-item:last-child { border-right: none; margin-right: 0; padding-right: 0; }
 .home-cf-label { font-size: 11px; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-.home-cf-val { font-size: 22px; font-weight: 700; line-height: 1.1; }
+.home-cf-val { font-size: clamp(16px, 3.5vw, 22px); font-weight: 700; line-height: 1.1; }
 .home-cf-val.income { color: var(--income); }
 .home-cf-val.expense { color: var(--expense); }
 .home-stat-label { font-size: 11px; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
