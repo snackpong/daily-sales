@@ -67,6 +67,29 @@ table { border-collapse: collapse; width: 100%; }
 }
 .btn-google:hover { border-color: var(--primary); background: var(--primary-light); }
 
+/* ===== 접근 차단 화면 ===== */
+#access-denied-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a4a7a 0%, #0d2d4d 100%);
+}
+.access-denied-box {
+  background: white;
+  border-radius: 16px;
+  padding: 48px 40px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  max-width: 360px;
+  width: 90%;
+}
+.access-denied-icon { font-size: 56px; margin-bottom: 12px; display: block; }
+.access-denied-box h2 { font-size: 20px; font-weight: 700; color: var(--danger); margin-bottom: 12px; }
+.access-denied-box p { color: var(--text-light); font-size: 13px; margin-bottom: 8px; }
+.access-denied-email { font-weight: 700; color: var(--text); font-size: 14px; background: var(--bg); padding: 6px 14px; border-radius: 20px; display: inline-block; margin: 8px 0; }
+.access-denied-hint { margin-bottom: 24px !important; }
+
 /* ===== 앱 레이아웃 ===== */
 #app { display: flex; flex-direction: column; min-height: 100vh; }
 

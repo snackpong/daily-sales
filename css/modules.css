@@ -132,8 +132,6 @@
 .cal-cell:nth-child(7n+1) .cal-date { color: var(--danger); }
 .cal-cell:nth-child(7n) .cal-date { color: #2563a8; }
 .cal-res-dot { font-size: 11px; background: var(--accent); color: white; border-radius: 10px; padding: 1px 6px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cal-res-dot.visited { background: var(--success); }
-.cal-res-dot.noshow { background: var(--text-light); }
 .cal-res-dot.home-bus-dot { background: var(--primary); color: white; }
 
 .res-day-detail {

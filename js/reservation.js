@@ -5,6 +5,17 @@ const reservation = (() => {
   let _selectedDate = null;
   let _allReservations = [];
 
+  const _PALETTE = [
+    '#e74c3c', '#3498db', '#27ae60', '#f39c12',
+    '#9b59b6', '#1abc9c', '#e67e22', '#2980b9',
+  ];
+
+  function _resColor(id) {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) & 0xffff;
+    return _PALETTE[h % _PALETTE.length];
+  }
+
   function load() {
     _renderCalendar();
     _loadMonth();
@@ -70,7 +81,10 @@ const reservation = (() => {
       const dotHTML = dayRes.slice(0, 3).map(r => {
         const parts = [r.driverName, r.busCompany].filter(Boolean);
         const label = parts.join('/') || '예약';
-        return `<div class="cal-res-dot ${r.status}" title="${label}">${r.time || ''} ${label}</div>`;
+        const color = _resColor(r.id);
+        const prefix = r.status === 'visited' ? '✓ ' : r.status === 'noshow' ? '✗ ' : '';
+        const extra = r.status === 'noshow' ? ';opacity:0.5;text-decoration:line-through' : '';
+        return `<div class="cal-res-dot" style="background:${color}${extra}" title="${label}">${prefix}${r.time || ''} ${label}</div>`;
       }).join('');
 
       cellsHTML += `
@@ -120,7 +134,7 @@ const reservation = (() => {
     }
 
     listEl.innerHTML = dayRes.map(r => `
-      <div class="res-item res-item-clickable" onclick="reservation.showDetail('${r.id}')">
+      <div class="res-item res-item-clickable" style="border-left: 4px solid ${_resColor(r.id)}" onclick="reservation.showDetail('${r.id}')">
         <div class="res-info">
           <div class="res-main">${r.time ? r.time + ' · ' : ''}${[r.driverName, r.busCompany].filter(Boolean).join(' / ') || '기사 미정'} ${r.estimatedPassengers ? r.estimatedPassengers + '명' : ''}</div>
           ${r.phoneNumber ? `<div class="res-sub">📞 ${phoneLink(r.phoneNumber)}</div>` : ''}

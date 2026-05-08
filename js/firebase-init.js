@@ -13,12 +13,23 @@
 // - Firestore Database → 데이터베이스 만들기
 // (Storage 불필요 - 사진은 압축 후 Firestore에 직접 저장)
 //
-// Firestore 보안 규칙 (Firebase Console에서 설정):
+// Firestore 보안 규칙 (Firebase Console → Firestore → 규칙 탭에 붙여넣기):
+// ※ 이메일 3개를 실제 가족 이메일로 교체 후 적용
+//
 // rules_version = '2';
 // service cloud.firestore {
 //   match /databases/{database}/documents {
+//     function isAllowed() {
+//       return request.auth != null
+//         && request.auth.token.email_verified == true
+//         && request.auth.token.email in [
+//           'snackpong25@gmail.com',
+//           'mom@gmail.com',      // 엄마 이메일로 교체
+//           'sister@gmail.com'    // 누나 이메일로 교체
+//         ];
+//     }
 //     match /users/{userId}/{document=**} {
-//       allow read, write: if request.auth != null && request.auth.uid == userId;
+//       allow read, write: if isAllowed() && request.auth.uid == userId;
 //     }
 //   }
 // }
