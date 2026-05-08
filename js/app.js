@@ -2,9 +2,9 @@
 
 // 허가된 구글 이메일 목록 — 이 세 개 계정만 앱 사용 가능
 const ALLOWED_EMAILS = [
-  'snackpong25@gmail.com',  
-  '',ymin2741@gmail.com                   
-  '',suhyn7314@gmail.com                        
+  'snackpong25@gmail.com',  // 본인
+  'ymin2741@gmail.com',     // 엄마
+  'suhyn7314@gmail.com',    // 누나
 ];
 
 let _tabInitialized = {};

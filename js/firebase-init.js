@@ -24,8 +24,8 @@
 //         && request.auth.token.email_verified == true
 //         && request.auth.token.email in [
 //           'snackpong25@gmail.com',
-//           'mom@gmail.com',      // 엄마 이메일로 교체
-//           'sister@gmail.com'    // 누나 이메일로 교체
+//           'ymin2741@gmail.com',
+//           'suhyn7314@gmail.com'
 //         ];
 //     }
 //     // 가족 공유 데이터 (세 계정 모두 읽기/쓰기 가능)
