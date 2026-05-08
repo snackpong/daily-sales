@@ -140,6 +140,10 @@
 .cal-cell:hover .cal-note-btn { opacity: 1; }
 .cal-res-dot { font-size: 11px; background: var(--accent); color: white; border-radius: 10px; padding: 1px 6px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cal-res-dot.home-bus-dot { background: var(--primary); color: white; }
+.cal-res-dot.visited { background: #1a7a46; }
+.cal-res-dot.pending { background: #c07a00; }
+.cal-res-dot.noshow { background: #888; opacity: 0.7; text-decoration: line-through; }
+.res-dot-tag { font-weight: 700; margin-right: 2px; }
 
 .res-day-detail {
   background: white;
