@@ -75,6 +75,7 @@ const reservation = (() => {
       const dateStr = `${_year}-${String(_month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const isToday = dateStr === today;
       const isSelected = dateStr === _selectedDate;
+      const isHol = holidays.isHoliday(dateStr);
       const dayRes = _allReservations.filter(r => r.date === dateStr);
 
       const dotHTML = dayRes.slice(0, 3).map(r => {
@@ -87,7 +88,7 @@ const reservation = (() => {
       }).join('');
 
       cellsHTML += `
-        <div class="cal-cell${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}"
+        <div class="cal-cell${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}${isHol ? ' holiday' : ''}"
              onclick="reservation.selectDate('${dateStr}')">
           <div class="cal-date">${day}</div>
           ${dotHTML}

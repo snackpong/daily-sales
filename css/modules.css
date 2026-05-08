@@ -131,6 +131,8 @@
 .cal-date { font-size: 13px; font-weight: 600; margin-bottom: 4px; width: 24px; text-align: center; }
 .cal-cell:nth-child(7n+1) .cal-date { color: var(--danger); }
 .cal-cell:nth-child(7n) .cal-date { color: #2563a8; }
+/* 공휴일: 토요일이라도 빨간색, 오늘 동그라미는 제외 */
+.cal-cell.holiday:not(.today) .cal-date { color: var(--danger) !important; }
 .cal-res-dot { font-size: 11px; background: var(--accent); color: white; border-radius: 10px; padding: 1px 6px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cal-res-dot.home-bus-dot { background: var(--primary); color: white; }
 

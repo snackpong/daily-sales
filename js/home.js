@@ -137,6 +137,7 @@ const home = (() => {
       const dateStr = `${_year}-${String(_month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const isToday = dateStr === today;
       const isSelected = dateStr === _selectedDate;
+      const isHol = holidays.isHoliday(dateStr);
       const dayBuses = _busEntries.filter(e => e.date === dateStr);
       const dayRes = _reservations.filter(r => r.date === dateStr);
 
@@ -153,7 +154,7 @@ const home = (() => {
       }
 
       cellsHTML += `
-        <div class="cal-cell${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}"
+        <div class="cal-cell${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}${isHol ? ' holiday' : ''}"
              onclick="home.selectDate('${dateStr}')">
           <div class="cal-date">${day}</div>
           ${dotsHTML}
