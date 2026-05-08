@@ -47,7 +47,7 @@ table { border-collapse: collapse; width: 100%; }
   max-width: 360px;
   width: 90%;
 }
-.login-logo { width: 200px; height: auto; display: block; margin: 0 auto 20px; border-radius: 8px; }
+.login-logo { width: 150px; max-width: 55%; height: auto; display: block; margin: 0 auto 20px; }
 .login-desc { color: var(--text-light); margin-bottom: 32px; font-size: 13px; }
 .btn-google {
   display: inline-flex;
@@ -106,7 +106,7 @@ table { border-collapse: collapse; width: 100%; }
   box-shadow: var(--shadow);
 }
 .header-left { display: flex; align-items: center; gap: 10px; }
-.header-logo { height: 38px; width: auto; background: white; border-radius: 6px; padding: 4px 10px; display: block; cursor: pointer; transition: opacity 0.15s; }
+.header-logo { height: 36px; width: auto; max-width: 160px; background: white; border-radius: 6px; padding: 3px 10px; display: block; cursor: pointer; transition: opacity 0.15s; object-fit: contain; }
 .header-logo:hover { opacity: 0.85; }
 .header-right { display: flex; align-items: center; gap: 12px; }
 .user-name { font-size: 13px; opacity: 0.85; }
