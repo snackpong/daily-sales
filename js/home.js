@@ -5,6 +5,7 @@ const home = (() => {
   let _selectedDate = null;
   let _busEntries = [];
   let _reservations = [];
+  let _cashflows = [];
 
   async function load() {
     _year = new Date().getFullYear();
@@ -34,12 +35,14 @@ const home = (() => {
     const endDate = `${_year}-${String(_month + 1).padStart(2, '0')}-31`;
 
     try {
-      const [busSnap, resSnap] = await Promise.all([
+      const [busSnap, resSnap, cfSnap] = await Promise.all([
         userCol('busEntries').where('date', '>=', startDate).where('date', '<=', endDate).get(),
-        userCol('reservations').where('date', '>=', startDate).where('date', '<=', endDate).orderBy('date').get()
+        userCol('reservations').where('date', '>=', startDate).where('date', '<=', endDate).orderBy('date').get(),
+        userCol('cashflowEntries').where('date', '>=', startDate).where('date', '<=', endDate).get()
       ]);
       _busEntries = busSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       _reservations = resSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      _cashflows = cfSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       _renderStats();
       _renderCalendar();
     } catch (e) {
@@ -51,6 +54,9 @@ const home = (() => {
     const totalBuses = _busEntries.length;
     const totalRes = _reservations.length;
     const visitedRes = _reservations.filter(r => r.status === 'visited').length;
+    const totalIncome = _cashflows.filter(c => c.type === 'income').reduce((s, c) => s + (Number(c.amount) || 0), 0);
+    const totalExpense = _cashflows.filter(c => c.type === 'expense').reduce((s, c) => s + (Number(c.amount) || 0), 0);
+    const balance = totalIncome - totalExpense;
 
     const bandCount = {};
     _busEntries.forEach(e => {
@@ -85,6 +91,23 @@ const home = (() => {
         <div class="home-stat-label">이번달 예약</div>
         <div class="home-stat-value">${visitedRes}<span class="home-stat-unit">/${totalRes}건</span></div>
         <div class="home-stat-sub">방문완료 / 전체</div>
+      </div>
+      <div class="home-stat-card home-stat-cf">
+        <div class="home-stat-label">이번달 수입/지출</div>
+        <div class="home-cf-row">
+          <div class="home-cf-item">
+            <span class="home-cf-label">수입</span>
+            <span class="home-cf-val income">${formatWon(totalIncome)}</span>
+          </div>
+          <div class="home-cf-item">
+            <span class="home-cf-label">지출</span>
+            <span class="home-cf-val expense">${formatWon(totalExpense)}</span>
+          </div>
+          <div class="home-cf-item">
+            <span class="home-cf-label">잔액</span>
+            <span class="home-cf-val ${balance >= 0 ? 'income' : 'expense'}">${formatWon(Math.abs(balance))}${balance < 0 ? ' 적자' : ''}</span>
+          </div>
+        </div>
       </div>
       <div class="home-stat-card home-stat-bands">
         <div class="home-stat-label">밴드별 버스</div>

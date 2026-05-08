@@ -219,6 +219,30 @@
 .add-item-btn:hover { background: var(--primary-light); }
 .item-row-headers { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 32px; gap: 6px; font-size: 11px; color: var(--text-light); font-weight: 600; padding: 0 2px; margin-top: 8px; }
 
+/* ===== 수입/지출 뷰 토글 ===== */
+.cf-view-toggle { display: flex; border: 1.5px solid var(--border); border-radius: 6px; overflow: hidden; }
+.cf-toggle-btn { padding: 5px 16px; font-size: 13px; font-weight: 600; color: var(--text-light); background: white; border: none; cursor: pointer; transition: all 0.15s; }
+.cf-toggle-btn.active { background: var(--primary); color: white; }
+.cf-toggle-btn:hover:not(.active) { background: var(--primary-light); color: var(--primary); }
+
+/* ===== 수입/지출 월별 뷰 ===== */
+.cf-month-day-card { background: white; border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
+.cf-month-day-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg); border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; flex-wrap: wrap; gap: 8px; }
+.cf-month-day-header:hover { background: var(--primary-light); }
+.cf-month-day-date { font-size: 14px; font-weight: 700; color: var(--primary); }
+.cf-month-day-totals { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.cf-month-chip { font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 10px; }
+.income-chip { color: var(--income); background: #e6f4ea; }
+.expense-chip { color: var(--expense); background: #fce8e6; }
+.cf-month-net { font-size: 13px; font-weight: 700; margin-left: 2px; }
+.cf-month-net.net-pos { color: var(--income); }
+.cf-month-net.net-neg { color: var(--expense); }
+.cf-month-entries { padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
+.cf-month-entry { display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: var(--bg); border-radius: 6px; }
+.cf-month-entry-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
+.cf-month-entry-cat { font-size: 13px; font-weight: 600; }
+.cf-month-entry-memo { font-size: 11px; color: var(--text-light); }
+
 /* ===== 수입/지출 ===== */
 .cf-summary-bar {
   display: flex;
@@ -397,6 +421,14 @@
 .home-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
 .home-stat-card { background: var(--card); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow-sm); }
 .home-stat-card.home-stat-bands { grid-column: 1 / -1; }
+.home-stat-card.home-stat-cf { grid-column: 1 / -1; }
+.home-cf-row { display: flex; gap: 0; margin-top: 10px; flex-wrap: wrap; }
+.home-cf-item { flex: 1; min-width: 100px; display: flex; flex-direction: column; gap: 4px; padding: 0 20px 0 0; border-right: 1px solid var(--border); margin-right: 20px; }
+.home-cf-item:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+.home-cf-label { font-size: 11px; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.home-cf-val { font-size: 22px; font-weight: 700; line-height: 1.1; }
+.home-cf-val.income { color: var(--income); }
+.home-cf-val.expense { color: var(--expense); }
 .home-stat-label { font-size: 11px; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
 .home-stat-value { font-size: 30px; font-weight: 700; color: var(--primary); line-height: 1; }
 .home-stat-unit { font-size: 14px; font-weight: 400; color: var(--text-light); margin-left: 2px; }

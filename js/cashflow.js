@@ -3,6 +3,8 @@ const cashflow = (() => {
   let _date = getTodayStr();
   let _entries = [];
   let _qs = {};
+  let _viewMode = 'day'; // 'day' | 'month'
+  let _viewMonth = getMonthStr();
 
   async function load() {
     document.getElementById('cf-date').value = _date;
@@ -25,10 +27,48 @@ const cashflow = (() => {
       document.getElementById('cf-date').value = _date;
       _fetch();
     };
-    document.getElementById('btn-add-cf').onclick = () => openForm(null);
+
+    document.getElementById('cf-prev-month').onclick = () => {
+      const d = new Date(_viewMonth + '-01');
+      d.setMonth(d.getMonth() - 1);
+      _viewMonth = getMonthStr(d);
+      _fetchMonth();
+    };
+    document.getElementById('cf-next-month').onclick = () => {
+      const d = new Date(_viewMonth + '-01');
+      d.setMonth(d.getMonth() + 1);
+      _viewMonth = getMonthStr(d);
+      _fetchMonth();
+    };
+
+    document.getElementById('cf-view-day-btn').onclick = () => _setView('day');
+    document.getElementById('cf-view-month-btn').onclick = () => _setView('month');
+
+    document.getElementById('btn-add-cf').onclick = () => {
+      if (_viewMode === 'month') {
+        const today = getTodayStr();
+        _date = today.slice(0, 7) === _viewMonth ? today : _viewMonth + '-01';
+        document.getElementById('cf-date').value = _date;
+      }
+      openForm(null);
+    };
 
     _qs = await loadQuickSelect();
     await _fetch();
+  }
+
+  function _setView(mode) {
+    _viewMode = mode;
+    document.getElementById('cf-view-day-btn').classList.toggle('active', mode === 'day');
+    document.getElementById('cf-view-month-btn').classList.toggle('active', mode === 'month');
+    document.getElementById('cf-day-nav').classList.toggle('hidden', mode === 'month');
+    document.getElementById('cf-month-nav').classList.toggle('hidden', mode === 'day');
+    if (mode === 'day') {
+      _fetch();
+    } else {
+      _viewMonth = _date.slice(0, 7);
+      _fetchMonth();
+    }
   }
 
   async function _fetch() {
@@ -44,6 +84,85 @@ const cashflow = (() => {
     } catch (e) {
       list.innerHTML = `<p class="error-msg">오류: ${e.message}</p>`;
     }
+  }
+
+  async function _fetchMonth() {
+    const [y, m] = _viewMonth.split('-');
+    document.getElementById('cf-month-label').textContent = `${y}년 ${parseInt(m)}월`;
+
+    const list = document.getElementById('cashflow-list');
+    list.innerHTML = '<p class="loading-msg">불러오는 중...</p>';
+    try {
+      const snap = await userCol('cashflowEntries')
+        .where('date', '>=', _viewMonth + '-01')
+        .where('date', '<=', _viewMonth + '-31')
+        .get();
+      const entries = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+      let totalIncome = 0, totalExpense = 0;
+      entries.forEach(e => {
+        if (e.type === 'income') totalIncome += Number(e.amount) || 0;
+        else totalExpense += Number(e.amount) || 0;
+      });
+      const balance = totalIncome - totalExpense;
+      document.getElementById('cf-total-income').textContent = formatWon(totalIncome);
+      document.getElementById('cf-total-expense').textContent = formatWon(totalExpense);
+      const balEl = document.getElementById('cf-balance');
+      balEl.textContent = formatWon(Math.abs(balance)) + (balance < 0 ? ' (적자)' : '');
+      balEl.style.color = balance >= 0 ? 'var(--income)' : 'var(--expense)';
+
+      if (entries.length === 0) {
+        list.innerHTML = '<p class="empty-msg">이달 수입/지출 기록이 없습니다.</p>';
+        return;
+      }
+
+      const byDate = {};
+      entries.forEach(e => {
+        if (!byDate[e.date]) byDate[e.date] = { income: 0, expense: 0, items: [] };
+        byDate[e.date].items.push(e);
+        if (e.type === 'income') byDate[e.date].income += Number(e.amount) || 0;
+        else byDate[e.date].expense += Number(e.amount) || 0;
+      });
+
+      list.innerHTML = `<div class="entry-list">${Object.entries(byDate)
+        .sort(([a], [b]) => b.localeCompare(a))
+        .map(([date, data]) => {
+          const net = data.income - data.expense;
+          const itemsHTML = data.items.map(e => `
+            <div class="cf-month-entry">
+              <span class="cf-type-badge type-${e.type}">${e.type === 'income' ? '수입' : '지출'}</span>
+              <div class="cf-month-entry-info">
+                <span class="cf-month-entry-cat">${e.category || ''}</span>
+                ${e.notes ? `<span class="cf-month-entry-memo">${e.notes}</span>` : ''}
+              </div>
+              <span class="cf-amount ${e.type}">${formatWon(e.amount)}</span>
+            </div>
+          `).join('');
+
+          return `
+            <div class="cf-month-day-card">
+              <div class="cf-month-day-header" onclick="cashflow.switchToDay('${date}')">
+                <span class="cf-month-day-date">${formatDateKo(date)}</span>
+                <div class="cf-month-day-totals">
+                  ${data.income > 0 ? `<span class="cf-month-chip income-chip">↑ ${formatWon(data.income)}</span>` : ''}
+                  ${data.expense > 0 ? `<span class="cf-month-chip expense-chip">↓ ${formatWon(data.expense)}</span>` : ''}
+                  <span class="cf-month-net ${net >= 0 ? 'net-pos' : 'net-neg'}">${net >= 0 ? '+' : ''}${formatWon(net)}</span>
+                </div>
+              </div>
+              <div class="cf-month-entries">${itemsHTML}</div>
+            </div>
+          `;
+        }).join('')}</div>`;
+    } catch (e) {
+      list.innerHTML = `<p class="error-msg">오류: ${e.message}</p>`;
+    }
+  }
+
+  function switchToDay(date) {
+    _date = date;
+    document.getElementById('cf-date').value = date;
+    _setView('day');
   }
 
   function _render() {
@@ -128,7 +247,7 @@ const cashflow = (() => {
       </button>
     `;
 
-    openModal(isEdit ? '수입/지출 수정' : '수입/지출 추가', body, footer); // global openModal (utils.js)
+    openModal(isEdit ? '수입/지출 수정' : '수입/지출 추가', body, footer);
 
     function _renderCategoryChips() {
       const type = document.getElementById('cf-type-select').value;
@@ -161,7 +280,6 @@ const cashflow = (() => {
     };
     if (!isEdit) data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
 
-    // 카테고리 빠른선택 자동 저장
     const key = type === 'income' ? 'incomeCategories' : 'expenseCategories';
     const existing = _qs[key] || [];
     if (!existing.includes(category)) {
@@ -179,7 +297,14 @@ const cashflow = (() => {
         showToast('추가되었습니다');
       }
       closeModal();
-      await _fetch();
+      if (_viewMode === 'month') {
+        _viewMonth = data.date.slice(0, 7);
+        await _fetchMonth();
+      } else {
+        _date = data.date;
+        document.getElementById('cf-date').value = _date;
+        await _fetch();
+      }
     } catch (e) {
       showToast('저장 실패: ' + e.message, 'error');
     }
@@ -190,11 +315,12 @@ const cashflow = (() => {
     try {
       await userCol('cashflowEntries').doc(entryId).delete();
       showToast('삭제되었습니다');
-      await _fetch();
+      if (_viewMode === 'month') await _fetchMonth();
+      else await _fetch();
     } catch (e) {
       showToast('삭제 실패: ' + e.message, 'error');
     }
   }
 
-  return { load, openModal: openForm, save, remove, _onTypeChange: () => {} };
+  return { load, openModal: openForm, save, remove, switchToDay, _onTypeChange: () => {} };
 })();

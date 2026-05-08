@@ -47,8 +47,7 @@ table { border-collapse: collapse; width: 100%; }
   max-width: 360px;
   width: 90%;
 }
-.login-icon { font-size: 56px; margin-bottom: 12px; display: block; }
-.login-box h1 { font-size: 22px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+.login-logo { width: 200px; height: auto; display: block; margin: 0 auto 20px; border-radius: 8px; }
 .login-desc { color: var(--text-light); margin-bottom: 32px; font-size: 13px; }
 .btn-google {
   display: inline-flex;
@@ -107,8 +106,8 @@ table { border-collapse: collapse; width: 100%; }
   box-shadow: var(--shadow);
 }
 .header-left { display: flex; align-items: center; gap: 10px; }
-.header-icon { font-size: 22px; }
-.header-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+.header-logo { height: 38px; width: auto; background: white; border-radius: 6px; padding: 4px 10px; display: block; cursor: pointer; transition: opacity 0.15s; }
+.header-logo:hover { opacity: 0.85; }
 .header-right { display: flex; align-items: center; gap: 12px; }
 .user-name { font-size: 13px; opacity: 0.85; }
 .btn-text-sm { color: rgba(255,255,255,0.8); font-size: 13px; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; }
