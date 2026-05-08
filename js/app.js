@@ -43,12 +43,25 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
 
-  // 구글 로그인
+  // 구글 로그인 (모바일은 redirect, 데스크탑은 popup)
+  const _isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  auth.getRedirectResult().catch(e => {
+    if (e.code && e.code !== 'auth/no-auth-event') {
+      showToast('로그인 실패: ' + e.message, 'error');
+    }
+  });
+
   document.getElementById('btn-google-login').addEventListener('click', () => {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).catch(e => {
-      showToast('로그인 실패: ' + e.message, 'error');
-    });
+    if (_isMobile) {
+      auth.signInWithRedirect(provider).catch(e => {
+        showToast('로그인 실패: ' + e.message, 'error');
+      });
+    } else {
+      auth.signInWithPopup(provider).catch(e => {
+        showToast('로그인 실패: ' + e.message, 'error');
+      });
+    }
   });
 
   // 로그아웃
