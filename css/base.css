@@ -230,26 +230,57 @@ table { border-collapse: collapse; width: 100%; }
 .btn-icon:hover { border-color: var(--primary); color: var(--primary); }
 
 /* ===== 당일 요약 ===== */
+
+/* 데스크탑: 박스 나열형 */
 .day-summary {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.summary-item {
   background: white;
   border: 1.5px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 14px;
-  overflow: hidden;
-}
-.summary-item {
+  padding: 10px 18px;
+  flex: 1;
+  min-width: 130px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--border);
-  gap: 12px;
-  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: var(--shadow-sm);
 }
-.summary-item:last-child { border-bottom: none; }
-.summary-label { font-size: 13px; color: var(--text-light); white-space: nowrap; }
-.summary-value { font-size: 15px; font-weight: 700; color: var(--primary); white-space: nowrap; text-align: right; }
+.summary-label { font-size: 12px; color: var(--text-light); }
+.summary-value { font-size: 17px; font-weight: 700; color: var(--primary); white-space: nowrap; }
+
+/* 모바일: 행 목록형 (라벨 왼쪽, 숫자 오른쪽) */
+@media (max-width: 600px) {
+  .day-summary {
+    display: block;
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    gap: 0;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .summary-item {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    min-width: 0;
+    flex: none;
+  }
+  .summary-item:last-child { border-bottom: none; }
+  .summary-label { font-size: 13px; white-space: nowrap; }
+  .summary-value { font-size: 15px; text-align: right; }
+}
 
 /* ===== 장부 테이블 ===== */
 .table-wrapper { overflow-x: auto; border-radius: var(--radius); box-shadow: var(--shadow-sm); }
