@@ -175,10 +175,10 @@
 .status-pending { background: #fff3cd; color: #856404; }
 .status-visited { background: #d1e7dd; color: #0a3622; }
 .status-noshow { background: #e2e3e5; color: #383d41; }
-.res-info { flex: 1; }
-.res-main { font-size: 14px; font-weight: 600; }
-.res-sub { font-size: 12px; color: var(--text-light); }
-.res-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.res-info { flex: 1; min-width: 0; }
+.res-main { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.res-sub { font-size: 12px; color: var(--text-light); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.res-actions { display: flex; gap: 6px; flex-wrap: wrap; flex-shrink: 0; }
 
 /* ===== 사입 장부 ===== */
 .month-total-bar {
@@ -199,12 +199,13 @@
   border-radius: var(--radius);
   padding: 14px 16px;
   box-shadow: var(--shadow-sm);
+  min-width: 0;
 }
-.entry-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.entry-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; gap: 8px; min-width: 0; }
 .entry-date { font-size: 12px; color: var(--text-light); }
-.entry-supplier { font-size: 15px; font-weight: 700; color: var(--primary); }
-.entry-total { font-size: 16px; font-weight: 700; color: var(--primary); }
-.entry-actions { display: flex; gap: 6px; }
+.entry-supplier { font-size: 15px; font-weight: 700; color: var(--primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entry-total { font-size: 16px; font-weight: 700; color: var(--primary); white-space: nowrap; flex-shrink: 0; }
+.entry-actions { display: flex; gap: 6px; flex-shrink: 0; }
 .purchase-items-table { width: 100%; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; font-size: 13px; }
 .purchase-items-table th { background: var(--bg); padding: 6px 10px; text-align: center; color: var(--text-light); font-weight: 600; }
 .purchase-items-table td { padding: 6px 10px; border-top: 1px solid var(--border); text-align: center; }
@@ -254,8 +255,8 @@
   margin-bottom: 12px;
   flex-wrap: wrap;
 }
-.cf-sum { font-size: 14px; color: var(--text-light); }
-.cf-sum strong { font-size: 16px; }
+.cf-sum { font-size: 14px; color: var(--text-light); min-width: 0; }
+.cf-sum strong { font-size: 16px; white-space: nowrap; }
 .income-color strong { color: var(--income); }
 .expense-color strong { color: var(--expense); }
 .cf-entry-card {
@@ -266,14 +267,15 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
-.cf-type-badge { font-size: 11px; padding: 3px 10px; border-radius: 10px; font-weight: 700; white-space: nowrap; }
+.cf-type-badge { font-size: 11px; padding: 3px 10px; border-radius: 10px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
 .type-income { background: #e6f4ea; color: var(--income); }
 .type-expense { background: #fce8e6; color: var(--expense); }
-.cf-info { flex: 1; }
-.cf-category { font-size: 14px; font-weight: 600; }
-.cf-memo-text { font-size: 12px; color: var(--text-light); }
-.cf-amount { font-size: 16px; font-weight: 700; white-space: nowrap; }
+.cf-info { flex: 1; min-width: 0; }
+.cf-category { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cf-memo-text { font-size: 12px; color: var(--text-light); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cf-amount { font-size: 16px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
 .cf-amount.income { color: var(--income); }
 .cf-amount.expense { color: var(--expense); }
 
@@ -310,10 +312,11 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 .search-result-date { font-size: 12px; color: var(--text-light); }
-.search-result-main { font-size: 14px; font-weight: 600; }
-.search-result-detail { font-size: 13px; color: var(--text-light); }
+.search-result-main { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.search-result-detail { font-size: 13px; color: var(--text-light); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .no-results { text-align: center; padding: 32px; color: var(--text-light); }
 
 /* ===== 기사 프로필 ===== */
@@ -436,14 +439,14 @@
 .home-stat-card.home-stat-bands { grid-column: 1 / -1; }
 .home-stat-card.home-stat-cf { grid-column: 1 / -1; }
 .home-cf-row { display: flex; gap: 0; margin-top: 10px; flex-wrap: wrap; row-gap: 10px; }
-.home-cf-item { flex: 1; min-width: 80px; display: flex; flex-direction: column; gap: 4px; padding: 0 20px 0 0; border-right: 1px solid var(--border); margin-right: 20px; }
+.home-cf-item { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 0 16px 0 0; border-right: 1px solid var(--border); margin-right: 16px; }
 .home-cf-item:last-child { border-right: none; margin-right: 0; padding-right: 0; }
 .home-cf-label { font-size: 11px; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-.home-cf-val { font-size: clamp(16px, 3.5vw, 22px); font-weight: 700; line-height: 1.1; }
+.home-cf-val { font-size: 22px; font-weight: 700; line-height: 1.1; white-space: nowrap; overflow: hidden; }
 .home-cf-val.income { color: var(--income); }
 .home-cf-val.expense { color: var(--expense); }
 .home-stat-label { font-size: 11px; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
-.home-stat-value { font-size: 30px; font-weight: 700; color: var(--primary); line-height: 1; }
+.home-stat-value { font-size: 30px; font-weight: 700; color: var(--primary); line-height: 1; white-space: nowrap; overflow: hidden; }
 .home-stat-unit { font-size: 14px; font-weight: 400; color: var(--text-light); margin-left: 2px; }
 .home-stat-sub { font-size: 11px; color: var(--text-light); margin-top: 5px; }
 .home-band-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
