@@ -79,7 +79,8 @@ const reservation = (() => {
       const noteText = holidays.getName(dateStr) || dateNotes.get(dateStr) || '';
       const dayRes = _allReservations.filter(r => r.date === dateStr);
 
-      const dotHTML = dayRes.slice(0, 3).map(r => {
+      const maxDots = window.innerWidth <= 600 ? 2 : 3;
+      const dotHTML = dayRes.slice(0, maxDots).map(r => {
         const parts = [r.driverName, r.busCompany].filter(Boolean);
         const label = parts.join('/') || '예약';
         const color = _resColor(r.id);
@@ -99,7 +100,7 @@ const reservation = (() => {
              onclick="reservation.selectDate('${dateStr}')">
           ${dateRowHTML}
           ${dotHTML}
-          ${dayRes.length > 3 ? `<div class="cal-res-dot">+${dayRes.length - 3}건</div>` : ''}
+          ${dayRes.length > maxDots ? `<div class="cal-res-dot">+${dayRes.length - maxDots}건</div>` : ''}
           <button class="cal-note-btn" onclick="event.stopPropagation();reservation.editNote('${dateStr}')" title="메모">✎</button>
         </div>`;
     }

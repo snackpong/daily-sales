@@ -114,6 +114,7 @@
   cursor: pointer;
   transition: background 0.15s;
   position: relative;
+  overflow: hidden;
 }
 .cal-cell:hover { background: var(--primary-light); }
 .cal-cell.other-month .cal-date { color: #c0c8d4; }
@@ -484,6 +485,14 @@
 .hd-card-note { font-size: 11px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
 @media (max-width: 600px) {
   .hd-grid { grid-template-columns: 1fr 1fr; }
+
+  /* 모바일 캘린더: 셀 높이 제한 + 도트 최소화 */
+  .cal-cell { min-height: 54px; max-height: 80px; padding: 4px 3px; }
+  .cal-date { font-size: 12px; width: 20px; }
+  .cal-note { max-width: 36px; font-size: 9px; }
+  .res-dot-tag { display: none; }           /* "예약중" 텍스트 태그 숨김 */
+  .cal-res-dot { font-size: 10px; padding: 1px 4px; margin-bottom: 1px; }
+  .cal-day-name { font-size: 11px; padding: 6px 2px; }
 }
 
 /* ===== 전화번호 링크 ===== */
