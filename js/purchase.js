@@ -170,7 +170,7 @@ const purchase = (() => {
         <input type="text" class="item-name" placeholder="품목명" value="${item.name || ''}" oninput="purchase._calcTotal()">
         <input type="text" class="item-unit" placeholder="단위" value="${item.unit || ''}">
         <input type="number" class="item-qty" placeholder="수량" value="${item.quantity || ''}" min="0" oninput="purchase._calcRowAmount(this)">
-        <input type="number" class="item-price" placeholder="단가" value="${item.unitPrice || ''}" min="0" oninput="purchase._calcRowAmount(this)">
+        <input type="text" inputmode="numeric" class="item-price" placeholder="단가" value="${item.unitPrice ? Number(item.unitPrice).toLocaleString('ko-KR') : ''}" oninput="purchase._onPriceInput(this)">
         <div class="auto-amount" id="row-amount-${idx}">${item.amount ? formatWon(item.amount) : '-'}</div>
         <button type="button" class="remove-item-btn" onclick="this.closest('.purchase-item-row').remove();purchase._calcTotal()">×</button>
       </div>
@@ -185,10 +185,16 @@ const purchase = (() => {
     container.appendChild(div.firstElementChild);
   }
 
+  function _onPriceInput(el) {
+    const raw = el.value.replace(/[^0-9]/g, '');
+    el.value = raw ? Number(raw).toLocaleString('ko-KR') : '';
+    _calcRowAmount(el);
+  }
+
   function _calcRowAmount(input) {
     const row = input.closest('.purchase-item-row');
     const qty = Number(row.querySelector('.item-qty').value) || 0;
-    const price = Number(row.querySelector('.item-price').value) || 0;
+    const price = parseMoneyInput(row.querySelector('.item-price').value);
     const amount = qty * price;
     const idx = Array.from(row.parentElement.children).indexOf(row);
     const amountEl = row.querySelector('.auto-amount');
@@ -201,7 +207,7 @@ const purchase = (() => {
     let total = 0;
     rows.forEach(row => {
       const qty = Number(row.querySelector('.item-qty')?.value) || 0;
-      const price = Number(row.querySelector('.item-price')?.value) || 0;
+      const price = parseMoneyInput(row.querySelector('.item-price')?.value);
       total += qty * price;
     });
     const el = document.getElementById('pur-total-display');
@@ -223,7 +229,7 @@ const purchase = (() => {
       if (!name) return;
       const unit = row.querySelector('.item-unit')?.value.trim() || '';
       const quantity = Number(row.querySelector('.item-qty')?.value) || 0;
-      const unitPrice = Number(row.querySelector('.item-price')?.value) || 0;
+      const unitPrice = parseMoneyInput(row.querySelector('.item-price')?.value);
       const amount = quantity * unitPrice;
       totalAmount += amount;
       items.push({ name, unit, quantity, unitPrice, amount });
@@ -274,5 +280,5 @@ const purchase = (() => {
     }
   }
 
-  return { load, openModal: openForm, addItemRow, _calcRowAmount, _calcTotal, save, remove };
+  return { load, openModal: openForm, addItemRow, _calcRowAmount, _onPriceInput, _calcTotal, save, remove };
 })();

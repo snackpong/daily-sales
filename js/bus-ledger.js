@@ -169,14 +169,14 @@ const busLedger = (() => {
           </div>
           <div class="form-group">
             <label>판매금액 (원)</label>
-            <input type="number" name="salesAmount" value="${entry?.salesAmount || ''}" placeholder="0" min="0" step="1000">
+            <input type="text" inputmode="numeric" name="salesAmount" value="${entry?.salesAmount ? Number(entry.salesAmount).toLocaleString('ko-KR') : ''}" placeholder="0">
           </div>
           <div class="form-group">
-            <label>수고비 - 현금 (원)</label>
-            <input type="number" name="commissionCash" value="${entry?.commissionCash || ''}" placeholder="0" min="0" step="1000">
+            <label>커미션 - 현금 (원)</label>
+            <input type="text" inputmode="numeric" name="commissionCash" value="${entry?.commissionCash ? Number(entry.commissionCash).toLocaleString('ko-KR') : ''}" placeholder="0">
           </div>
           <div class="form-group">
-            <label>수고비 - 물건</label>
+            <label>커미션 - 물건</label>
             <input type="text" name="commissionGoods" value="${entry?.commissionGoods || ''}" placeholder="예: 홍어 1마리, 갈치 3마리">
           </div>
         </div>
@@ -217,6 +217,9 @@ const busLedger = (() => {
 
     openModal(isEdit ? '버스 기록 수정' : '버스 추가', body, footer);
 
+    initMoneyInput(document.querySelector('#bus-form [name="salesAmount"]'));
+    initMoneyInput(document.querySelector('#bus-form [name="commissionCash"]'));
+
     const chipsEl = document.getElementById('from-chips');
     if (chipsEl && places.length > 0) {
       renderChips(chipsEl, places, val => {
@@ -252,8 +255,8 @@ const busLedger = (() => {
       phoneNumber: form.querySelector('[name="phoneNumber"]').value.trim(),
       departureFrom: form.querySelector('[name="departureFrom"]').value.trim(),
       passengerCount: Number(form.querySelector('[name="passengerCount"]').value) || 0,
-      salesAmount: Number(form.querySelector('[name="salesAmount"]').value) || 0,
-      commissionCash: Number(form.querySelector('[name="commissionCash"]').value) || 0,
+      salesAmount: parseMoneyInput(form.querySelector('[name="salesAmount"]').value),
+      commissionCash: parseMoneyInput(form.querySelector('[name="commissionCash"]').value),
       commissionGoods: form.querySelector('[name="commissionGoods"]').value.trim(),
       bandIds,
       notes: form.querySelector('[name="notes"]').value.trim(),
@@ -432,7 +435,7 @@ const busLedger = (() => {
             <div class="dp-stats">
               총 ${totalVisits}회 방문 &nbsp;·&nbsp;
               누적 판매 ${formatWon(totalSales)} &nbsp;·&nbsp;
-              평균 수고비 ${formatWon(avgComm)}
+              평균 커미션 ${formatWon(avgComm)}
             </div>
           </div>
 
@@ -464,7 +467,7 @@ const busLedger = (() => {
 
     const infoStr = [
       v.salesAmount ? '판매 ' + formatWon(v.salesAmount) : '',
-      v.commissionCash ? '수고비 ' + formatWon(v.commissionCash) : '',
+      v.commissionCash ? '커미션 ' + formatWon(v.commissionCash) : '',
       v.passengerCount ? v.passengerCount + '명' : ''
     ].filter(Boolean).join('&nbsp;·&nbsp;');
 

@@ -112,6 +112,19 @@ function phoneLink(phone) {
   return `<a href="tel:${clean}" class="phone-link" onclick="event.stopPropagation()" title="전화하기">${phone}</a><button class="phone-copy-btn" onclick="event.stopPropagation();navigator.clipboard.writeText('${phone}').then(()=>showToast('번호 복사됨'))" title="복사">📋</button>`;
 }
 
+// ===== 금액 입력 콤마 포맷 =====
+function initMoneyInput(el) {
+  if (!el) return;
+  el.addEventListener('input', () => {
+    const raw = el.value.replace(/[^0-9]/g, '');
+    el.value = raw ? Number(raw).toLocaleString('ko-KR') : '';
+  });
+}
+
+function parseMoneyInput(val) {
+  return Number((val || '').replace(/[^0-9]/g, '')) || 0;
+}
+
 // ===== 이미지 압축 후 Firebase Storage 업로드 =====
 async function uploadPhoto(file, path) {
   const dataUrl = await _compressImage(file, 1200, 0.80);

@@ -231,7 +231,7 @@ const cashflow = (() => {
         </div>
         <div class="form-group">
           <label>금액 (원)</label>
-          <input type="number" name="amount" value="${e?.amount || ''}" placeholder="0" min="0" step="100">
+          <input type="text" inputmode="numeric" name="amount" value="${e?.amount ? Number(e.amount).toLocaleString('ko-KR') : ''}" placeholder="0">
         </div>
         <div class="form-group full">
           <label>메모</label>
@@ -248,6 +248,8 @@ const cashflow = (() => {
     `;
 
     openModal(isEdit ? '수입/지출 수정' : '수입/지출 추가', body, footer);
+
+    initMoneyInput(document.querySelector('#cf-form [name="amount"]'));
 
     function _renderCategoryChips() {
       const type = document.getElementById('cf-type-select').value;
@@ -267,7 +269,7 @@ const cashflow = (() => {
 
     const type = form.querySelector('[name="type"]').value;
     const category = form.querySelector('[name="category"]').value.trim();
-    const amount = Number(form.querySelector('[name="amount"]').value);
+    const amount = parseMoneyInput(form.querySelector('[name="amount"]').value);
 
     if (!category) { showToast('항목명을 입력하세요', 'error'); return; }
     if (!amount) { showToast('금액을 입력하세요', 'error'); return; }

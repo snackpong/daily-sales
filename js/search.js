@@ -118,7 +118,7 @@ const search = (() => {
           ${[e.departureFrom ? '출발지: ' + e.departureFrom : '',
              e.passengerCount ? e.passengerCount + '명' : '',
              e.salesAmount ? '판매 ' + formatWon(e.salesAmount) : '',
-             e.commissionCash ? '수고비 ' + formatWon(e.commissionCash) : ''
+             e.commissionCash ? '커미션 ' + formatWon(e.commissionCash) : ''
           ].filter(Boolean).join(' · ')}
         </div>
         ${bandStr ? `<div class="search-result-detail">밴드: ${bandStr}</div>` : ''}
