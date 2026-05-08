@@ -112,23 +112,29 @@ function phoneLink(phone) {
   return `<a href="tel:${clean}" class="phone-link" onclick="event.stopPropagation()" title="전화하기">${phone}</a><button class="phone-copy-btn" onclick="event.stopPropagation();navigator.clipboard.writeText('${phone}').then(()=>showToast('번호 복사됨'))" title="복사">📋</button>`;
 }
 
-// ===== 이미지 압축 후 base64로 반환 (Firebase Storage 불필요) =====
-function uploadPhoto(file, _path) {
+// ===== 이미지 압축 후 Firebase Storage 업로드 =====
+async function uploadPhoto(file, path) {
+  const dataUrl = await _compressImage(file, 1200, 0.80);
+  const blob = await fetch(dataUrl).then(r => r.blob());
+  const ref = storage.ref(path);
+  await ref.put(blob, { contentType: 'image/jpeg' });
+  return ref.getDownloadURL();
+}
+
+function _compressImage(file, maxW, quality) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = reject;
-    reader.onload = (e) => {
+    reader.onload = e => {
       const img = new Image();
       img.onerror = reject;
       img.onload = () => {
-        const MAX_W = 1200;
         let w = img.width, h = img.height;
-        if (w > MAX_W) { h = Math.round(h * MAX_W / w); w = MAX_W; }
+        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
         const canvas = document.createElement('canvas');
-        canvas.width = w;
-        canvas.height = h;
+        canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', 0.72));
+        resolve(canvas.toDataURL('image/jpeg', quality));
       };
       img.src = e.target.result;
     };

@@ -11,7 +11,26 @@
 // Firebase에서 활성화 필요한 서비스:
 // - Authentication → Google 로그인 사용 설정
 // - Firestore Database → 데이터베이스 만들기
-// (Storage 불필요 - 사진은 압축 후 Firestore에 직접 저장)
+// - Storage → 사진 저장용 (Firebase Console → Storage → 시작하기)
+//
+// Storage 보안 규칙 (Firebase Console → Storage → 규칙 탭):
+// rules_version = '2';
+// service firebase.storage {
+//   match /b/{bucket}/o {
+//     function isAllowed() {
+//       return request.auth != null
+//         && request.auth.token.email_verified == true
+//         && request.auth.token.email in [
+//           'snackpong25@gmail.com',
+//           'ymin2741@gmail.com',
+//           'suhyn7314@gmail.com'
+//         ];
+//     }
+//     match /photos/{allPaths=**} {
+//       allow read, write: if isAllowed();
+//     }
+//   }
+// }
 //
 // Firestore 보안 규칙 (Firebase Console → Firestore → 규칙 탭에 붙여넣기):
 // ※ 이메일 3개를 실제 가족 이메일로 교체 후 적용
@@ -55,6 +74,7 @@ firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storage = firebase.storage();
 
 // 모바일 브라우저 호환성: localStorage 기반 인증 유지
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
