@@ -37,7 +37,7 @@ const home = (() => {
     try {
       const [busSnap, resSnap, cfSnap] = await Promise.all([
         userCol('busEntries').where('date', '>=', startDate).where('date', '<=', endDate).get(),
-        userCol('reservations').where('date', '>=', startDate).where('date', '<=', endDate).orderBy('date').get(),
+        userCol('reservations').where('date', '>=', startDate).where('date', '<=', endDate).get(),
         userCol('cashflowEntries').where('date', '>=', startDate).where('date', '<=', endDate).get()
       ]);
       _busEntries = busSnap.docs.map(d => ({ id: d.id, ...d.data() }));

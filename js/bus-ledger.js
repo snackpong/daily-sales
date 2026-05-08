@@ -39,21 +39,14 @@ const busLedger = (() => {
     try {
       const snap = await userCol('busEntries')
         .where('date', '==', _date)
-        .orderBy('daySequence', 'asc')
         .get();
 
-      _entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      _entries = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (a.daySequence || 0) - (b.daySequence || 0));
       _renderTable();
       _updateSummary();
     } catch (e) {
-      if (e.code === 'failed-precondition') {
-        tbody.innerHTML = `<tr><td colspan="13" class="error-msg">
-          Firestore 인덱스가 필요합니다. 콘솔에서 링크를 클릭해 인덱스를 생성하세요.<br>
-          (busEntries: date 오름차순 + daySequence 오름차순)
-        </td></tr>`;
-      } else {
-        tbody.innerHTML = `<tr><td colspan="13" class="error-msg">오류: ${e.message}</td></tr>`;
-      }
+      tbody.innerHTML = `<tr><td colspan="13" class="error-msg">오류: ${e.message}</td></tr>`;
       console.error(e);
     }
   }

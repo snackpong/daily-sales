@@ -43,7 +43,6 @@ const reservation = (() => {
       const snap = await userCol('reservations')
         .where('date', '>=', startDate)
         .where('date', '<=', endDate)
-        .orderBy('date')
         .get();
       _allReservations = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       _renderCalendar();
