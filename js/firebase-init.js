@@ -28,8 +28,9 @@
 //           'sister@gmail.com'    // 누나 이메일로 교체
 //         ];
 //     }
-//     match /users/{userId}/{document=**} {
-//       allow read, write: if isAllowed() && request.auth.uid == userId;
+//     // 가족 공유 데이터 (세 계정 모두 읽기/쓰기 가능)
+//     match /store/main/{document=**} {
+//       allow read, write: if isAllowed();
 //     }
 //   }
 // }

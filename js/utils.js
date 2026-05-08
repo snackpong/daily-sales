@@ -36,7 +36,7 @@ function getUserId() {
 }
 
 function userCol(colName) {
-  return db.collection('users').doc(getUserId()).collection(colName);
+  return db.collection('store').doc('main').collection(colName);
 }
 
 // ===== 토스트 =====
@@ -77,14 +77,14 @@ function _escHandler(e) {
 // ===== 빠른선택 칩 렌더 =====
 async function loadQuickSelect() {
   try {
-    const doc = await db.collection('users').doc(getUserId())
+    const doc = await db.collection('store').doc('main')
       .collection('settings').doc('quickSelect').get();
     return doc.exists ? doc.data() : {};
   } catch { return {}; }
 }
 
 async function saveQuickSelect(data) {
-  await db.collection('users').doc(getUserId())
+  await db.collection('store').doc('main')
     .collection('settings').doc('quickSelect').set(data, { merge: true });
 }
 
