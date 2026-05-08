@@ -231,25 +231,24 @@ table { border-collapse: collapse; width: 100%; }
 
 /* ===== 당일 요약 ===== */
 .day-summary {
-  display: flex;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
   margin-bottom: 14px;
-  flex-wrap: wrap;
 }
 .summary-item {
   background: white;
   border: 1.5px solid var(--border);
   border-radius: var(--radius);
-  padding: 10px 14px;
-  flex: 0 0 calc(50% - 6px); /* 절대 2열 고정 - shrink/grow 없음 */
+  padding: 10px 12px;
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 2px;
   box-shadow: var(--shadow-sm);
 }
-.summary-label { font-size: 12px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.summary-value { font-size: 15px; font-weight: 700; color: var(--primary); white-space: nowrap; overflow: hidden; }
+.summary-label { font-size: 11px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.summary-value { font-size: 14px; font-weight: 700; color: var(--primary); white-space: nowrap; overflow: hidden; }
 
 /* ===== 장부 테이블 ===== */
 .table-wrapper { overflow-x: auto; border-radius: var(--radius); box-shadow: var(--shadow-sm); }
