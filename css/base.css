@@ -302,6 +302,7 @@ table { border-collapse: collapse; width: 100%; }
   text-align: center;
   font-size: 13px;
   vertical-align: middle;
+  white-space: nowrap;
 }
 .ledger-table tbody tr:nth-child(even) { background: #fafcff; }
 .ledger-table tbody tr:hover { background: var(--primary-light); }
@@ -312,7 +313,7 @@ table { border-collapse: collapse; width: 100%; }
 .col-phone { width: 110px; }
 .col-from { width: 80px; }
 .col-pax { width: 55px; }
-.col-amount { width: 100px; }
+.col-amount { width: 130px; }
 .col-goods { width: 120px; text-align: left !important; }
 .col-memo { width: 130px; text-align: left !important; }
 .col-photo { width: 70px; }
