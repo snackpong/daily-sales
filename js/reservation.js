@@ -76,6 +76,7 @@ const reservation = (() => {
       const isToday = dateStr === today;
       const isSelected = dateStr === _selectedDate;
       const isHol = holidays.isHoliday(dateStr);
+      const noteText = holidays.getName(dateStr) || dateNotes.get(dateStr) || '';
       const dayRes = _allReservations.filter(r => r.date === dateStr);
 
       const dotHTML = dayRes.slice(0, 3).map(r => {
@@ -87,12 +88,19 @@ const reservation = (() => {
         return `<div class="cal-res-dot" style="background:${color}${extra}" title="${label}">${prefix}${r.time || ''} ${label}</div>`;
       }).join('');
 
+      const dateRowHTML = `
+        <div class="cal-date-row">
+          <div class="cal-date">${day}</div>
+          ${noteText ? `<span class="cal-note">${noteText}</span>` : ''}
+        </div>`;
+
       cellsHTML += `
         <div class="cal-cell${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}${isHol ? ' holiday' : ''}"
              onclick="reservation.selectDate('${dateStr}')">
-          <div class="cal-date">${day}</div>
+          ${dateRowHTML}
           ${dotHTML}
           ${dayRes.length > 3 ? `<div class="cal-res-dot">+${dayRes.length - 3}건</div>` : ''}
+          <button class="cal-note-btn" onclick="event.stopPropagation();reservation.editNote('${dateStr}')" title="메모">✎</button>
         </div>`;
     }
 
@@ -313,5 +321,9 @@ const reservation = (() => {
     openModal('예약 상세', body, footer);
   }
 
-  return { load, selectDate, openModal: openForm, save, setStatus, remove, showDetail };
+  function editNote(dateStr) {
+    dateNotes.openEditor(dateStr, () => _renderCalendar());
+  }
+
+  return { load, selectDate, openModal: openForm, save, setStatus, remove, showDetail, editNote };
 })();

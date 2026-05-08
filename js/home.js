@@ -138,6 +138,7 @@ const home = (() => {
       const isToday = dateStr === today;
       const isSelected = dateStr === _selectedDate;
       const isHol = holidays.isHoliday(dateStr);
+      const noteText = holidays.getName(dateStr) || dateNotes.get(dateStr) || '';
       const dayBuses = _busEntries.filter(e => e.date === dateStr);
       const dayRes = _reservations.filter(r => r.date === dateStr);
 
@@ -153,11 +154,18 @@ const home = (() => {
         dotsHTML += `<div class="cal-res-dot">+${dayRes.length - 2}건</div>`;
       }
 
+      const dateRowHTML = `
+        <div class="cal-date-row">
+          <div class="cal-date">${day}</div>
+          ${noteText ? `<span class="cal-note">${noteText}</span>` : ''}
+        </div>`;
+
       cellsHTML += `
         <div class="cal-cell${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}${isHol ? ' holiday' : ''}"
              onclick="home.selectDate('${dateStr}')">
-          <div class="cal-date">${day}</div>
+          ${dateRowHTML}
           ${dotsHTML}
+          <button class="cal-note-btn" onclick="event.stopPropagation();home.editNote('${dateStr}')" title="메모">✎</button>
         </div>`;
     }
 
@@ -214,5 +222,9 @@ const home = (() => {
       (busHTML + resHTML) || '<p style="color:var(--text-light);font-size:14px">이날 기록이 없습니다.</p>';
   }
 
-  return { load, selectDate };
+  function editNote(dateStr) {
+    dateNotes.openEditor(dateStr, () => _renderCalendar());
+  }
+
+  return { load, selectDate, editNote };
 })();

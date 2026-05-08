@@ -119,7 +119,7 @@ function _retryLogin() {
 }
 
 async function _onSignIn() {
-  await bands.ensureLoaded();
+  await Promise.all([bands.ensureLoaded(), dateNotes.load()]);
   await home.load();
   _tabInitialized['home'] = true;
   document.getElementById('btn-add-band').addEventListener('click', () => bands.openModal(null));
