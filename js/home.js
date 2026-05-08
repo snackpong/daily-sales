@@ -142,21 +142,18 @@ const home = (() => {
       const dayBuses = _busEntries.filter(e => e.date === dateStr);
       const dayRes = _reservations.filter(r => r.date === dateStr);
 
-      let dotsHTML = '';
-      if (dayBuses.length > 0) {
-        dotsHTML += `<div class="cal-res-dot home-bus-dot">🚌 ${dayBuses.length}대</div>`;
-      }
-      const maxDots = window.innerWidth <= 600 ? 1 : 2;
-      dayRes.slice(0, maxDots).forEach(r => {
-        const label = [r.driverName, r.busCompany].filter(Boolean).join('/') || '예약';
-        const tag = r.status === 'noshow' ? '<span class="res-dot-tag">✗미방문</span>'
-                  : r.status === 'pending' ? '<span class="res-dot-tag">예약중</span>'
-                  : '';
-        dotsHTML += `<div class="cal-res-dot ${r.status}">${tag}${r.time ? r.time + ' ' : ''}${label}</div>`;
-      });
-      if (dayRes.length > maxDots) {
-        dotsHTML += `<div class="cal-res-dot">+${dayRes.length - maxDots}건</div>`;
-      }
+      const cntBus     = dayBuses.length;
+      const cntPending = dayRes.filter(r => !r.status || r.status === 'pending').length;
+      const cntVisited = dayRes.filter(r => r.status === 'visited').length;
+      const cntNoshow  = dayRes.filter(r => r.status === 'noshow').length;
+
+      const dotGroup = (cls, cnt) => cnt > 0
+        ? `<span class="cal-dot-group"><span class="cal-dot ${cls}"></span>${cnt > 1 ? `<span class="cal-dot-num">${cnt}</span>` : ''}</span>`
+        : '';
+
+      const dotsHTML = (cntBus || cntPending || cntVisited || cntNoshow)
+        ? `<div class="cal-dots-row">${dotGroup('dot-bus', cntBus)}${dotGroup('dot-pending', cntPending)}${dotGroup('dot-visited', cntVisited)}${dotGroup('dot-noshow', cntNoshow)}</div>`
+        : '';
 
       const dateRowHTML = `
         <div class="cal-date-row">

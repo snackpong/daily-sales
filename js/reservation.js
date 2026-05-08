@@ -79,15 +79,17 @@ const reservation = (() => {
       const noteText = holidays.getName(dateStr) || dateNotes.get(dateStr) || '';
       const dayRes = _allReservations.filter(r => r.date === dateStr);
 
-      const maxDots = window.innerWidth <= 600 ? 2 : 3;
-      const dotHTML = dayRes.slice(0, maxDots).map(r => {
-        const parts = [r.driverName, r.busCompany].filter(Boolean);
-        const label = parts.join('/') || '예약';
-        const color = _resColor(r.id);
-        const prefix = r.status === 'visited' ? '✓ ' : r.status === 'noshow' ? '✗ ' : '';
-        const extra = r.status === 'noshow' ? ';opacity:0.5;text-decoration:line-through' : '';
-        return `<div class="cal-res-dot" style="background:${color}${extra}" title="${label}">${prefix}${r.time || ''} ${label}</div>`;
-      }).join('');
+      const cntPending = dayRes.filter(r => !r.status || r.status === 'pending').length;
+      const cntVisited = dayRes.filter(r => r.status === 'visited').length;
+      const cntNoshow  = dayRes.filter(r => r.status === 'noshow').length;
+
+      const dotGroup = (cls, cnt) => cnt > 0
+        ? `<span class="cal-dot-group"><span class="cal-dot ${cls}"></span>${cnt > 1 ? `<span class="cal-dot-num">${cnt}</span>` : ''}</span>`
+        : '';
+
+      const dotHTML = (cntPending || cntVisited || cntNoshow)
+        ? `<div class="cal-dots-row">${dotGroup('dot-pending', cntPending)}${dotGroup('dot-visited', cntVisited)}${dotGroup('dot-noshow', cntNoshow)}</div>`
+        : '';
 
       const dateRowHTML = `
         <div class="cal-date-row">
@@ -100,7 +102,6 @@ const reservation = (() => {
              onclick="reservation.selectDate('${dateStr}')">
           ${dateRowHTML}
           ${dotHTML}
-          ${dayRes.length > maxDots ? `<div class="cal-res-dot">+${dayRes.length - maxDots}건</div>` : ''}
           <button class="cal-note-btn" onclick="event.stopPropagation();reservation.editNote('${dateStr}')" title="메모">✎</button>
         </div>`;
     }
