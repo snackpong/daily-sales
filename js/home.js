@@ -142,16 +142,16 @@ const home = (() => {
       const dayBuses = _busEntries.filter(e => e.date === dateStr);
       const dayRes = _reservations.filter(r => r.date === dateStr);
 
-      const statusTag = { visited: '✓방문', pending: '예약중', noshow: '✗미방문' };
-
       let dotsHTML = '';
       if (dayBuses.length > 0) {
         dotsHTML += `<div class="cal-res-dot home-bus-dot">🚌 ${dayBuses.length}대</div>`;
       }
       dayRes.slice(0, 2).forEach(r => {
         const label = [r.driverName, r.busCompany].filter(Boolean).join('/') || '예약';
-        const tag = statusTag[r.status] || '예약중';
-        dotsHTML += `<div class="cal-res-dot ${r.status}"><span class="res-dot-tag">${tag}</span>${r.time ? ' ' + r.time : ''} ${label}</div>`;
+        const tag = r.status === 'noshow' ? '<span class="res-dot-tag">✗미방문</span>'
+                  : r.status === 'pending' ? '<span class="res-dot-tag">예약중</span>'
+                  : '';
+        dotsHTML += `<div class="cal-res-dot ${r.status}">${tag}${r.time ? r.time + ' ' : ''}${label}</div>`;
       });
       if (dayRes.length > 2) {
         dotsHTML += `<div class="cal-res-dot">+${dayRes.length - 2}건</div>`;
