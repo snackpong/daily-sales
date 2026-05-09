@@ -207,6 +207,14 @@ function parseMoneyInput(val) {
 
 // ===== 이미지 압축 후 Firebase Storage 업로드 =====
 async function uploadPhoto(file, path) {
+  if (!file || !file.type || !file.type.startsWith('image/')) {
+    showToast('이미지 파일만 업로드할 수 있습니다', 'error');
+    throw new Error('Invalid upload file type');
+  }
+  if (file.size > 20 * 1024 * 1024) {
+    showToast('사진은 20MB 이하만 업로드할 수 있습니다', 'error');
+    throw new Error('Upload file too large');
+  }
   const dataUrl = await _compressImage(file, 1200, 0.80);
   const blob = await fetch(dataUrl).then(r => r.blob());
   const ref = storage.ref(path);

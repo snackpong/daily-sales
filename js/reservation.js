@@ -205,15 +205,15 @@ const reservation = (() => {
           </div>
           <div class="form-group">
             <label>기사명</label>
-            <input type="text" name="driverName" value="${escapeAttr(r?.driverName || '')}" placeholder="모를 경우 공란">
+            <input type="text" name="driverName" maxlength="50" value="${escapeAttr(r?.driverName || '')}" placeholder="모를 경우 공란">
           </div>
           <div class="form-group">
             <label>버스회사</label>
-            <input type="text" name="busCompany" value="${escapeAttr(r?.busCompany || '')}" placeholder="예: 금화고속">
+            <input type="text" name="busCompany" maxlength="50" value="${escapeAttr(r?.busCompany || '')}" placeholder="예: 금화고속">
           </div>
           <div class="form-group">
             <label>기사 전화번호</label>
-            <input type="tel" name="phoneNumber" value="${escapeAttr(r?.phoneNumber || '')}" placeholder="010-0000-0000">
+            <input type="tel" name="phoneNumber" maxlength="20" value="${escapeAttr(r?.phoneNumber || '')}" placeholder="010-0000-0000">
           </div>
           <div class="form-group">
             <label>예상 손님 수 (명)</label>
@@ -230,7 +230,7 @@ const reservation = (() => {
         </div>
         <div class="form-group full">
           <label>특이사항 / 요청 내용</label>
-          <textarea name="requests" placeholder="밥집 추천, 숙소, 관광지, 주차 요청 등">${escapeHTML(r?.requests || '')}</textarea>
+          <textarea name="requests" maxlength="500" placeholder="밥집 추천, 숙소, 관광지, 주차 요청 등">${escapeHTML(r?.requests || '')}</textarea>
         </div>
       </form>
     `;

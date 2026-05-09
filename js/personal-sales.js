@@ -131,15 +131,15 @@ const personalSales = (() => {
         <div class="form-grid">
           <div class="form-group">
             <label>현금 매출</label>
-            <input type="text" inputmode="numeric" name="cash" value="${entry?.cash ? Number(entry.cash).toLocaleString('ko-KR') : ''}" placeholder="0">
+            <input type="text" inputmode="numeric" name="cash" maxlength="15" value="${entry?.cash ? Number(entry.cash).toLocaleString('ko-KR') : ''}" placeholder="0">
           </div>
           <div class="form-group">
             <label>카드 매출</label>
-            <input type="text" inputmode="numeric" name="card" value="${entry?.card ? Number(entry.card).toLocaleString('ko-KR') : ''}" placeholder="0">
+            <input type="text" inputmode="numeric" name="card" maxlength="15" value="${entry?.card ? Number(entry.card).toLocaleString('ko-KR') : ''}" placeholder="0">
           </div>
           <div class="form-group">
             <label>매출</label>
-            <input type="text" inputmode="numeric" name="total" value="${entry?.total ? Number(entry.total).toLocaleString('ko-KR') : ''}" placeholder="0">
+            <input type="text" inputmode="numeric" name="total" maxlength="15" value="${entry?.total ? Number(entry.total).toLocaleString('ko-KR') : ''}" placeholder="0">
           </div>
         </div>
       </form>

@@ -148,12 +148,12 @@ const purchase = (() => {
           </div>
           <div class="form-group">
             <label>거래처 (공급업체)</label>
-            <input type="text" name="supplier" value="${escapeAttr(e?.supplier || '')}" placeholder="예: 청풍운, 남해수산">
+            <input type="text" name="supplier" maxlength="50" value="${escapeAttr(e?.supplier || '')}" placeholder="예: 청풍운, 남해수산">
           </div>
           <div class="form-group">
             <label>전화번호</label>
             <div class="input-with-copy">
-              <input type="tel" name="supplierPhone" value="${escapeAttr(supplierPhone)}" placeholder="010-0000-0000">
+              <input type="tel" name="supplierPhone" maxlength="20" value="${escapeAttr(supplierPhone)}" placeholder="010-0000-0000">
               <button type="button" class="phone-copy-btn" onclick="purchase.copySupplierPhone()" title="복사">📋</button>
             </div>
           </div>
@@ -173,7 +173,7 @@ const purchase = (() => {
 
         <div class="form-group full">
           <label>메모</label>
-          <textarea name="notes" placeholder="특이사항">${escapeHTML(e?.notes || '')}</textarea>
+          <textarea name="notes" maxlength="500" placeholder="특이사항">${escapeHTML(e?.notes || '')}</textarea>
         </div>
 
         <div class="form-group full">
@@ -210,11 +210,11 @@ const purchase = (() => {
   function _itemRowHTML(item, idx) {
     return `
       <div class="purchase-item-row" id="item-row-${idx}">
-        <input type="text" class="item-name" placeholder="품목명" value="${escapeAttr(item.name || '')}" oninput="purchase._calcTotal()">
+        <input type="text" class="item-name" maxlength="50" placeholder="품목명" value="${escapeAttr(item.name || '')}" oninput="purchase._calcTotal()">
         <input type="number" class="item-boxes" placeholder="박스 수" value="${item.boxes || ''}" min="0" step="0.01" oninput="purchase._calcRowAmount(this)">
-        <input type="text" class="item-kg" placeholder="kg" value="${escapeAttr(item.kg || '')}">
-        <input type="text" class="item-count" placeholder="개수" value="${escapeAttr(item.count || '')}">
-        <input type="text" inputmode="numeric" class="item-price" placeholder="단가" value="${item.unitPrice ? Number(item.unitPrice).toLocaleString('ko-KR') : ''}" oninput="purchase._onPriceInput(this)">
+        <input type="text" class="item-kg" maxlength="50" placeholder="kg" value="${escapeAttr(item.kg || '')}">
+        <input type="text" class="item-count" maxlength="50" placeholder="개수" value="${escapeAttr(item.count || '')}">
+        <input type="text" inputmode="numeric" class="item-price" maxlength="15" placeholder="단가" value="${item.unitPrice ? Number(item.unitPrice).toLocaleString('ko-KR') : ''}" oninput="purchase._onPriceInput(this)">
         <div class="auto-amount" id="row-amount-${idx}">${item.amount ? formatWon(item.amount) : '-'}</div>
         <button type="button" class="remove-item-btn" onclick="this.closest('.purchase-item-row').remove();purchase._calcTotal()">×</button>
       </div>
@@ -362,11 +362,11 @@ const purchase = (() => {
         <div class="form-grid">
           <div class="form-group">
             <label>거래처명</label>
-            <input type="text" name="name" placeholder="예: 남해수산">
+            <input type="text" name="name" maxlength="50" placeholder="예: 남해수산">
           </div>
           <div class="form-group">
             <label>전화번호</label>
-            <input type="tel" name="phone" placeholder="010-0000-0000">
+            <input type="tel" name="phone" maxlength="20" placeholder="010-0000-0000">
           </div>
         </div>
         <button type="button" class="btn-primary" onclick="purchase.addSupplier()">거래처 추가</button>

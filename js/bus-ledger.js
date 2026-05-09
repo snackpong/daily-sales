@@ -218,31 +218,31 @@ const busLedger = (() => {
         <div class="form-grid">
           <div class="form-group">
             <label>버스회사명 *</label>
-            <input type="text" name="busCompany" value="${escapeAttr(entry?.busCompany || '')}" placeholder="예: 금화고속, 우성여행사" required>
+            <input type="text" name="busCompany" maxlength="50" value="${escapeAttr(entry?.busCompany || '')}" placeholder="예: 금화고속, 우성여행사" required>
           </div>
           <div class="form-group">
             <label>기사명</label>
-            <input type="text" name="driverName" value="${escapeAttr(entry?.driverName || '')}" placeholder="기사님 성함">
+            <input type="text" name="driverName" maxlength="50" value="${escapeAttr(entry?.driverName || '')}" placeholder="기사님 성함">
           </div>
           <div class="form-group">
             <label>전화번호</label>
-            <input type="tel" name="phoneNumber" value="${escapeAttr(entry?.phoneNumber || '')}" placeholder="010-0000-0000">
+            <input type="tel" name="phoneNumber" maxlength="20" value="${escapeAttr(entry?.phoneNumber || '')}" placeholder="010-0000-0000">
           </div>
           <div class="form-group">
             <label>현금매출 (원)</label>
-            <input type="text" inputmode="numeric" name="salesCash" value="${_cashSales(entry) ? _cashSales(entry).toLocaleString('ko-KR') : ''}" placeholder="0">
+            <input type="text" inputmode="numeric" name="salesCash" maxlength="15" value="${_cashSales(entry) ? _cashSales(entry).toLocaleString('ko-KR') : ''}" placeholder="0">
           </div>
           <div class="form-group">
             <label>카드매출 (원)</label>
-            <input type="text" inputmode="numeric" name="salesCard" value="${_cardSales(entry) ? _cardSales(entry).toLocaleString('ko-KR') : ''}" placeholder="0">
+            <input type="text" inputmode="numeric" name="salesCard" maxlength="15" value="${_cardSales(entry) ? _cardSales(entry).toLocaleString('ko-KR') : ''}" placeholder="0">
           </div>
           <div class="form-group">
             <label>커미션 - 현금 (원)</label>
-            <input type="text" inputmode="numeric" name="commissionCash" value="${entry?.commissionCash ? Number(entry.commissionCash).toLocaleString('ko-KR') : ''}" placeholder="0">
+            <input type="text" inputmode="numeric" name="commissionCash" maxlength="15" value="${entry?.commissionCash ? Number(entry.commissionCash).toLocaleString('ko-KR') : ''}" placeholder="0">
           </div>
           <div class="form-group">
             <label>커미션 - 물건</label>
-            <input type="text" name="commissionGoods" value="${escapeAttr(entry?.commissionGoods || '')}" placeholder="예: 홍어 1마리, 갈치 3마리">
+            <input type="text" name="commissionGoods" maxlength="500" value="${escapeAttr(entry?.commissionGoods || '')}" placeholder="예: 홍어 1마리, 갈치 3마리">
           </div>
         </div>
 
@@ -253,7 +253,7 @@ const busLedger = (() => {
 
         <div class="form-group full">
           <label>메모 / 비고</label>
-          <textarea name="notes" placeholder="특이사항, 드린 물건, 손님 관련 메모 등">${escapeHTML(entry?.notes || '')}</textarea>
+          <textarea name="notes" maxlength="500" placeholder="특이사항, 드린 물건, 손님 관련 메모 등">${escapeHTML(entry?.notes || '')}</textarea>
         </div>
 
         <div class="form-group full">

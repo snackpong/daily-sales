@@ -125,16 +125,19 @@ const cashflow = (() => {
         .sort(([a], [b]) => b.localeCompare(a))
         .map(([date, data]) => {
           const net = data.income - data.expense;
-          const itemsHTML = data.items.map(e => `
+          const itemsHTML = data.items.map(e => {
+            const safeType = e.type === 'income' ? 'income' : 'expense';
+            return `
             <div class="cf-month-entry">
-              <span class="cf-type-badge type-${e.type}">${e.type === 'income' ? '수입' : '지출'}</span>
+              <span class="cf-type-badge type-${safeType}">${safeType === 'income' ? '수입' : '지출'}</span>
               <div class="cf-month-entry-info">
                 <span class="cf-month-entry-cat">${escapeHTML(e.category || '')}</span>
                 ${e.notes ? `<span class="cf-month-entry-memo">${escapeHTML(e.notes)}</span>` : ''}
               </div>
-              <span class="cf-amount ${e.type}">${formatWon(e.amount)}</span>
+              <span class="cf-amount ${safeType}">${formatWon(e.amount)}</span>
             </div>
-          `).join('');
+          `;
+          }).join('');
 
           return `
             <div class="cf-month-day-card">
@@ -182,20 +185,23 @@ const cashflow = (() => {
       return;
     }
 
-    list.innerHTML = `<div class="entry-list">${_entries.map(e => `
+    list.innerHTML = `<div class="entry-list">${_entries.map(e => {
+      const safeType = e.type === 'income' ? 'income' : 'expense';
+      return `
       <div class="cf-entry-card">
-        <span class="cf-type-badge type-${e.type}">${e.type === 'income' ? '수입' : '지출'}</span>
+        <span class="cf-type-badge type-${safeType}">${safeType === 'income' ? '수입' : '지출'}</span>
         <div class="cf-info">
           <div class="cf-category">${escapeHTML(e.category || '항목 미입력')}</div>
           ${e.notes ? `<div class="cf-memo-text">${escapeHTML(e.notes)}</div>` : ''}
         </div>
-        <div class="cf-amount ${e.type}">${formatWon(e.amount)}</div>
+        <div class="cf-amount ${safeType}">${formatWon(e.amount)}</div>
         <div class="cf-entry-btns">
           <button class="btn-sm btn-outline" onclick="cashflow.openModal('${e.id}')">수정</button>
           <button class="btn-sm btn-danger" onclick="cashflow.remove('${e.id}')">삭제</button>
         </div>
       </div>
-    `).join('')}</div>`;
+    `;
+    }).join('')}</div>`;
   }
 
   function openForm(entryId) {
@@ -223,15 +229,15 @@ const cashflow = (() => {
         <div class="form-group full">
           <label>카테고리 / 항목명</label>
           <div class="quick-chips" id="cf-cat-chips"></div>
-          <input type="text" name="category" value="${escapeAttr(e?.category || '')}" placeholder="예: 판매수입, 전기세, 포장재">
+          <input type="text" name="category" maxlength="50" value="${escapeAttr(e?.category || '')}" placeholder="예: 판매수입, 전기세, 포장재">
         </div>
         <div class="form-group">
           <label>금액 (원)</label>
-          <input type="text" inputmode="numeric" name="amount" value="${e?.amount ? Number(e.amount).toLocaleString('ko-KR') : ''}" placeholder="0">
+          <input type="text" inputmode="numeric" name="amount" maxlength="15" value="${e?.amount ? Number(e.amount).toLocaleString('ko-KR') : ''}" placeholder="0">
         </div>
         <div class="form-group full">
           <label>메모</label>
-          <input type="text" name="notes" value="${escapeAttr(e?.notes || '')}" placeholder="간단한 메모">
+          <input type="text" name="notes" maxlength="500" value="${escapeAttr(e?.notes || '')}" placeholder="간단한 메모">
         </div>
       </form>
     `;

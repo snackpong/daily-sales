@@ -84,7 +84,7 @@ const search = (() => {
 
       resultsEl.innerHTML = html;
     } catch (err) {
-      resultsEl.innerHTML = `<p class="error-msg">검색 오류: ${err.message}</p>`;
+      resultsEl.innerHTML = `<p class="error-msg">검색 오류: ${escapeHTML(err.message)}</p>`;
     }
   }
 
@@ -168,13 +168,14 @@ const search = (() => {
   }
 
   function _cfCard(e) {
+    const safeType = e.type === 'income' ? 'income' : 'expense';
     return `
       <div class="search-result-item">
         <div class="search-result-date">${formatDateKo(e.date)}</div>
         <div class="search-result-main" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <span class="cf-type-badge type-${e.type}">${e.type === 'income' ? '수입' : '지출'}</span>
+          <span class="cf-type-badge type-${safeType}">${safeType === 'income' ? '수입' : '지출'}</span>
           <span>${escapeHTML(e.category || '')}</span>
-          <span style="font-weight:700;color:${e.type === 'income' ? 'var(--income)' : 'var(--expense)'}">${formatWon(e.amount)}</span>
+          <span style="font-weight:700;color:${safeType === 'income' ? 'var(--income)' : 'var(--expense)'}">${formatWon(e.amount)}</span>
         </div>
         ${e.notes ? `<div class="search-result-detail">📝 ${escapeHTML(e.notes)}</div>` : ''}
       </div>

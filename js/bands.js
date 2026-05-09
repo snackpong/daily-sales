@@ -68,7 +68,7 @@ const bands = (() => {
       <form class="entry-form" id="band-form">
         <div class="form-group">
           <label>밴드 이름 *</label>
-          <input type="text" name="name" value="${escapeAttr(b?.name || '')}" placeholder="예: 우송, 처음처럼, 너와누리" required>
+          <input type="text" name="name" maxlength="50" value="${escapeAttr(b?.name || '')}" placeholder="예: 우송, 처음처럼, 너와누리" required>
         </div>
         <div class="form-group">
           <label>
