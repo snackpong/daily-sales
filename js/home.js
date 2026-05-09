@@ -71,6 +71,7 @@ const home = (() => {
     const totalBuses = _busEntries.length;
     const totalRes = _reservations.length;
     const visitedRes = _reservations.filter(r => r.status === 'visited').length;
+    const busSales = _busEntries.reduce((s, e) => s + _busTotalSales(e), 0);
     const totalIncome = _cashflows.filter(c => c.type === 'income').reduce((s, c) => s + (Number(c.amount) || 0), 0);
     const totalExpense = _cashflows.filter(c => c.type === 'expense').reduce((s, c) => s + (Number(c.amount) || 0), 0);
     const balance = totalIncome - totalExpense;
@@ -115,6 +116,10 @@ const home = (() => {
           <div class="home-cf-item">
             <span class="home-cf-label">수입</span>
             <span class="home-cf-val income">${formatWon(totalIncome)}</span>
+          </div>
+          <div class="home-cf-item">
+            <span class="home-cf-label">버스매출</span>
+            <span class="home-cf-val income">${formatWon(busSales)}</span>
           </div>
           <div class="home-cf-item">
             <span class="home-cf-label">지출</span>
@@ -282,15 +287,15 @@ const home = (() => {
   }
 
   function _busCardSales(entry) {
-    return Number(entry?.cardSalesAmount) || 0;
+    return Number(entry?.salesCard) || Number(entry?.cardSalesAmount) || 0;
   }
 
   function _busCashSales(entry) {
-    return Number(entry?.cashSalesAmount) || 0;
+    return Number(entry?.salesCash) || Number(entry?.cashSalesAmount) || Number(entry?.salesAmount) || 0;
   }
 
   function _busTotalSales(entry) {
-    return _busCardSales(entry) + _busCashSales(entry) || Number(entry?.salesAmount) || 0;
+    return _busCashSales(entry) + _busCardSales(entry);
   }
 
   function showBusDetail(entryId) {
@@ -311,9 +316,8 @@ const home = (() => {
         ['버스회사', escapeHTML(e.busCompany || '-')],
         ['기사명', escapeHTML(e.driverName || '-')],
         ['전화번호', e.phoneNumber ? phoneLink(e.phoneNumber) : '-'],
-        ['카드매출', _busCardSales(e) ? formatWon(_busCardSales(e)) : '-'],
         ['현금매출', _busCashSales(e) ? formatWon(_busCashSales(e)) : '-'],
-        ['총매출', _busTotalSales(e) ? formatWon(_busTotalSales(e)) : '-'],
+        ['카드매출', _busCardSales(e) ? formatWon(_busCardSales(e)) : '-'],
         ['커미션 현금', e.commissionCash ? formatWon(e.commissionCash) : '-'],
         ['커미션 물건', escapeHTML(e.commissionGoods || '-')],
         ['메모', escapeHTML(e.notes || '-')],
@@ -362,8 +366,12 @@ const home = (() => {
   async function deleteBusFromDetail(entryId) {
     const deleted = await busLedger.remove(entryId);
     if (deleted) {
+      const dateStr = _selectedDate;
+      _busEntries = _busEntries.filter(e => e.id !== entryId);
       closeModal();
-      await _refresh(true);
+      _renderStats();
+      _renderCalendar();
+      if (dateStr) _showDayDetail(dateStr);
     }
   }
 
@@ -375,8 +383,12 @@ const home = (() => {
   async function deleteReservationFromDetail(resId) {
     const deleted = await reservation.remove(resId);
     if (deleted) {
+      const dateStr = _selectedDate;
+      _reservations = _reservations.filter(r => r.id !== resId);
       closeModal();
-      await _refresh(true);
+      _renderStats();
+      _renderCalendar();
+      if (dateStr) _showDayDetail(dateStr);
     }
   }
 

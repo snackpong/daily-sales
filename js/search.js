@@ -115,9 +115,8 @@ const search = (() => {
           ${escapeHTML(e.busCompany || '')}${e.driverName ? ' · ' + escapeHTML(e.driverName) : ''}${e.phoneNumber ? ' · ' + phoneLink(e.phoneNumber) : ''}
         </div>
         <div class="search-result-detail">
-          ${[e.cardSalesAmount ? '카드 ' + formatWon(e.cardSalesAmount) : '',
-             e.cashSalesAmount ? '현금 ' + formatWon(e.cashSalesAmount) : '',
-             e.salesAmount ? '총매출 ' + formatWon(e.salesAmount) : '',
+          ${[(e.salesCash || e.salesAmount) ? '현금 ' + formatWon(Number(e.salesCash) || Number(e.salesAmount) || 0) : '',
+             e.salesCard ? '카드 ' + formatWon(e.salesCard) : '',
              e.commissionCash ? '커미션 ' + formatWon(e.commissionCash) : ''
           ].filter(Boolean).join(' · ')}
         </div>

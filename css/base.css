@@ -311,6 +311,7 @@ table { border-collapse: collapse; width: 100%; }
 .col-company { width: 110px; }
 .col-driver { width: 80px; }
 .col-phone { width: 110px; }
+.col-photo-time { width: 140px; }
 .col-amount { width: 130px; }
 .col-goods { width: 120px; text-align: left !important; }
 .col-memo { width: 130px; text-align: left !important; }
@@ -332,6 +333,7 @@ table { border-collapse: collapse; width: 100%; }
 .amount-cell { text-align: right !important; font-weight: 600; color: var(--primary); }
 .empty-row td { padding: 32px; color: var(--text-light); font-size: 14px; text-align: center; }
 .loading-row td { padding: 24px; color: var(--text-light); text-align: center; }
+.photo-time-cell { font-size: 12px; color: var(--text); font-weight: 600; }
 
 /* 밴드 배지 */
 .band-badges { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }

@@ -188,7 +188,7 @@ const bands = (() => {
                 ${escapeHTML(v.busCompany || '')}
                 ${v.driverName ? ' · ' + escapeHTML(v.driverName) : ''}
               </span>
-              <span class="visit-amount">${v.salesAmount ? formatWon(v.salesAmount) : ''}</span>
+              <span class="visit-amount">${_visitSales(v) ? formatWon(_visitSales(v)) : ''}</span>
             </div>
           `).join('');
 
@@ -221,6 +221,10 @@ const bands = (() => {
   function getAll() { return _all; }
   function getById(id) { return _all.find(b => b.id === id); }
   function invalidate() { _loaded = false; }
+  function _visitSales(v) {
+    return (Number(v.salesCash) || Number(v.salesAmount) || 0) +
+      (Number(v.salesCard) || 0);
+  }
 
   return { load, ensureLoaded, openModal: openForm, save, remove, showStats, getAll, getById, invalidate };
 })();

@@ -84,9 +84,8 @@ const busLedger = (() => {
       const phoneHTML = e.phoneNumber
         ? `<span class="driver-link" onclick="busLedger.openDriverProfile('${p}','${n}')">${escapeHTML(e.phoneNumber)}</span><button class="phone-copy-btn" onclick="event.stopPropagation();navigator.clipboard.writeText('${p}').then(()=>showToast('번호 복사됨'))" title="복사">📋</button>`
         : '-';
-      const cardSales = _cardSales(e);
       const cashSales = _cashSales(e);
-      const totalSales = _totalSales(e);
+      const cardSales = _cardSales(e);
 
       return `
         <tr>
@@ -95,12 +94,12 @@ const busLedger = (() => {
           <td>${escapeHTML(e.busCompany || '-')}</td>
           <td>${driverNameHTML}</td>
           <td>${phoneHTML}</td>
-          <td class="amount-cell">${cardSales ? formatWon(cardSales) : '-'}</td>
           <td class="amount-cell">${cashSales ? formatWon(cashSales) : '-'}</td>
-          <td class="amount-cell">${totalSales ? formatWon(totalSales) : '-'}</td>
+          <td class="amount-cell">${cardSales ? formatWon(cardSales) : '-'}</td>
           <td class="amount-cell">${e.commissionCash ? formatWon(e.commissionCash) : '-'}</td>
           <td>${escapeHTML(e.commissionGoods || '-')}</td>
           <td style="text-align:left">${escapeHTML(e.notes || '-')}</td>
+          <td class="photo-time-cell">${_photoUploadedAtText(photoURLs[0])}</td>
           <td>${photoHTML}</td>
           <td>
             <div class="action-btns">
@@ -115,16 +114,31 @@ const busLedger = (() => {
   }
 
   function _cardSales(entry) {
-    return Number(entry?.cardSalesAmount) || 0;
+    return Number(entry?.salesCard) || Number(entry?.cardSalesAmount) || 0;
   }
 
   function _cashSales(entry) {
-    return Number(entry?.cashSalesAmount) || 0;
+    return Number(entry?.salesCash) || Number(entry?.cashSalesAmount) || Number(entry?.salesAmount) || 0;
   }
 
   function _totalSales(entry) {
-    const splitTotal = _cardSales(entry) + _cashSales(entry);
-    return splitTotal || Number(entry?.salesAmount) || 0;
+    return _cashSales(entry) + _cardSales(entry);
+  }
+
+  function _photoUploadedAtText(url) {
+    if (!url) return '-';
+    const decoded = decodeURIComponent(url);
+    const fileName = decoded.split('/').pop().split('?')[0].split('#')[0];
+    const timestamp = fileName.includes('_') ? fileName.split('_')[0] : fileName;
+    const ts = Number(timestamp);
+    if (!Number.isFinite(ts)) return '-';
+    const d = new Date(ts);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    return `${y}.${m}.${day} ${hh}:${mm}`;
   }
 
   function _bandBadges(bandIds) {
@@ -204,16 +218,12 @@ const busLedger = (() => {
             <input type="tel" name="phoneNumber" value="${escapeAttr(entry?.phoneNumber || '')}" placeholder="010-0000-0000">
           </div>
           <div class="form-group">
-            <label>카드매출 (원)</label>
-            <input type="text" inputmode="numeric" name="cardSalesAmount" value="${_cardSales(entry) ? _cardSales(entry).toLocaleString('ko-KR') : ''}" placeholder="0">
-          </div>
-          <div class="form-group">
             <label>현금매출 (원)</label>
-            <input type="text" inputmode="numeric" name="cashSalesAmount" value="${_cashSales(entry) ? _cashSales(entry).toLocaleString('ko-KR') : ''}" placeholder="0">
+            <input type="text" inputmode="numeric" name="salesCash" value="${_cashSales(entry) ? _cashSales(entry).toLocaleString('ko-KR') : ''}" placeholder="0">
           </div>
           <div class="form-group">
-            <label>총매출 (원)</label>
-            <input type="text" inputmode="numeric" name="salesAmount" value="${_totalSales(entry) ? _totalSales(entry).toLocaleString('ko-KR') : ''}" placeholder="0" readonly>
+            <label>카드매출 (원)</label>
+            <input type="text" inputmode="numeric" name="salesCard" value="${_cardSales(entry) ? _cardSales(entry).toLocaleString('ko-KR') : ''}" placeholder="0">
           </div>
           <div class="form-group">
             <label>커미션 - 현금 (원)</label>
@@ -261,18 +271,11 @@ const busLedger = (() => {
 
     openModal(isEdit ? '버스 기록 수정' : '버스 추가', body, footer);
 
-    const cardInput = document.querySelector('#bus-form [name="cardSalesAmount"]');
-    const cashInput = document.querySelector('#bus-form [name="cashSalesAmount"]');
-    const totalInput = document.querySelector('#bus-form [name="salesAmount"]');
-    const updateTotal = () => {
-      const total = parseMoneyInput(cardInput.value) + parseMoneyInput(cashInput.value);
-      totalInput.value = total ? total.toLocaleString('ko-KR') : '';
-    };
-    initMoneyInput(cardInput);
+    const cashInput = document.querySelector('#bus-form [name="salesCash"]');
+    const cardInput = document.querySelector('#bus-form [name="salesCard"]');
     initMoneyInput(cashInput);
+    initMoneyInput(cardInput);
     initMoneyInput(document.querySelector('#bus-form [name="commissionCash"]'));
-    cardInput.addEventListener('input', updateTotal);
-    cashInput.addEventListener('input', updateTotal);
 
     document.getElementById('bus-photo-file').addEventListener('change', e => {
       const files = Array.from(e.target.files);
@@ -306,19 +309,14 @@ const busLedger = (() => {
       busCompany,
       driverName: form.querySelector('[name="driverName"]').value.trim(),
       phoneNumber: form.querySelector('[name="phoneNumber"]').value.trim(),
-      cardSalesAmount: parseMoneyInput(form.querySelector('[name="cardSalesAmount"]').value),
-      cashSalesAmount: parseMoneyInput(form.querySelector('[name="cashSalesAmount"]').value),
+      salesCash: parseMoneyInput(form.querySelector('[name="salesCash"]').value),
+      salesCard: parseMoneyInput(form.querySelector('[name="salesCard"]').value),
       commissionCash: parseMoneyInput(form.querySelector('[name="commissionCash"]').value),
       commissionGoods: form.querySelector('[name="commissionGoods"]').value.trim(),
       bandIds,
       notes: form.querySelector('[name="notes"]').value.trim(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
-    data.salesAmount = data.cardSalesAmount + data.cashSalesAmount;
-    if (!data.salesAmount && isEdit) {
-      const existingEntry = _entries.find(e => e.id === entryId);
-      data.salesAmount = Number(existingEntry?.salesAmount) || 0;
-    }
 
     if (!isEdit) {
       data.daySequence = _entries.length + 1;
@@ -617,7 +615,7 @@ const busLedger = (() => {
         .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
       const totalVisits = visits.length;
-      const totalSales = visits.reduce((s, v) => s + (Number(v.salesAmount) || 0), 0);
+      const totalSales = visits.reduce((s, v) => s + _totalSales(v), 0);
       const totalComm = visits.reduce((s, v) => s + (Number(v.commissionCash) || 0), 0);
       const avgComm = totalVisits > 0 ? Math.round(totalComm / totalVisits) : 0;
       const displayName = name || visits[0]?.driverName || '이름 미상';
@@ -685,9 +683,8 @@ const busLedger = (() => {
          </label>`;
 
     const infoStr = [
-      v.cardSalesAmount ? '카드 ' + formatWon(v.cardSalesAmount) : '',
-      v.cashSalesAmount ? '현금 ' + formatWon(v.cashSalesAmount) : '',
-      v.salesAmount ? '총매출 ' + formatWon(v.salesAmount) : '',
+      _cashSales(v) ? '현금 ' + formatWon(_cashSales(v)) : '',
+      _cardSales(v) ? '카드 ' + formatWon(_cardSales(v)) : '',
       v.commissionCash ? '커미션 ' + formatWon(v.commissionCash) : '',
     ].filter(Boolean).join('&nbsp;·&nbsp;');
 
