@@ -543,7 +543,12 @@
 .ps-summary-total strong { color: var(--income); }
 .ps-day-amount { margin-top: 8px; font-size: 12px; font-weight: 700; color: var(--income); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 600px) {
-  .hd-grid { grid-template-columns: 1fr 1fr; }
+  .hd-grid { grid-template-columns: 1fr; }
+  .hd-card-main,
+  .hd-card-note {
+    white-space: normal;
+    overflow: visible;
+  }
 
   /* 모바일 캘린더 */
   .cal-cell { min-height: 52px; max-height: 96px; padding: 4px 3px; }
