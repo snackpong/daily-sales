@@ -94,7 +94,7 @@ const reservation = (() => {
       const dateRowHTML = `
         <div class="cal-date-row">
           <div class="cal-date">${day}</div>
-          ${noteText ? `<span class="cal-note">${noteText}</span>` : ''}
+          ${noteText ? `<span class="cal-note">${escapeHTML(noteText)}</span>` : ''}
         </div>`;
 
       cellsHTML += `
@@ -143,26 +143,39 @@ const reservation = (() => {
       return;
     }
 
-    listEl.innerHTML = dayRes.map(r => `
-      <div class="res-item res-item-clickable" style="border-left: 4px solid ${_resColor(r.id)}" onclick="reservation.showDetail('${r.id}')">
-        <div class="res-info">
-          <div class="res-main">${r.time ? r.time + ' · ' : ''}${[r.driverName, r.busCompany].filter(Boolean).join(' / ') || '기사 미정'} ${r.estimatedPassengers ? r.estimatedPassengers + '명' : ''}</div>
-          ${r.phoneNumber ? `<div class="res-sub">📞 ${phoneLink(r.phoneNumber)}</div>` : ''}
-          ${r.requests ? `<div class="res-sub">${r.requests}</div>` : ''}
-        </div>
-        <div class="res-actions" onclick="event.stopPropagation()">
-          <div class="res-status-group">
-            <button class="res-status-btn${r.status === 'pending' ? ' active pending' : ''}" onclick="reservation.setStatus('${r.id}','pending')">예약중</button>
-            <button class="res-status-btn${r.status === 'visited' ? ' active visited' : ''}" onclick="reservation.setStatus('${r.id}','visited')">방문완료</button>
-            <button class="res-status-btn${r.status === 'noshow' ? ' active noshow' : ''}" onclick="reservation.setStatus('${r.id}','noshow')">미방문</button>
+    const cards = dayRes.map(r => {
+      const cls = r.status === 'visited' ? 'res-card-done'
+                : r.status === 'noshow'  ? 'res-card-noshow'
+                : 'res-card-pending';
+      const badge = r.status === 'visited' ? '✓ 방문완료'
+                  : r.status === 'noshow'  ? '✗ 미방문'
+                  : '📅 예약중';
+      const name = escapeHTML([r.driverName, r.busCompany].filter(Boolean).join(' · ') || '기사 미정');
+      return `
+        <div class="res-card ${cls}" onclick="reservation.showDetail('${r.id}')">
+          <span class="res-card-badge">${badge}</span>
+          ${r.time ? `<div class="res-card-time">${escapeHTML(r.time)}</div>` : ''}
+          <div class="res-card-name">${name}</div>
+          ${r.estimatedPassengers ? `<div class="res-card-meta">👥 예상 ${r.estimatedPassengers}명</div>` : ''}
+          ${r.phoneNumber ? `<div class="res-card-meta">📞 ${escapeHTML(r.phoneNumber)}</div>` : ''}
+          ${r.requests ? `<div class="res-card-req">${escapeHTML(r.requests)}</div>` : ''}
+          <div class="res-card-actions" onclick="event.stopPropagation()">
+            <div class="res-card-status-row">
+              <button class="res-scbtn${!r.status || r.status === 'pending' ? ' s-pending' : ''}" onclick="reservation.setStatus('${r.id}','pending')">예약중</button>
+              <button class="res-scbtn${r.status === 'visited' ? ' s-visited' : ''}" onclick="reservation.setStatus('${r.id}','visited')">완료</button>
+              <button class="res-scbtn${r.status === 'noshow' ? ' s-noshow' : ''}" onclick="reservation.setStatus('${r.id}','noshow')">미방문</button>
+            </div>
+            <div class="res-card-btn-row">
+              <button class="btn-sm btn-outline" onclick="reservation.openModal('${r.date}','${r.id}')">수정</button>
+              <button class="btn-sm btn-danger" onclick="reservation.remove('${r.id}')">삭제</button>
+            </div>
           </div>
-          <button class="btn-sm btn-outline" onclick="reservation.openModal('${r.date}','${r.id}')">수정</button>
-          <button class="btn-sm btn-danger" onclick="reservation.remove('${r.id}')">삭제</button>
-        </div>
-      </div>
-    `).join('');
+        </div>`;
+    }).join('');
 
-    listEl.innerHTML += `<button class="btn-outline btn-sm" style="margin-top:8px" onclick="reservation.openModal('${dateStr}')">+ 이날 예약 추가</button>`;
+    listEl.innerHTML = `
+      <div class="res-grid">${cards}</div>
+      <button class="btn-outline btn-sm" style="margin-top:10px" onclick="reservation.openModal('${dateStr}')">+ 이날 예약 추가</button>`;
   }
 
   function openForm(dateStr, resId) {
@@ -182,15 +195,15 @@ const reservation = (() => {
           </div>
           <div class="form-group">
             <label>기사명</label>
-            <input type="text" name="driverName" value="${r?.driverName || ''}" placeholder="모를 경우 공란">
+            <input type="text" name="driverName" value="${escapeAttr(r?.driverName || '')}" placeholder="모를 경우 공란">
           </div>
           <div class="form-group">
             <label>버스회사</label>
-            <input type="text" name="busCompany" value="${r?.busCompany || ''}" placeholder="예: 금화고속">
+            <input type="text" name="busCompany" value="${escapeAttr(r?.busCompany || '')}" placeholder="예: 금화고속">
           </div>
           <div class="form-group">
             <label>기사 전화번호</label>
-            <input type="tel" name="phoneNumber" value="${r?.phoneNumber || ''}" placeholder="010-0000-0000">
+            <input type="tel" name="phoneNumber" value="${escapeAttr(r?.phoneNumber || '')}" placeholder="010-0000-0000">
           </div>
           <div class="form-group">
             <label>예상 손님 수 (명)</label>
@@ -207,7 +220,7 @@ const reservation = (() => {
         </div>
         <div class="form-group full">
           <label>특이사항 / 요청 내용</label>
-          <textarea name="requests" placeholder="밥집 추천, 숙소, 관광지, 주차 요청 등">${r?.requests || ''}</textarea>
+          <textarea name="requests" placeholder="밥집 추천, 숙소, 관광지, 주차 요청 등">${escapeHTML(r?.requests || '')}</textarea>
         </div>
       </form>
     `;
@@ -289,20 +302,21 @@ const reservation = (() => {
     const statusColor = { pending: '#856404', visited: '#0a3622', noshow: '#383d41' };
     const statusBg = { pending: '#fff3cd', visited: '#d1e7dd', noshow: '#e2e3e5' };
 
+    const safeStatus = r.status || 'pending';
     const rows = [
       ['날짜', formatDateKo(r.date)],
       ['시간', r.time || '-'],
-      ['기사명', r.driverName || '-'],
-      ['버스회사', r.busCompany || '-'],
+      ['기사명', escapeHTML(r.driverName || '-')],
+      ['버스회사', escapeHTML(r.busCompany || '-')],
       ['전화번호', r.phoneNumber ? phoneLink(r.phoneNumber) : '-'],
       ['예상 인원', r.estimatedPassengers ? r.estimatedPassengers + '명' : '-'],
-      ['요청사항', r.requests || '-'],
+      ['요청사항', escapeHTML(r.requests || '-')],
     ];
 
     const body = `
       <div style="margin-bottom:14px">
-        <span style="display:inline-block;padding:4px 14px;border-radius:12px;font-weight:700;font-size:14px;background:${statusBg[r.status]};color:${statusColor[r.status]}">
-          ${statusLabel[r.status] || '예약중'}
+        <span style="display:inline-block;padding:4px 14px;border-radius:12px;font-weight:700;font-size:14px;background:${statusBg[safeStatus]};color:${statusColor[safeStatus]}">
+          ${statusLabel[safeStatus] || '예약중'}
         </span>
       </div>
       <table style="width:100%;border-collapse:collapse;font-size:14px">
