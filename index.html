@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>목포 건어물 장부</title>
-  <link rel="stylesheet" href="css/base.css?v=20260509-6">
-  <link rel="stylesheet" href="css/modules.css?v=20260509-6">
+  <link rel="stylesheet" href="css/base.css?v=20260509-7">
+  <link rel="stylesheet" href="css/modules.css?v=20260509-7">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🐟</text></svg>">
 </head>
 <body>
@@ -37,6 +37,7 @@
 
   <nav class="tab-nav">
     <button class="tab-btn active" data-tab="home">🏠 홈</button>
+    <button class="tab-btn" data-tab="personal">💵 개인매출</button>
     <button class="tab-btn" data-tab="bus">🚌 버스장부</button>
     <button class="tab-btn" data-tab="reservation">📅 예약일정</button>
     <button class="tab-btn" data-tab="purchase">📦 사입장부</button>
@@ -68,6 +69,19 @@
         <h3 id="home-detail-date"></h3>
         <div id="home-detail-content"></div>
       </div>
+    </div>
+
+    <!-- 개인매출 -->
+    <div id="tab-personal" class="tab-panel">
+      <div class="panel-toolbar">
+        <div class="date-nav">
+          <button class="btn-icon" id="ps-prev-month">◀</button>
+          <span id="ps-month-label" class="month-label"></span>
+          <button class="btn-icon" id="ps-next-month">▶</button>
+        </div>
+      </div>
+      <div id="ps-summary" class="ps-summary-grid"></div>
+      <div id="ps-calendar" class="calendar"></div>
     </div>
 
     <!-- 버스 기사 장부 -->
@@ -235,18 +249,19 @@
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
 
-<script src="js/firebase-init.js?v=20260509-6"></script>
-<script src="js/utils.js?v=20260509-6"></script>
-<script src="js/holidays.js?v=20260509-6"></script>
-<script src="js/date-notes.js?v=20260509-6"></script>
-<script src="js/bands.js?v=20260509-6"></script>
-<script src="js/home.js?v=20260509-6"></script>
-<script src="js/bus-ledger.js?v=20260509-6"></script>
-<script src="js/reservation.js?v=20260509-6"></script>
-<script src="js/purchase.js?v=20260509-6"></script>
-<script src="js/cashflow.js?v=20260509-6"></script>
-<script src="js/search.js?v=20260509-6"></script>
-<script src="js/app.js?v=20260509-6"></script>
+<script src="js/firebase-init.js?v=20260509-7"></script>
+<script src="js/utils.js?v=20260509-7"></script>
+<script src="js/holidays.js?v=20260509-7"></script>
+<script src="js/date-notes.js?v=20260509-7"></script>
+<script src="js/bands.js?v=20260509-7"></script>
+<script src="js/home.js?v=20260509-7"></script>
+<script src="js/personal-sales.js?v=20260509-7"></script>
+<script src="js/bus-ledger.js?v=20260509-7"></script>
+<script src="js/reservation.js?v=20260509-7"></script>
+<script src="js/purchase.js?v=20260509-7"></script>
+<script src="js/cashflow.js?v=20260509-7"></script>
+<script src="js/search.js?v=20260509-7"></script>
+<script src="js/app.js?v=20260509-7"></script>
 
 </body>
 </html>

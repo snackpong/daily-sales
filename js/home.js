@@ -6,6 +6,7 @@ const home = (() => {
   let _busEntries = [];
   let _reservations = [];
   let _cashflows = [];
+  let _personalSales = [];
   let _dataChangeBound = false;
 
   async function load() {
@@ -26,7 +27,7 @@ const home = (() => {
 
     if (!_dataChangeBound) {
       document.addEventListener('dailySales:dataChanged', () => {
-        if (_selectedDate) _refresh(true);
+        _refresh(!!_selectedDate);
       });
       _dataChangeBound = true;
     }
@@ -47,14 +48,16 @@ const home = (() => {
 
     async function _doFetch(source) {
       const opts = source ? { source } : undefined;
-      const [busSnap, resSnap, cfSnap] = await Promise.all([
+      const [busSnap, resSnap, cfSnap, psSnap] = await Promise.all([
         userCol('busEntries').where('date', '>=', startDate).where('date', '<=', endDate).get(opts),
         userCol('reservations').where('date', '>=', startDate).where('date', '<=', endDate).get(opts),
         userCol('cashflowEntries').where('date', '>=', startDate).where('date', '<=', endDate).get(opts),
+        userCol('personalSales').where('date', '>=', startDate).where('date', '<=', endDate).get(opts),
       ]);
       _busEntries = busSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       _reservations = resSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       _cashflows = cfSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      _personalSales = psSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       _renderStats();
       if (selectedBeforeRefresh) _selectedDate = selectedBeforeRefresh;
       _renderCalendar();
@@ -72,6 +75,8 @@ const home = (() => {
     const totalRes = _reservations.length;
     const visitedRes = _reservations.filter(r => r.status === 'visited').length;
     const busSales = _busEntries.reduce((s, e) => s + _busTotalSales(e), 0);
+    const personalSalesTotal = _personalSales.reduce((s, e) => s + _personalSalesTotal(e), 0);
+    const grandSales = busSales + personalSalesTotal;
     const totalIncome = _cashflows.filter(c => c.type === 'income').reduce((s, c) => s + (Number(c.amount) || 0), 0);
     const totalExpense = _cashflows.filter(c => c.type === 'expense').reduce((s, c) => s + (Number(c.amount) || 0), 0);
     const balance = totalIncome - totalExpense;
@@ -118,10 +123,6 @@ const home = (() => {
             <span class="home-cf-val income">${formatWon(totalIncome)}</span>
           </div>
           <div class="home-cf-item">
-            <span class="home-cf-label">버스매출</span>
-            <span class="home-cf-val income">${formatWon(busSales)}</span>
-          </div>
-          <div class="home-cf-item">
             <span class="home-cf-label">지출</span>
             <span class="home-cf-val expense">${formatWon(totalExpense)}</span>
           </div>
@@ -129,6 +130,14 @@ const home = (() => {
             <span class="home-cf-label">잔액</span>
             <span class="home-cf-val ${balance >= 0 ? 'income' : 'expense'}">${formatWon(Math.abs(balance))}${balance < 0 ? ' 적자' : ''}</span>
           </div>
+        </div>
+      </div>
+      <div class="home-stat-card home-stat-sales">
+        <div class="home-stat-label">이번달 총매출</div>
+        <div class="home-stat-value income">${formatWon(grandSales)}</div>
+        <div class="home-sales-row">
+          <span>버스매출 <strong>${formatWon(busSales)}</strong></span>
+          <span>개인매출 <strong>${formatWon(personalSalesTotal)}</strong></span>
         </div>
       </div>
       <div class="home-stat-card home-stat-bands">
@@ -296,6 +305,10 @@ const home = (() => {
 
   function _busTotalSales(entry) {
     return _busCashSales(entry) + _busCardSales(entry);
+  }
+
+  function _personalSalesTotal(entry) {
+    return (Number(entry?.cash) || 0) + (Number(entry?.card) || 0) + (Number(entry?.total) || 0);
   }
 
   function showBusDetail(entryId) {

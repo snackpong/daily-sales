@@ -153,6 +153,7 @@ function switchTab(tab) {
     if (stale) {
       _tabLastLoad[tab] = now;
       if (tab === 'home') home.load();
+      if (tab === 'personal') personalSales.load();
       if (tab === 'bus') busLedger.load();
     }
     return;
@@ -162,6 +163,7 @@ function switchTab(tab) {
   _tabLastLoad[tab] = Date.now();
 
   switch (tab) {
+    case 'personal': personalSales.load(); break;
     case 'bus': busLedger.init(); break;
     case 'reservation': reservation.load(); break;
     case 'purchase': purchase.load(); break;
