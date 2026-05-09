@@ -356,6 +356,8 @@ table { border-collapse: collapse; width: 100%; }
 .photo-thumb { width: 48px; height: 36px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 1px solid var(--border); }
 .photo-thumb:hover { opacity: 0.85; }
 .no-photo-text { color: var(--text-light); font-size: 11px; }
+.photo-thumb-wrap { position: relative; display: inline-block; cursor: pointer; }
+.photo-count-badge { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: #fff; font-size: 10px; padding: 1px 4px; border-radius: 6px; line-height: 1.4; pointer-events: none; }
 
 /* 액션 버튼들 */
 .action-btns { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
@@ -456,11 +458,14 @@ table { border-collapse: collapse; width: 100%; }
 .band-check-img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
 
 /* 사진 미리보기 */
-.photo-preview { margin-top: 8px; }
-.photo-preview img { max-width: 100%; max-height: 180px; border-radius: 6px; border: 1px solid var(--border); }
+.photo-preview { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.photo-preview img { width: 72px; height: 72px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
 .current-photo { margin-bottom: 8px; }
 .current-photo img { max-height: 100px; border-radius: 6px; border: 1px solid var(--border); }
 .current-photo p { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+.current-photos { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.current-photo-thumb { width: 72px; height: 72px; object-fit: cover; border-radius: 6px; border: 2px solid var(--border); cursor: pointer; transition: opacity 0.15s; }
+.current-photo-thumb:hover { opacity: 0.8; }
 
 /* 체크박스 레이블 */
 .check-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; }

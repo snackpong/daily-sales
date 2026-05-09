@@ -3,30 +3,31 @@ const busLedger = (() => {
   let _date = getTodayStr();
   let _entries = [];
   let _qs = {};
+  let _galleryState = { urls: [], idx: 0 };
 
   async function init() {
     document.getElementById('bus-date').value = _date;
 
-    document.getElementById('bus-date').addEventListener('change', e => {
+    document.getElementById('bus-date').onchange = e => {
       _date = e.target.value;
       load();
-    });
-    document.getElementById('bus-prev-day').addEventListener('click', () => {
+    };
+    document.getElementById('bus-prev-day').onclick = () => {
       _date = addDays(_date, -1);
       document.getElementById('bus-date').value = _date;
       load();
-    });
-    document.getElementById('bus-next-day').addEventListener('click', () => {
+    };
+    document.getElementById('bus-next-day').onclick = () => {
       _date = addDays(_date, 1);
       document.getElementById('bus-date').value = _date;
       load();
-    });
-    document.getElementById('bus-today').addEventListener('click', () => {
+    };
+    document.getElementById('bus-today').onclick = () => {
       _date = getTodayStr();
       document.getElementById('bus-date').value = _date;
       load();
-    });
-    document.getElementById('btn-add-bus').addEventListener('click', () => openEntryModal(null));
+    };
+    document.getElementById('btn-add-bus').onclick = () => openEntryModal(null);
 
     _qs = await loadQuickSelect();
     await load();
@@ -62,31 +63,34 @@ const busLedger = (() => {
       const bandHTML = _bandBadges(e.bandIds);
       const photoURLs = e.photoURLs || (e.photoURL ? [e.photoURL] : []);
       const photoHTML = photoURLs.length > 0
-        ? `<img src="${photoURLs[0]}" class="photo-thumb" onclick="busLedger.viewPhoto('${photoURLs[0]}')" alt="사진">`
+        ? `<div class="photo-thumb-wrap" onclick="busLedger.viewPhotos('${escapeInlineJS(e.id)}')">
+             <img src="${escapeAttr(photoURLs[0])}" class="photo-thumb" alt="사진">
+             ${photoURLs.length > 1 ? `<span class="photo-count-badge">+${photoURLs.length - 1}</span>` : ''}
+           </div>`
         : `<span class="no-photo-text">없음</span>`;
 
-      const p = (e.phoneNumber || '').replace(/'/g, "\\'");
-      const n = (e.driverName || '').replace(/'/g, "\\'");
+      const p = escapeInlineJS(e.phoneNumber || '');
+      const n = escapeInlineJS(e.driverName || '');
       const driverNameHTML = e.driverName
-        ? `<span class="driver-link" onclick="busLedger.openDriverProfile('${p}','${n}')">${e.driverName}</span>`
+        ? `<span class="driver-link" onclick="busLedger.openDriverProfile('${p}','${n}')">${escapeHTML(e.driverName)}</span>`
         : '-';
       const phoneHTML = e.phoneNumber
-        ? `<span class="driver-link" onclick="busLedger.openDriverProfile('${p}','${n}')">${e.phoneNumber}</span><button class="phone-copy-btn" onclick="event.stopPropagation();navigator.clipboard.writeText('${e.phoneNumber}').then(()=>showToast('번호 복사됨'))" title="복사">📋</button>`
+        ? `<span class="driver-link" onclick="busLedger.openDriverProfile('${p}','${n}')">${escapeHTML(e.phoneNumber)}</span><button class="phone-copy-btn" onclick="event.stopPropagation();navigator.clipboard.writeText('${p}').then(()=>showToast('번호 복사됨'))" title="복사">📋</button>`
         : '-';
 
       return `
         <tr>
           <td><span class="seq-badge">${i + 1}</span></td>
           <td><div class="band-badges">${bandHTML}</div></td>
-          <td>${e.busCompany || '-'}</td>
+          <td>${escapeHTML(e.busCompany || '-')}</td>
           <td>${driverNameHTML}</td>
           <td>${phoneHTML}</td>
-          <td>${e.departureFrom || '-'}</td>
+          <td>${escapeHTML(e.departureFrom || '-')}</td>
           <td>${e.passengerCount ? e.passengerCount + '명' : '-'}</td>
           <td class="amount-cell">${e.salesAmount ? formatWon(e.salesAmount) : '-'}</td>
           <td class="amount-cell">${e.commissionCash ? formatWon(e.commissionCash) : '-'}</td>
-          <td>${e.commissionGoods || '-'}</td>
-          <td style="text-align:left">${e.notes || '-'}</td>
+          <td>${escapeHTML(e.commissionGoods || '-')}</td>
+          <td style="text-align:left">${escapeHTML(e.notes || '-')}</td>
           <td>${photoHTML}</td>
           <td>
             <div class="action-btns">
@@ -106,8 +110,8 @@ const busLedger = (() => {
       const b = bands.getById(bid);
       if (!b) return '';
       return b.logoURL
-        ? `<img src="${b.logoURL}" class="band-badge-img" title="${b.name}" alt="${b.name}">`
-        : `<span class="band-badge-text" title="${b.name}">${b.name.slice(0, 2)}</span>`;
+        ? `<img src="${escapeAttr(b.logoURL)}" class="band-badge-img" title="${escapeAttr(b.name)}" alt="${escapeAttr(b.name)}">`
+        : `<span class="band-badge-text" title="${escapeAttr(b.name)}">${escapeHTML(b.name.slice(0, 2))}</span>`;
     }).join('');
   }
 
@@ -138,30 +142,38 @@ const busLedger = (() => {
           <label class="band-check-label">
             <input type="checkbox" name="bandIds" value="${b.id}"
               ${entry?.bandIds?.includes(b.id) ? 'checked' : ''}>
-            ${b.logoURL ? `<img src="${b.logoURL}" class="band-check-img" alt="">` : ''}
-            <span>${b.name}</span>
+            ${b.logoURL ? `<img src="${escapeAttr(b.logoURL)}" class="band-check-img" alt="">` : ''}
+            <span>${escapeHTML(b.name)}</span>
           </label>
         `).join('');
+
+    const existingPhotoURLs = entry?.photoURLs || (entry?.photoURL ? [entry.photoURL] : []);
+    const existingPhotosHTML = existingPhotoURLs.length > 0
+      ? `<div class="current-photos">${existingPhotoURLs.map((url, i) =>
+          `<img src="${escapeAttr(url)}" class="current-photo-thumb" alt="사진 ${i + 1}"
+               onclick="busLedger.viewPhotos('${escapeInlineJS(entryId)}')">`
+        ).join('')}</div>`
+      : '';
 
     const body = `
       <form class="entry-form" id="bus-form">
         <div class="form-grid">
           <div class="form-group">
             <label>버스회사명 *</label>
-            <input type="text" name="busCompany" value="${entry?.busCompany || ''}" placeholder="예: 금화고속, 우성여행사" required>
+            <input type="text" name="busCompany" value="${escapeAttr(entry?.busCompany || '')}" placeholder="예: 금화고속, 우성여행사" required>
           </div>
           <div class="form-group">
             <label>기사명</label>
-            <input type="text" name="driverName" value="${entry?.driverName || ''}" placeholder="기사님 성함">
+            <input type="text" name="driverName" value="${escapeAttr(entry?.driverName || '')}" placeholder="기사님 성함">
           </div>
           <div class="form-group">
             <label>전화번호</label>
-            <input type="tel" name="phoneNumber" value="${entry?.phoneNumber || ''}" placeholder="010-0000-0000">
+            <input type="tel" name="phoneNumber" value="${escapeAttr(entry?.phoneNumber || '')}" placeholder="010-0000-0000">
           </div>
           <div class="form-group">
             <label>출발지 (관광지)</label>
             ${placeChips}
-            <input type="text" name="departureFrom" id="input-from" value="${entry?.departureFrom || ''}" placeholder="예: 해남, 강진, 완도">
+            <input type="text" name="departureFrom" id="input-from" value="${escapeAttr(entry?.departureFrom || '')}" placeholder="예: 해남, 강진, 완도">
           </div>
           <div class="form-group">
             <label>손님 수 (명)</label>
@@ -177,7 +189,7 @@ const busLedger = (() => {
           </div>
           <div class="form-group">
             <label>커미션 - 물건</label>
-            <input type="text" name="commissionGoods" value="${entry?.commissionGoods || ''}" placeholder="예: 홍어 1마리, 갈치 3마리">
+            <input type="text" name="commissionGoods" value="${escapeAttr(entry?.commissionGoods || '')}" placeholder="예: 홍어 1마리, 갈치 3마리">
           </div>
         </div>
 
@@ -188,13 +200,13 @@ const busLedger = (() => {
 
         <div class="form-group full">
           <label>메모 / 비고</label>
-          <textarea name="notes" placeholder="특이사항, 드린 물건, 손님 관련 메모 등">${entry?.notes || ''}</textarea>
+          <textarea name="notes" placeholder="특이사항, 드린 물건, 손님 관련 메모 등">${escapeHTML(entry?.notes || '')}</textarea>
         </div>
 
         <div class="form-group full">
           <label>버스 사진</label>
-          ${(entry?.photoURLs?.length || entry?.photoURL) ? `<div class="current-photo"><img src="${(entry.photoURLs || [entry.photoURL])[0]}" alt="현재 사진"><p>현재 등록된 사진</p></div>` : ''}
-          <input type="file" name="photo" accept="image/*" id="bus-photo-file">
+          ${existingPhotosHTML}
+          <input type="file" name="photo" accept="image/*" id="bus-photo-file" multiple>
           <div id="bus-photo-preview" class="photo-preview"></div>
         </div>
 
@@ -228,14 +240,20 @@ const busLedger = (() => {
     }
 
     document.getElementById('bus-photo-file').addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        document.getElementById('bus-photo-preview').innerHTML =
-          `<img src="${ev.target.result}" alt="미리보기">`;
-      };
-      reader.readAsDataURL(file);
+      const files = Array.from(e.target.files);
+      if (files.length === 0) return;
+      const preview = document.getElementById('bus-photo-preview');
+      preview.innerHTML = '';
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const img = document.createElement('img');
+          img.src = ev.target.result;
+          img.alt = '미리보기';
+          preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
     });
   }
 
@@ -272,12 +290,14 @@ const busLedger = (() => {
     btn.disabled = true; btn.textContent = '저장 중...';
 
     try {
-      const photoFile = document.getElementById('bus-photo-file').files[0];
-      if (photoFile) {
-        const url = await uploadPhoto(photoFile,
-          `photos/${getUserId()}/bus/${Date.now()}_${photoFile.name}`);
+      const photoFiles = Array.from(document.getElementById('bus-photo-file').files);
+      if (photoFiles.length > 0) {
+        const ts = Date.now();
+        const newUrls = await Promise.all(photoFiles.map((file, i) =>
+          uploadPhoto(file, `photos/${getUserId()}/bus/${ts}_${i}_${file.name}`)
+        ));
         const existing = isEdit ? (_entries.find(e => e.id === entryId)?.photoURLs || []) : [];
-        data.photoURLs = [...existing, url];
+        data.photoURLs = [...existing, ...newUrls];
         data.photoURL = data.photoURLs[0];
       } else if (!isEdit) {
         data.photoURLs = [];
@@ -347,13 +367,13 @@ const busLedger = (() => {
       return `
         <div class="band-post-item">
           <div class="band-post-header">
-            ${b.logoURL ? `<img src="${b.logoURL}" class="band-post-logo" alt="">` : ''}
-            ${b.name} 밴드용
+            ${b.logoURL ? `<img src="${escapeAttr(b.logoURL)}" class="band-post-logo" alt="">` : ''}
+            ${escapeHTML(b.name)} 밴드용
           </div>
           ${photoURLs.length > 0
-            ? `<img src="${photoURLs[0]}" class="band-post-bus-photo" alt="버스 사진">`
+            ? `<img src="${escapeAttr(photoURLs[0])}" class="band-post-bus-photo" alt="버스 사진">`
             : '<p class="no-photo-note">📷 사진이 없습니다 (사진 첨부 후 다시 시도하세요)</p>'}
-          <textarea class="band-post-text" id="${pid}" readonly>${text}</textarea>
+          <textarea class="band-post-text" id="${escapeAttr(pid)}" readonly>${escapeHTML(text)}</textarea>
           <button class="btn-sm btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('${pid}').value).then(()=>showToast('복사되었습니다!'))">📋 문구 복사</button>
         </div>
       `;
@@ -366,8 +386,70 @@ const busLedger = (() => {
 
   function viewPhoto(url) {
     openModal('사진',
-      `<img src="${url}" style="max-width:100%;border-radius:8px;display:block;">`,
+      `<img src="${escapeAttr(url)}" style="max-width:100%;border-radius:8px;display:block;">`,
       '<button class="btn-outline" onclick="closeModal()">닫기</button>');
+  }
+
+  function viewPhotos(entryId) {
+    const entry = _entries.find(e => e.id === entryId);
+    if (!entry) return;
+    const photoURLs = entry.photoURLs || (entry.photoURL ? [entry.photoURL] : []);
+    if (photoURLs.length === 0) return;
+    _galleryState = { urls: photoURLs, idx: 0 };
+    _renderGalleryModal();
+  }
+
+  function _renderGalleryModal() {
+    const { urls, idx } = _galleryState;
+    const url = urls[idx];
+    const multi = urls.length > 1;
+    const body = `
+      <div class="gallery-wrap">
+        ${multi ? `<button class="gallery-nav gallery-prev" onclick="busLedger._galleryNav(-1)">&#8249;</button>` : ''}
+        <img src="${escapeAttr(url)}" class="gallery-main-img" alt="사진">
+        ${multi ? `<button class="gallery-nav gallery-next" onclick="busLedger._galleryNav(1)">&#8250;</button>` : ''}
+        ${multi ? `<div class="gallery-counter">${idx + 1} / ${urls.length}</div>` : ''}
+      </div>
+    `;
+    const footer = `
+      <button class="btn-outline" onclick="busLedger.downloadCurrentPhoto()">⬇ 다운로드</button>
+      <button class="btn-outline" onclick="closeModal()">닫기</button>
+    `;
+    openModal(multi ? `사진 (${idx + 1}/${urls.length})` : '사진', body, footer);
+  }
+
+  function _galleryNav(dir) {
+    const { urls, idx } = _galleryState;
+    _galleryState.idx = (idx + dir + urls.length) % urls.length;
+    const i = _galleryState.idx;
+    const url = urls[i];
+    document.getElementById('modal-title').textContent = `사진 (${i + 1}/${urls.length})`;
+    document.getElementById('modal-body').innerHTML = `
+      <div class="gallery-wrap">
+        <button class="gallery-nav gallery-prev" onclick="busLedger._galleryNav(-1)">&#8249;</button>
+        <img src="${escapeAttr(url)}" class="gallery-main-img" alt="사진">
+        <button class="gallery-nav gallery-next" onclick="busLedger._galleryNav(1)">&#8250;</button>
+        <div class="gallery-counter">${i + 1} / ${urls.length}</div>
+      </div>
+    `;
+  }
+
+  async function downloadCurrentPhoto() {
+    const { urls, idx } = _galleryState;
+    const url = urls[idx];
+    try {
+      const resp = await fetch(url);
+      const blob = await resp.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `photo_${idx + 1}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    } catch (_) {
+      window.open(url, '_blank');
+    }
   }
 
   // ===== 기사 프로필 =====
@@ -403,11 +485,11 @@ const busLedger = (() => {
       const avgComm = totalVisits > 0 ? Math.round(totalComm / totalVisits) : 0;
       const displayName = name || visits[0]?.driverName || '이름 미상';
 
-      const escapedKey = (profileKey || '').replace(/'/g, "\\'");
+      const escapedKey = escapeInlineJS(profileKey || '');
 
       const bizCardHTML = profile.businessCardURL
-        ? `<img src="${profile.businessCardURL}" class="dp-biz-img" alt="명함"
-             onclick="busLedger.viewPhoto('${profile.businessCardURL}')">
+        ? `<img src="${escapeAttr(profile.businessCardURL)}" class="dp-biz-img" alt="명함"
+             onclick="busLedger.viewPhoto('${escapeInlineJS(profile.businessCardURL)}')">
            <button class="dp-biz-change-btn"
              onclick="document.getElementById('dp-biz-file').click()">📷 교체</button>`
         : `<div class="dp-biz-placeholder"
@@ -430,7 +512,7 @@ const busLedger = (() => {
           </div>
 
           <div class="dp-info-section">
-            <div class="dp-name">${displayName}</div>
+            <div class="dp-name">${escapeHTML(displayName)}</div>
             ${phone ? `<div class="dp-phone">📞 ${phoneLink(phone)}</div>` : ''}
             <div class="dp-stats">
               총 ${totalVisits}회 방문 &nbsp;·&nbsp;
@@ -479,7 +561,7 @@ const busLedger = (() => {
             onclick="busLedger._editFromProfile('${v.id}','${v.date}')">수정</button>
         </div>
         ${infoStr ? `<div class="dp-visit-info">${infoStr}</div>` : ''}
-        ${v.notes ? `<div class="dp-visit-memo">💬 ${v.notes}</div>` : ''}
+        ${v.notes ? `<div class="dp-visit-memo">💬 ${escapeHTML(v.notes)}</div>` : ''}
         <div class="dp-photo-area" id="dp-pa-${v.id}">
           ${photoSection}
         </div>
@@ -492,13 +574,13 @@ const busLedger = (() => {
   function _slideshowHTML(entryId, photoURLs) {
     if (photoURLs.length === 1) {
       return `<div class="dp-slideshow">
-        <img src="${photoURLs[0]}" class="dp-slide-img"
-          onclick="busLedger.viewPhoto('${photoURLs[0]}')">
+        <img src="${escapeAttr(photoURLs[0])}" class="dp-slide-img"
+          onclick="busLedger.viewPhoto('${escapeInlineJS(photoURLs[0])}')">
       </div>`;
     }
     const slides = photoURLs.map((url, i) =>
       `<div class="dp-slide${i === 0 ? ' active' : ''}">
-        <img src="${url}" class="dp-slide-img" onclick="busLedger.viewPhoto('${url}')">
+        <img src="${escapeAttr(url)}" class="dp-slide-img" onclick="busLedger.viewPhoto('${escapeInlineJS(url)}')">
       </div>`
     ).join('');
     const dots = photoURLs.map((_, i) =>
@@ -544,10 +626,10 @@ const busLedger = (() => {
 
       const section = document.querySelector('.dp-biz-section');
       if (section) {
-        const escaped = (profileKey || '').replace(/'/g, "\\'");
+        const escaped = escapeInlineJS(profileKey || '');
         section.innerHTML = `
-          <img src="${url}" class="dp-biz-img" alt="명함"
-            onclick="busLedger.viewPhoto('${url}')">
+          <img src="${escapeAttr(url)}" class="dp-biz-img" alt="명함"
+            onclick="busLedger.viewPhoto('${escapeInlineJS(url)}')">
           <button class="dp-biz-change-btn"
             onclick="document.getElementById('dp-biz-file').click()">📷 교체</button>
           <input type="file" id="dp-biz-file" accept="image/*" style="display:none"
@@ -599,6 +681,7 @@ const busLedger = (() => {
 
   return {
     init, load, openEntryModal, save, remove, generatePost, viewPhoto,
+    viewPhotos, _galleryNav, downloadCurrentPhoto,
     openDriverProfile, _prevSlide, _nextSlide, _goSlide,
     _onBizCardChange, _onVisitPhotoChange, _editFromProfile
   };
