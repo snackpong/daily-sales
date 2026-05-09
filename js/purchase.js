@@ -3,6 +3,8 @@ const purchase = (() => {
   let _month = getMonthStr();
   let _entries = [];
   let _qs = {};
+  let _suppliers = [];
+  let _suppliersLoaded = false;
 
   async function load() {
     const el = document.getElementById('pur-month');
@@ -23,7 +25,21 @@ const purchase = (() => {
     document.getElementById('btn-add-purchase').onclick = () => openForm(null);
 
     _qs = await loadQuickSelect();
+    await _loadSuppliers();
     await _fetch();
+  }
+
+  async function _loadSuppliers(force = false) {
+    if (_suppliersLoaded && !force) return;
+    try {
+      const snap = await userCol('suppliers').orderBy('name').get();
+      _suppliers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      _suppliersLoaded = true;
+    } catch (e) {
+      console.error(e);
+      _suppliers = [];
+      _suppliersLoaded = true;
+    }
   }
 
   async function _fetch() {
@@ -56,12 +72,14 @@ const purchase = (() => {
       const itemRows = (e.items || []).map(it =>
         `<tr>
           <td class="name-cell">${escapeHTML(it.name || '-')}</td>
-          <td>${escapeHTML(it.unit || '-')}</td>
-          <td>${it.quantity || '-'}</td>
+          <td>${it.boxes || '-'}</td>
+          <td>${escapeHTML(it.kg || '-')}</td>
+          <td>${escapeHTML(it.count || '-')}</td>
           <td>${it.unitPrice ? formatWon(it.unitPrice) : '-'}</td>
           <td style="font-weight:700;color:var(--primary)">${it.amount ? formatWon(it.amount) : '-'}</td>
         </tr>`
       ).join('');
+      const supplierPhone = e.supplierPhone || e.phone || '';
 
       return `
         <div class="entry-card">
@@ -69,6 +87,12 @@ const purchase = (() => {
             <div>
               <div class="entry-date">${formatDateKo(e.date)}</div>
               <div class="entry-supplier">${escapeHTML(e.supplier || '거래처 미입력')}</div>
+              ${supplierPhone ? `
+                <div class="entry-phone">
+                  ${escapeHTML(supplierPhone)}
+                  <button class="phone-copy-btn" onclick="event.stopPropagation();purchase.copyText('${escapeInlineJS(supplierPhone)}')" title="복사">📋</button>
+                </div>
+              ` : ''}
             </div>
             <div style="display:flex;align-items:center;gap:10px">
               <div class="entry-total">${formatWon(e.totalAmount)}</div>
@@ -80,7 +104,7 @@ const purchase = (() => {
           </div>
           ${e.items && e.items.length > 0 ? `
             <table class="purchase-items-table">
-              <thead><tr><th>품목</th><th>단위</th><th>수량</th><th>단가</th><th>금액</th></tr></thead>
+              <thead><tr><th>품목</th><th>박스</th><th>kg</th><th>개수</th><th>단가</th><th>합계</th></tr></thead>
               <tbody>${itemRows}</tbody>
             </table>
           ` : ''}
@@ -93,14 +117,30 @@ const purchase = (() => {
   function openForm(entryId) {
     const isEdit = !!entryId;
     const e = isEdit ? _entries.find(x => x.id === entryId) : null;
-    const items = e?.items?.length > 0 ? e.items : [{ name: '', unit: '', quantity: '', unitPrice: '', amount: '' }];
+    const items = e?.items?.length > 0 ? e.items : [{ name: '', boxes: '', kg: '', count: '', unitPrice: '', amount: '' }];
 
     const quickItems = (_qs.purchaseItems || []);
     const chipsHTML = quickItems.length > 0
       ? `<div class="quick-chips" id="pur-quick-chips"></div>` : '';
+    const supplierChipsHTML = _suppliers.length > 0
+      ? _suppliers.map(s => `
+          <button type="button" class="supplier-chip" onclick="purchase.selectSupplier('${escapeInlineJS(s.id)}')">
+            ${escapeHTML(s.name)}
+          </button>
+        `).join('')
+      : '<span class="supplier-empty">등록된 거래처 없음</span>';
+    const supplierPhone = e?.supplierPhone || e?.phone || '';
 
     const body = `
       <form class="entry-form" id="pur-form">
+        <div class="form-group full">
+          <label>자주 쓰는 거래처</label>
+          <div class="supplier-quick-row">
+            <div class="supplier-chip-list">${supplierChipsHTML}</div>
+            <button type="button" class="btn-outline-sm" onclick="purchase.openSupplierManager()">관리</button>
+          </div>
+        </div>
+
         <div class="form-grid">
           <div class="form-group">
             <label>날짜 *</label>
@@ -110,13 +150,20 @@ const purchase = (() => {
             <label>거래처 (공급업체)</label>
             <input type="text" name="supplier" value="${escapeAttr(e?.supplier || '')}" placeholder="예: 청풍운, 남해수산">
           </div>
+          <div class="form-group">
+            <label>전화번호</label>
+            <div class="input-with-copy">
+              <input type="tel" name="supplierPhone" value="${escapeAttr(supplierPhone)}" placeholder="010-0000-0000">
+              <button type="button" class="phone-copy-btn" onclick="purchase.copySupplierPhone()" title="복사">📋</button>
+            </div>
+          </div>
         </div>
 
         <div class="form-group full">
           <label>품목 목록</label>
           ${chipsHTML}
           <div class="item-row-headers">
-            <span>품목명</span><span>단위</span><span>수량</span><span>단가(원)</span><span>금액</span><span></span>
+            <span>품목명</span><span>박스 수</span><span>kg</span><span>개수</span><span>단가(원)</span><span>합계</span><span></span>
           </div>
           <div id="pur-items">
             ${items.map((it, i) => _itemRowHTML(it, i)).join('')}
@@ -164,8 +211,9 @@ const purchase = (() => {
     return `
       <div class="purchase-item-row" id="item-row-${idx}">
         <input type="text" class="item-name" placeholder="품목명" value="${escapeAttr(item.name || '')}" oninput="purchase._calcTotal()">
-        <input type="text" class="item-unit" placeholder="단위" value="${escapeAttr(item.unit || '')}">
-        <input type="number" class="item-qty" placeholder="수량" value="${item.quantity || ''}" min="0" oninput="purchase._calcRowAmount(this)">
+        <input type="number" class="item-boxes" placeholder="박스 수" value="${item.boxes || ''}" min="0" step="0.01" oninput="purchase._calcRowAmount(this)">
+        <input type="text" class="item-kg" placeholder="kg" value="${escapeAttr(item.kg || '')}">
+        <input type="text" class="item-count" placeholder="개수" value="${escapeAttr(item.count || '')}">
         <input type="text" inputmode="numeric" class="item-price" placeholder="단가" value="${item.unitPrice ? Number(item.unitPrice).toLocaleString('ko-KR') : ''}" oninput="purchase._onPriceInput(this)">
         <div class="auto-amount" id="row-amount-${idx}">${item.amount ? formatWon(item.amount) : '-'}</div>
         <button type="button" class="remove-item-btn" onclick="this.closest('.purchase-item-row').remove();purchase._calcTotal()">×</button>
@@ -189,10 +237,9 @@ const purchase = (() => {
 
   function _calcRowAmount(input) {
     const row = input.closest('.purchase-item-row');
-    const qty = Number(row.querySelector('.item-qty').value) || 0;
+    const boxes = Number(row.querySelector('.item-boxes').value) || 0;
     const price = parseMoneyInput(row.querySelector('.item-price').value);
-    const amount = qty * price;
-    const idx = Array.from(row.parentElement.children).indexOf(row);
+    const amount = boxes * price;
     const amountEl = row.querySelector('.auto-amount');
     if (amountEl) amountEl.textContent = amount > 0 ? formatWon(amount) : '-';
     _calcTotal();
@@ -202,9 +249,9 @@ const purchase = (() => {
     const rows = document.querySelectorAll('#pur-items .purchase-item-row');
     let total = 0;
     rows.forEach(row => {
-      const qty = Number(row.querySelector('.item-qty')?.value) || 0;
+      const boxes = Number(row.querySelector('.item-boxes')?.value) || 0;
       const price = parseMoneyInput(row.querySelector('.item-price')?.value);
-      total += qty * price;
+      total += boxes * price;
     });
     const el = document.getElementById('pur-total-display');
     if (el) el.textContent = formatWon(total);
@@ -223,17 +270,19 @@ const purchase = (() => {
     rows.forEach(row => {
       const name = row.querySelector('.item-name')?.value.trim();
       if (!name) return;
-      const unit = row.querySelector('.item-unit')?.value.trim() || '';
-      const quantity = Number(row.querySelector('.item-qty')?.value) || 0;
+      const boxes = Number(row.querySelector('.item-boxes')?.value) || 0;
+      const kg = row.querySelector('.item-kg')?.value.trim() || '';
+      const count = row.querySelector('.item-count')?.value.trim() || '';
       const unitPrice = parseMoneyInput(row.querySelector('.item-price')?.value);
-      const amount = quantity * unitPrice;
+      const amount = boxes * unitPrice;
       totalAmount += amount;
-      items.push({ name, unit, quantity, unitPrice, amount });
+      items.push({ name, boxes, kg, count, unitPrice, amount });
     });
 
     const data = {
       date,
       supplier: form.querySelector('[name="supplier"]').value.trim(),
+      supplierPhone: form.querySelector('[name="supplierPhone"]').value.trim(),
       items,
       totalAmount,
       notes: form.querySelector('[name="notes"]').value.trim(),
@@ -251,6 +300,7 @@ const purchase = (() => {
     }
 
     try {
+      await _ensureSupplierSaved(data.supplier, data.supplierPhone);
       if (isEdit) {
         await userCol('purchaseEntries').doc(entryId).update(data);
         showToast('수정되었습니다');
@@ -276,5 +326,104 @@ const purchase = (() => {
     }
   }
 
-  return { load, openModal: openForm, addItemRow, _calcRowAmount, _onPriceInput, _calcTotal, save, remove };
+  function selectSupplier(supplierId) {
+    const supplier = _suppliers.find(s => s.id === supplierId);
+    const form = document.getElementById('pur-form');
+    if (!supplier || !form) return;
+    form.querySelector('[name="supplier"]').value = supplier.name || '';
+    form.querySelector('[name="supplierPhone"]').value = supplier.phone || '';
+  }
+
+  function copyText(text) {
+    navigator.clipboard.writeText(text || '').then(() => showToast('복사되었습니다'));
+  }
+
+  function copySupplierPhone() {
+    const phone = document.querySelector('#pur-form [name="supplierPhone"]')?.value.trim();
+    if (!phone) { showToast('복사할 전화번호가 없습니다', 'error'); return; }
+    copyText(phone);
+  }
+
+  function openSupplierManager() {
+    const rows = _suppliers.length > 0
+      ? _suppliers.map(s => `
+          <div class="supplier-manage-row">
+            <div>
+              <strong>${escapeHTML(s.name)}</strong>
+              ${s.phone ? `<span>${escapeHTML(s.phone)}</span>` : ''}
+            </div>
+            <button class="btn-danger" onclick="purchase.removeSupplier('${escapeInlineJS(s.id)}')">삭제</button>
+          </div>
+        `).join('')
+      : '<p class="empty-msg">등록된 거래처가 없습니다.</p>';
+
+    openModal('거래처 관리', `
+      <form class="entry-form" id="supplier-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>거래처명</label>
+            <input type="text" name="name" placeholder="예: 남해수산">
+          </div>
+          <div class="form-group">
+            <label>전화번호</label>
+            <input type="tel" name="phone" placeholder="010-0000-0000">
+          </div>
+        </div>
+        <button type="button" class="btn-primary" onclick="purchase.addSupplier()">거래처 추가</button>
+      </form>
+      <div class="supplier-manage-list">${rows}</div>
+    `, '<button class="btn-outline" onclick="closeModal()">닫기</button>');
+  }
+
+  async function addSupplier() {
+    const form = document.getElementById('supplier-form');
+    const name = form.querySelector('[name="name"]').value.trim();
+    const phone = form.querySelector('[name="phone"]').value.trim();
+    if (!name) { showToast('거래처명을 입력하세요', 'error'); return; }
+    await _ensureSupplierSaved(name, phone);
+    showToast('거래처가 추가되었습니다');
+    openSupplierManager();
+  }
+
+  async function removeSupplier(supplierId) {
+    if (!await confirmDialog('이 거래처를 삭제하시겠습니까?')) return;
+    try {
+      await userCol('suppliers').doc(supplierId).delete();
+      _suppliers = _suppliers.filter(s => s.id !== supplierId);
+      showToast('삭제되었습니다');
+      openSupplierManager();
+    } catch (e) {
+      showToast('삭제 실패: ' + e.message, 'error');
+    }
+  }
+
+  async function _ensureSupplierSaved(name, phone) {
+    if (!name) return;
+    const existing = _suppliers.find(s => s.name === name);
+    if (existing) {
+      if (phone && existing.phone !== phone) {
+        await userCol('suppliers').doc(existing.id).set({
+          name,
+          phone,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        existing.phone = phone;
+      }
+      return;
+    }
+    const ref = await userCol('suppliers').add({
+      name,
+      phone: phone || '',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    _suppliers.push({ id: ref.id, name, phone: phone || '' });
+    _suppliers.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+  }
+
+  return {
+    load, openModal: openForm, addItemRow, _calcRowAmount, _onPriceInput,
+    _calcTotal, save, remove, selectSupplier, copyText, copySupplierPhone,
+    openSupplierManager, addSupplier, removeSupplier
+  };
 })();

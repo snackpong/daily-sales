@@ -223,6 +223,7 @@
 .entry-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; gap: 8px; min-width: 0; }
 .entry-date { font-size: 12px; color: var(--text-light); }
 .entry-supplier { font-size: 15px; font-weight: 700; color: var(--primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entry-phone { display: flex; align-items: center; gap: 4px; margin-top: 2px; font-size: 12px; color: var(--text-light); }
 .entry-total { font-size: 16px; font-weight: 700; color: var(--primary); white-space: nowrap; flex-shrink: 0; }
 .entry-actions { display: flex; gap: 6px; flex-shrink: 0; }
 .purchase-items-table { width: 100%; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; font-size: 13px; }
@@ -231,13 +232,52 @@
 .purchase-items-table td.name-cell { text-align: left; }
 
 /* 사입 폼 아이템 행 */
-.purchase-item-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; gap: 6px; align-items: center; }
+.purchase-item-row { display: grid; grid-template-columns: 2fr 0.8fr 0.8fr 0.8fr 1fr 1fr auto; gap: 6px; align-items: center; }
 .purchase-item-row input { padding: 6px 8px; }
 .purchase-item-row .auto-amount { background: var(--bg); font-weight: 600; color: var(--primary); padding: 6px 8px; border-radius: 6px; text-align: right; font-size: 13px; min-width: 80px; }
 .remove-item-btn { color: var(--danger); font-size: 18px; font-weight: 700; padding: 4px 8px; line-height: 1; }
 .add-item-btn { margin-top: 8px; font-size: 13px; color: var(--primary); font-weight: 600; padding: 6px 12px; border: 1.5px dashed var(--primary); border-radius: 6px; background: white; }
 .add-item-btn:hover { background: var(--primary-light); }
-.item-row-headers { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 32px; gap: 6px; font-size: 11px; color: var(--text-light); font-weight: 600; padding: 0 2px; margin-top: 8px; }
+.item-row-headers { display: grid; grid-template-columns: 2fr 0.8fr 0.8fr 0.8fr 1fr 1fr 32px; gap: 6px; font-size: 11px; color: var(--text-light); font-weight: 600; padding: 0 2px; margin-top: 8px; }
+.supplier-quick-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.supplier-chip-list { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; min-width: 0; }
+.supplier-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 11px;
+  border: 1.5px solid var(--primary);
+  border-radius: 18px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+.supplier-chip:hover { background: var(--primary); color: white; }
+.supplier-empty { font-size: 12px; color: var(--text-light); }
+.input-with-copy { display: flex; align-items: center; gap: 6px; }
+.input-with-copy input { flex: 1; min-width: 0; }
+.supplier-manage-list { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.supplier-manage-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+}
+.supplier-manage-row div { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.supplier-manage-row strong { font-size: 14px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.supplier-manage-row span { font-size: 12px; color: var(--text-light); }
+@media (max-width: 768px) {
+  .purchase-item-row { grid-template-columns: 1fr 1fr; }
+  .purchase-item-row .item-name,
+  .purchase-item-row .auto-amount { grid-column: 1 / -1; }
+  .item-row-headers { display: none; }
+  .supplier-quick-row { align-items: stretch; flex-direction: column; }
+  .supplier-quick-row .btn-outline-sm { align-self: flex-start; }
+}
 
 /* ===== 수입/지출 뷰 토글 ===== */
 .cf-view-toggle { display: flex; border: 1.5px solid var(--border); border-radius: 6px; overflow: hidden; }
