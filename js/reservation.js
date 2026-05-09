@@ -181,7 +181,7 @@ const reservation = (() => {
             <input type="time" name="time" value="${r?.time || ''}">
           </div>
           <div class="form-group">
-            <label>기사명 / 버스회사</label>
+            <label>기사명</label>
             <input type="text" name="driverName" value="${r?.driverName || ''}" placeholder="모를 경우 공란">
           </div>
           <div class="form-group">

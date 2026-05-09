@@ -7,20 +7,27 @@ const bands = (() => {
     const grid = document.getElementById('band-grid');
     grid.innerHTML = '<p class="loading-msg">불러오는 중...</p>';
     try {
-      const snap = await userCol('bands').orderBy('name').get();
-      _all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const snap = await userCol('bands').get();
+      _all = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ko'));
       _loaded = true;
       _renderGrid();
     } catch (e) {
-      grid.innerHTML = `<p class="error-msg">오류: ${e.message}</p>`;
+      console.error('bands.load 실패:', e);
+      grid.innerHTML = `<p class="error-msg">밴드 불러오기 실패: ${e.message}<br><small>Firebase Console에서 Firestore 규칙을 확인하세요.</small></p>`;
     }
   }
 
   async function ensureLoaded() {
     if (_loaded) return;
-    const snap = await userCol('bands').orderBy('name').get();
-    _all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    _loaded = true;
+    try {
+      const snap = await userCol('bands').get();
+      _all = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ko'));
+      _loaded = true;
+    } catch (e) {
+      console.error('bands.ensureLoaded 실패:', e);
+    }
   }
 
   function _renderGrid() {

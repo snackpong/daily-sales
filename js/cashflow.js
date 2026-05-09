@@ -194,7 +194,7 @@ const cashflow = (() => {
           ${e.notes ? `<div class="cf-memo-text">${e.notes}</div>` : ''}
         </div>
         <div class="cf-amount ${e.type}">${formatWon(e.amount)}</div>
-        <div style="display:flex;gap:6px">
+        <div class="cf-entry-btns">
           <button class="btn-sm btn-outline" onclick="cashflow.openModal('${e.id}')">수정</button>
           <button class="btn-sm btn-danger" onclick="cashflow.remove('${e.id}')">삭제</button>
         </div>

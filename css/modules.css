@@ -298,6 +298,9 @@
 .cf-amount.income { color: var(--income); }
 .cf-amount.expense { color: var(--expense); }
 
+/* cf-entry 버튼 그룹 */
+.cf-entry-btns { display: flex; gap: 6px; flex-shrink: 0; }
+
 /* ===== 검색 ===== */
 .search-bar-wrap { display: flex; gap: 10px; margin-bottom: 8px; }
 .search-input {
@@ -305,7 +308,7 @@
   border: 1.5px solid var(--border);
   border-radius: var(--radius);
   padding: 10px 14px;
-  font-size: 14px;
+  font-size: 16px; /* iOS 자동확대 방지 */
 }
 .search-input:focus { outline: none; border-color: var(--primary); }
 .search-hint { font-size: 12px; color: var(--text-light); margin-bottom: 14px; }
@@ -494,12 +497,18 @@
   .hd-grid { grid-template-columns: 1fr 1fr; }
 
   /* 모바일 캘린더 */
-  .cal-cell { min-height: 52px; max-height: 72px; padding: 4px 3px; }
+  .cal-cell { min-height: 52px; max-height: 96px; padding: 4px 3px; }
   .cal-date { font-size: 12px; width: 20px; }
   .cal-note { max-width: 34px; font-size: 9px; }
   .cal-dot { width: 8px; height: 8px; }
   .cal-day-name { font-size: 11px; padding: 6px 2px; }
   .cal-legend { font-size: 11px; gap: 8px 12px; padding: 6px 10px; }
+
+  /* 예약 리스트 아이템 — 세로 배치 */
+  .res-item { flex-direction: column; align-items: stretch; gap: 8px; }
+  .res-actions { flex-wrap: wrap; gap: 6px; }
+  .res-status-group { flex-wrap: wrap; gap: 4px; }
+  .res-status-btn { font-size: 11px; padding: 4px 8px; }
 }
 
 /* ===== 전화번호 링크 ===== */
@@ -521,3 +530,17 @@
   transition: background 0.15s;
 }
 .phone-copy-btn:hover { background: var(--primary-light); color: var(--primary); }
+
+/* ===== 소형 모바일 추가 수정 (480px 이하) ===== */
+@media (max-width: 480px) {
+  /* 홈 통계 카드 숫자 크기 축소 */
+  .home-stat-value { font-size: 24px; }
+  .home-cf-val { font-size: 16px; }
+
+  /* 사입 폼 — 품목 헤더 숨김 (placeholder가 역할 대체) */
+  .item-row-headers { display: none; }
+
+  /* 수입/지출 일별 카드 버튼 영역 */
+  .cf-entry-card { flex-wrap: wrap; gap: 8px; }
+  .cf-entry-btns { width: 100%; display: flex; gap: 6px; justify-content: flex-end; }
+}
