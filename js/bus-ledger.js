@@ -458,41 +458,56 @@ const busLedger = (() => {
     const url = urls[idx];
     showToast('다운로드 중...', 'info');
 
-    // URL에서 Storage 경로 추출 (refFromURL보다 안정적)
     function _getStorageRef() {
       const m = url.match(/\/o\/([^?#]+)/);
       if (m) return storage.ref(decodeURIComponent(m[1]));
       return storage.refFromURL(url);
     }
 
-    // 방법 1: Firebase Storage SDK (인증 포함, CORS 설정 후 동작)
+    // blob 획득
+    let blob = null;
     try {
       const ref = _getStorageRef();
-      const blob = typeof ref.getBlob === 'function'
+      blob = typeof ref.getBlob === 'function'
         ? await ref.getBlob()
         : new Blob([await ref.getBytes()], { type: 'image/jpeg' });
-      _triggerDownload(blob, `photo_${idx + 1}.jpg`);
-      showToast('다운로드 완료');
-      return;
     } catch (e1) {
       console.warn('[download] SDK:', e1.message);
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(resp.status);
+        blob = await resp.blob();
+      } catch (e2) {
+        console.warn('[download] fetch:', e2.message);
+      }
     }
 
-    // 방법 2: fetch (CORS 설정 후 동작)
-    try {
-      const resp = await fetch(url);
-      if (!resp.ok) throw new Error(resp.status);
-      const blob = await resp.blob();
-      _triggerDownload(blob, `photo_${idx + 1}.jpg`);
-      showToast('다운로드 완료');
+    if (!blob) {
+      window.open(url, '_blank');
+      showToast('새 탭에서 사진을 길게 눌러 저장하세요', 'info');
       return;
-    } catch (e2) {
-      console.warn('[download] fetch:', e2.message);
     }
 
-    // 최후 수단: 새 탭
-    window.open(url, '_blank');
-    showToast('새 탭에서 사진을 길게 눌러 저장하세요', 'info');
+    const filename = `photo_${idx + 1}.jpg`;
+
+    // 모바일: 네이티브 공유 시트 → "사진에 저장" 선택 가능
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (isMobile && navigator.canShare) {
+      const file = new File([blob], filename, { type: 'image/jpeg' });
+      if (navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file] });
+          return;
+        } catch (e) {
+          if (e.name === 'AbortError') return; // 사용자가 취소
+          console.warn('[download] share:', e.message);
+        }
+      }
+    }
+
+    // PC: 파일 직접 다운로드
+    _triggerDownload(blob, filename);
+    showToast('다운로드 완료');
   }
 
   function _triggerDownload(blob, filename) {
