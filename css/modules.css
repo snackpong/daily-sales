@@ -297,6 +297,7 @@
 .cf-amount { font-size: 16px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
 .cf-amount.income { color: var(--income); }
 .cf-amount.expense { color: var(--expense); }
+.total-sales { font-weight: 600; }
 
 /* cf-entry 버튼 그룹 */
 .cf-entry-btns { display: flex; gap: 6px; flex-shrink: 0; }

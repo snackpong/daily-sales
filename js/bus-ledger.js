@@ -49,12 +49,12 @@ const busLedger = (() => {
     // 캐시에서 즉시 렌더링 (캐시 미스면 로딩 표시)
     let cacheHit = false;
     try { await _doFetch('cache'); cacheHit = true; } catch (_) {}
-    if (!cacheHit) tbody.innerHTML = '<tr class="loading-row"><td colspan="13">불러오는 중...</td></tr>';
+    if (!cacheHit) tbody.innerHTML = '<tr class="loading-row"><td colspan="14">불러오는 중...</td></tr>';
 
     // 서버에서 최신 데이터로 갱신
     try { await _doFetch(); } catch (e) {
       if (!cacheHit)
-        tbody.innerHTML = `<tr><td colspan="13" class="error-msg">오류: ${e.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" class="error-msg">오류: ${e.message}</td></tr>`;
       console.error(e);
     }
   }
@@ -62,7 +62,7 @@ const busLedger = (() => {
   function _renderTable() {
     const tbody = document.getElementById('bus-tbody');
     if (_entries.length === 0) {
-      tbody.innerHTML = '<tr class="empty-row"><td colspan="13">이날 기록이 없습니다. "+ 버스 추가" 버튼으로 추가하세요.</td></tr>';
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="14">이날 기록이 없습니다. "+ 버스 추가" 버튼으로 추가하세요.</td></tr>';
       return;
     }
 
@@ -86,6 +86,7 @@ const busLedger = (() => {
         : '-';
       const cashSales = _cashSales(e);
       const cardSales = _cardSales(e);
+      const totalSales = cashSales + cardSales;
 
       return `
         <tr>
@@ -96,6 +97,7 @@ const busLedger = (() => {
           <td>${phoneHTML}</td>
           <td class="amount-cell">${cashSales ? formatWon(cashSales) : '-'}</td>
           <td class="amount-cell">${cardSales ? formatWon(cardSales) : '-'}</td>
+          <td class="amount-cell total-sales">${totalSales ? formatWon(totalSales) : '-'}</td>
           <td class="amount-cell">${e.commissionCash ? formatWon(e.commissionCash) : '-'}</td>
           <td>${escapeHTML(e.commissionGoods || '-')}</td>
           <td style="text-align:left">${escapeHTML(e.notes || '-')}</td>
