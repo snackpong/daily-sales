@@ -76,5 +76,11 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
 
+// Firestore 오프라인 캐시: IndexedDB에 저장 → 앱 재시작 시 즉시 표시
+db.enablePersistence({ synchronizeTabs: true }).catch(err => {
+  if (err.code !== 'failed-precondition' && err.code !== 'unimplemented')
+    console.warn('Firestore persistence 비활성화:', err.code);
+});
+
 // 모바일 브라우저 호환성: localStorage 기반 인증 유지
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});

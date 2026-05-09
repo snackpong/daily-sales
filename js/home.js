@@ -34,20 +34,24 @@ const home = (() => {
     const startDate = `${_year}-${String(_month + 1).padStart(2, '0')}-01`;
     const endDate = `${_year}-${String(_month + 1).padStart(2, '0')}-31`;
 
-    try {
+    async function _doFetch(source) {
+      const opts = source ? { source } : undefined;
       const [busSnap, resSnap, cfSnap] = await Promise.all([
-        userCol('busEntries').where('date', '>=', startDate).where('date', '<=', endDate).get(),
-        userCol('reservations').where('date', '>=', startDate).where('date', '<=', endDate).get(),
-        userCol('cashflowEntries').where('date', '>=', startDate).where('date', '<=', endDate).get()
+        userCol('busEntries').where('date', '>=', startDate).where('date', '<=', endDate).get(opts),
+        userCol('reservations').where('date', '>=', startDate).where('date', '<=', endDate).get(opts),
+        userCol('cashflowEntries').where('date', '>=', startDate).where('date', '<=', endDate).get(opts),
       ]);
       _busEntries = busSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       _reservations = resSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       _cashflows = cfSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       _renderStats();
       _renderCalendar();
-    } catch (e) {
-      console.error(e);
     }
+
+    // 캐시에서 즉시 렌더링
+    try { await _doFetch('cache'); } catch (_) {}
+    // 서버에서 최신 데이터로 갱신 (백그라운드)
+    try { await _doFetch(); } catch (e) { console.error(e); }
   }
 
   function _renderStats() {
@@ -76,9 +80,9 @@ const home = (() => {
     const bandHTML = bandItems.length > 0
       ? bandItems.map(b => {
           const logo = b.logoURL
-            ? `<img src="${b.logoURL}" class="home-band-logo" alt="${b.name}">`
-            : `<span class="home-band-initials">${b.name.slice(0, 2)}</span>`;
-          return `<span class="home-band-chip">${logo}${b.name} <strong>${b.count}대</strong></span>`;
+            ? `<img src="${escapeAttr(b.logoURL)}" class="home-band-logo" alt="${escapeAttr(b.name)}">`
+            : `<span class="home-band-initials">${escapeHTML(b.name.slice(0, 2))}</span>`;
+          return `<span class="home-band-chip">${logo}${escapeHTML(b.name)} <strong>${b.count}대</strong></span>`;
         }).join('')
       : '<span style="color:var(--text-light);font-size:13px">이번달 밴드 기록 없음</span>';
 
@@ -158,7 +162,7 @@ const home = (() => {
       const dateRowHTML = `
         <div class="cal-date-row">
           <div class="cal-date">${day}</div>
-          ${noteText ? `<span class="cal-note">${noteText}</span>` : ''}
+          ${noteText ? `<span class="cal-note">${escapeHTML(noteText)}</span>` : ''}
         </div>`;
 
       cellsHTML += `
@@ -200,7 +204,7 @@ const home = (() => {
     const busCards = dayBuses.map(e => `
       <div class="hd-card hd-bus">
         <div class="hd-card-status">✓ 방문완료</div>
-        <div class="hd-card-main">${[e.busCompany, e.driverName].filter(Boolean).join(' · ') || '기사 미정'}</div>
+        <div class="hd-card-main">${escapeHTML([e.busCompany, e.driverName].filter(Boolean).join(' · ') || '기사 미정')}</div>
         <div class="hd-card-meta">
           ${e.passengerCount ? `<span>👥 ${e.passengerCount}명</span>` : ''}
           ${e.salesAmount ? `<span>${formatWon(e.salesAmount)}</span>` : ''}
@@ -219,12 +223,12 @@ const home = (() => {
       return `
         <div class="hd-card ${cls}">
           <div class="hd-card-status">${lbl}</div>
-          ${r.time ? `<div class="hd-card-time">${r.time}</div>` : ''}
-          <div class="hd-card-main">${[r.driverName, r.busCompany].filter(Boolean).join(' / ') || '기사 미정'}</div>
+          ${r.time ? `<div class="hd-card-time">${escapeHTML(r.time)}</div>` : ''}
+          <div class="hd-card-main">${escapeHTML([r.driverName, r.busCompany].filter(Boolean).join(' / ') || '기사 미정')}</div>
           <div class="hd-card-meta">
             ${r.estimatedPassengers ? `<span>👥 예상 ${r.estimatedPassengers}명</span>` : ''}
           </div>
-          ${r.requests ? `<div class="hd-card-note">${r.requests}</div>` : ''}
+          ${r.requests ? `<div class="hd-card-note">${escapeHTML(r.requests)}</div>` : ''}
         </div>
       `;
     }).join('');

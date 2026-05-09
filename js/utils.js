@@ -15,8 +15,20 @@ function formatDateKo(dateStr) {
   return `${y}년 ${m}월 ${d}일 (${days[date.getDay()]})`;
 }
 
+function toDateInputValue(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function parseDateInput(dateStr) {
+  const [y, m, d] = (dateStr || '').split('-').map(Number);
+  return new Date(y, (m || 1) - 1, d || 1);
+}
+
 function getTodayStr() {
-  return new Date().toISOString().split('T')[0];
+  return toDateInputValue(new Date());
 }
 
 function getMonthStr(date = new Date()) {
@@ -26,9 +38,44 @@ function getMonthStr(date = new Date()) {
 }
 
 function addDays(dateStr, n) {
-  const d = new Date(dateStr);
+  const d = parseDateInput(dateStr);
   d.setDate(d.getDate() + n);
-  return d.toISOString().split('T')[0];
+  return toDateInputValue(d);
+}
+
+function addMonths(monthStr, n) {
+  const [y, m] = (monthStr || getMonthStr()).split('-').map(Number);
+  const d = new Date(y, (m || 1) - 1, 1);
+  d.setMonth(d.getMonth() + n);
+  return getMonthStr(d);
+}
+
+function escapeHTML(value) {
+  return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[ch]));
+}
+
+function escapeAttr(value) {
+  return escapeHTML(value);
+}
+
+function escapeJSString(value) {
+  return String(value == null ? '' : value)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\r/g, '\\r')
+    .replace(/\n/g, '\\n')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+}
+
+function escapeInlineJS(value) {
+  return escapeAttr(escapeJSString(value));
 }
 
 function getUserId() {
@@ -75,15 +122,20 @@ function _escHandler(e) {
 }
 
 // ===== 빠른선택 칩 렌더 =====
+let _qsCache = null;
+
 async function loadQuickSelect() {
+  if (_qsCache) return { ..._qsCache };
   try {
     const doc = await db.collection('store').doc('main')
       .collection('settings').doc('quickSelect').get();
-    return doc.exists ? doc.data() : {};
+    _qsCache = doc.exists ? doc.data() : {};
+    return { ..._qsCache };
   } catch { return {}; }
 }
 
 async function saveQuickSelect(data) {
+  if (_qsCache) Object.assign(_qsCache, data);
   await db.collection('store').doc('main')
     .collection('settings').doc('quickSelect').set(data, { merge: true });
 }
@@ -109,8 +161,36 @@ function confirmDialog(msg) {
 function phoneLink(phone) {
   if (!phone) return '-';
   const clean = phone.replace(/\s/g, '');
-  return `<a href="tel:${clean}" class="phone-link" onclick="event.stopPropagation()" title="전화하기">${phone}</a><button class="phone-copy-btn" onclick="event.stopPropagation();navigator.clipboard.writeText('${phone}').then(()=>showToast('번호 복사됨'))" title="복사">📋</button>`;
+  return `<a href="tel:${escapeAttr(clean)}" class="phone-link" onclick="event.stopPropagation()" title="전화하기">${escapeHTML(phone)}</a><button class="phone-copy-btn" onclick="event.stopPropagation();navigator.clipboard.writeText('${escapeInlineJS(phone)}').then(()=>showToast('번호 복사됨'))" title="복사">📋</button>`;
 }
+
+Object.assign(window, {
+  formatWon,
+  formatDateKo,
+  toDateInputValue,
+  parseDateInput,
+  getTodayStr,
+  getMonthStr,
+  addDays,
+  addMonths,
+  escapeHTML,
+  escapeAttr,
+  escapeJSString,
+  escapeInlineJS,
+  getUserId,
+  userCol,
+  showToast,
+  openModal,
+  closeModal,
+  loadQuickSelect,
+  saveQuickSelect,
+  renderChips,
+  confirmDialog,
+  phoneLink,
+  initMoneyInput,
+  parseMoneyInput,
+  uploadPhoto
+});
 
 // ===== 금액 입력 콤마 포맷 =====
 function initMoneyInput(el) {

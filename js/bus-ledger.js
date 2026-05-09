@@ -35,19 +35,25 @@ const busLedger = (() => {
 
   async function load() {
     const tbody = document.getElementById('bus-tbody');
-    tbody.innerHTML = '<tr class="loading-row"><td colspan="13">불러오는 중...</td></tr>';
 
-    try {
-      const snap = await userCol('busEntries')
-        .where('date', '==', _date)
-        .get();
-
+    async function _doFetch(source) {
+      const opts = source ? { source } : undefined;
+      const snap = await userCol('busEntries').where('date', '==', _date).get(opts);
       _entries = snap.docs.map(d => ({ id: d.id, ...d.data() }))
         .sort((a, b) => (a.daySequence || 0) - (b.daySequence || 0));
       _renderTable();
       _updateSummary();
-    } catch (e) {
-      tbody.innerHTML = `<tr><td colspan="13" class="error-msg">오류: ${e.message}</td></tr>`;
+    }
+
+    // 캐시에서 즉시 렌더링 (캐시 미스면 로딩 표시)
+    let cacheHit = false;
+    try { await _doFetch('cache'); cacheHit = true; } catch (_) {}
+    if (!cacheHit) tbody.innerHTML = '<tr class="loading-row"><td colspan="13">불러오는 중...</td></tr>';
+
+    // 서버에서 최신 데이터로 갱신
+    try { await _doFetch(); } catch (e) {
+      if (!cacheHit)
+        tbody.innerHTML = `<tr><td colspan="13" class="error-msg">오류: ${e.message}</td></tr>`;
       console.error(e);
     }
   }
