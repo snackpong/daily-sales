@@ -224,7 +224,9 @@ const home = (() => {
     detail.classList.remove('hidden');
     document.getElementById('home-detail-date').textContent = formatDateKo(dateStr);
 
-    const dayBuses = _busEntries.filter(e => e.date === dateStr);
+    const dayBuses = _busEntries
+      .filter(e => e.date === dateStr)
+      .sort((a, b) => (a.daySequence || 0) - (b.daySequence || 0));
     const dayRes = _reservations.filter(r => r.date === dateStr);
 
     // 버스장부 카드 (실제 방문 기록)
