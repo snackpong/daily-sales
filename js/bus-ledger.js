@@ -4,6 +4,7 @@ const busLedger = (() => {
   let _entries = [];
   let _qs = {};
   let _galleryState = { urls: [], idx: 0 };
+  let _removedPhotoUrls = new Set();
 
   async function init() {
     document.getElementById('bus-date').value = _date;
@@ -132,6 +133,7 @@ const busLedger = (() => {
   }
 
   async function openEntryModal(entryId) {
+    _removedPhotoUrls = new Set();
     await bands.ensureLoaded();
     const isEdit = !!entryId;
     const entry = isEdit ? _entries.find(e => e.id === entryId) : null;
@@ -156,8 +158,12 @@ const busLedger = (() => {
     const existingPhotoURLs = entry?.photoURLs || (entry?.photoURL ? [entry.photoURL] : []);
     const existingPhotosHTML = existingPhotoURLs.length > 0
       ? `<div class="current-photos">${existingPhotoURLs.map((url, i) =>
-          `<img src="${escapeAttr(url)}" class="current-photo-thumb" alt="사진 ${i + 1}"
-               onclick="busLedger.viewPhotos('${escapeInlineJS(entryId)}')">`
+          `<div class="current-photo-item" id="cp-${i}">
+             <img src="${escapeAttr(url)}" class="current-photo-thumb" alt="사진 ${i + 1}"
+                  onclick="busLedger.viewPhoto('${escapeInlineJS(url)}')">
+             <button type="button" class="photo-del-btn"
+                     onclick="busLedger._removeExistingPhoto('${escapeInlineJS(url)}',${i})" title="삭제">×</button>
+           </div>`
         ).join('')}</div>`
       : '';
 
@@ -297,18 +303,19 @@ const busLedger = (() => {
 
     try {
       const photoFiles = Array.from(document.getElementById('bus-photo-file').files);
+      const existingEntry = isEdit ? _entries.find(e => e.id === entryId) : null;
+      const existingUrls = existingEntry?.photoURLs || (existingEntry?.photoURL ? [existingEntry.photoURL] : []);
+      const keptUrls = existingUrls.filter(url => !_removedPhotoUrls.has(url));
+
+      let newUrls = [];
       if (photoFiles.length > 0) {
         const ts = Date.now();
-        const newUrls = await Promise.all(photoFiles.map((file, i) =>
+        newUrls = await Promise.all(photoFiles.map((file, i) =>
           uploadPhoto(file, `photos/${getUserId()}/bus/${ts}_${i}_${file.name}`)
         ));
-        const existing = isEdit ? (_entries.find(e => e.id === entryId)?.photoURLs || []) : [];
-        data.photoURLs = [...existing, ...newUrls];
-        data.photoURL = data.photoURLs[0];
-      } else if (!isEdit) {
-        data.photoURLs = [];
-        data.photoURL = '';
       }
+      data.photoURLs = [...keptUrls, ...newUrls];
+      data.photoURL = data.photoURLs[0] || '';
 
       if (isEdit) {
         await userCol('busEntries').doc(entryId).update(data);
@@ -440,22 +447,42 @@ const busLedger = (() => {
     `;
   }
 
+  function _removeExistingPhoto(url, idx) {
+    _removedPhotoUrls.add(url);
+    const el = document.getElementById('cp-' + idx);
+    if (el) el.style.display = 'none';
+  }
+
   async function downloadCurrentPhoto() {
     const { urls, idx } = _galleryState;
     const url = urls[idx];
+    showToast('다운로드 중...', 'info');
     try {
-      const resp = await fetch(url);
-      const blob = await resp.blob();
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `photo_${idx + 1}.jpg`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      // Firebase Storage SDK로 다운로드 (CORS 우회)
+      const blob = await storage.refFromURL(url).getBlob();
+      _triggerDownload(blob, `photo_${idx + 1}.jpg`);
+      showToast('다운로드 완료');
     } catch (_) {
-      window.open(url, '_blank');
+      try {
+        const resp = await fetch(url);
+        const blob = await resp.blob();
+        _triggerDownload(blob, `photo_${idx + 1}.jpg`);
+        showToast('다운로드 완료');
+      } catch (__) {
+        window.open(url, '_blank');
+        showToast('새 탭에서 사진을 길게 눌러 저장하세요', 'info');
+      }
     }
+  }
+
+  function _triggerDownload(blob, filename) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 
   // ===== 기사 프로필 =====
@@ -687,7 +714,7 @@ const busLedger = (() => {
 
   return {
     init, load, openEntryModal, save, remove, generatePost, viewPhoto,
-    viewPhotos, _galleryNav, downloadCurrentPhoto,
+    viewPhotos, _galleryNav, downloadCurrentPhoto, _removeExistingPhoto,
     openDriverProfile, _prevSlide, _nextSlide, _goSlide,
     _onBizCardChange, _onVisitPhotoChange, _editFromProfile
   };

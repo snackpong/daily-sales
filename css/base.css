@@ -464,8 +464,11 @@ table { border-collapse: collapse; width: 100%; }
 .current-photo img { max-height: 100px; border-radius: 6px; border: 1px solid var(--border); }
 .current-photo p { font-size: 11px; color: var(--text-light); margin-top: 4px; }
 .current-photos { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
-.current-photo-thumb { width: 72px; height: 72px; object-fit: cover; border-radius: 6px; border: 2px solid var(--border); cursor: pointer; transition: opacity 0.15s; }
+.current-photo-item { position: relative; display: inline-block; }
+.current-photo-thumb { width: 72px; height: 72px; object-fit: cover; border-radius: 6px; border: 2px solid var(--border); cursor: pointer; transition: opacity 0.15s; display: block; }
 .current-photo-thumb:hover { opacity: 0.8; }
+.photo-del-btn { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #e74c3c; color: #fff; border: none; font-size: 13px; font-weight: 700; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.photo-del-btn:hover { background: #c0392b; }
 
 /* 체크박스 레이블 */
 .check-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; }
