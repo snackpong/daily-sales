@@ -542,6 +542,13 @@
 .ps-summary-card strong { font-size: 18px; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ps-summary-total strong { color: var(--income); }
 .ps-day-amount { margin-top: 8px; font-size: 12px; font-weight: 700; color: var(--income); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (min-width: 601px) and (max-width: 1180px) {
+  .home-stats-grid { gap: 10px; }
+  .home-stat-card { padding: 14px 16px; }
+  .home-stat-value { font-size: 26px; }
+  .home-cf-val { font-size: 18px; }
+  .hd-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+}
 @media (max-width: 600px) {
   .hd-grid { grid-template-columns: 1fr; }
   .hd-card-main,

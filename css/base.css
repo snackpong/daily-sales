@@ -283,10 +283,10 @@ table { border-collapse: collapse; width: 100%; }
 }
 
 /* ===== 장부 테이블 ===== */
-.table-wrapper { overflow-x: auto; border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+.table-wrapper { overflow-x: auto; border-radius: var(--radius); box-shadow: var(--shadow-sm); -webkit-overflow-scrolling: touch; }
 .ledger-table {
   background: white;
-  min-width: 1100px;
+  min-width: 1460px;
 }
 .ledger-table thead tr { background: var(--primary); color: white; }
 .ledger-table th {
@@ -547,6 +547,40 @@ table { border-collapse: collapse; width: 100%; }
 
   /* 수입/지출 뷰 토글 + 날짜 네비 */
   #tab-cashflow .panel-toolbar > div:first-child { flex-wrap: wrap; }
+}
+
+/* ===== 태블릿 최적화 ===== */
+@media (min-width: 601px) and (max-width: 1180px) {
+  .tab-panel { padding: 14px; }
+  .table-wrapper {
+    border: 1px solid var(--border);
+    box-shadow: none;
+  }
+  #bus-table {
+    min-width: 1360px;
+    table-layout: fixed;
+  }
+  #bus-table th,
+  #bus-table td {
+    padding: 8px 7px;
+    font-size: 12px;
+  }
+  #bus-table .col-seq { width: 38px; }
+  #bus-table .col-band { width: 108px; }
+  #bus-table .col-company { width: 108px; }
+  #bus-table .col-driver { width: 82px; }
+  #bus-table .col-phone { width: 108px; }
+  #bus-table .col-amount { width: 104px; }
+  #bus-table .col-goods { width: 110px; }
+  #bus-table .col-memo { width: 124px; }
+  #bus-table .col-photo-time { width: 112px; }
+  #bus-table .col-photo { width: 62px; }
+  #bus-table .col-actions { width: 134px; }
+  #bus-table .band-badge-pill { max-width: 96px; }
+  #bus-table .btn-sm {
+    padding: 4px 7px;
+    font-size: 11px;
+  }
 }
 
 /* ===== 소형 모바일 (600px 이하) ===== */
