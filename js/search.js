@@ -107,6 +107,8 @@ const search = (() => {
       const b = bands.getById(bid);
       return b ? b.name : '';
     }).filter(Boolean).join(', ');
+    const cashSales = _readMoney(e, 'salesCash', 'salesAmount');
+    const cardSales = _readMoney(e, 'salesCard');
 
     return `
       <div class="search-result-item">
@@ -115,8 +117,8 @@ const search = (() => {
           ${escapeHTML(e.busCompany || '')}${e.driverName ? ' · ' + escapeHTML(e.driverName) : ''}${e.phoneNumber ? ' · ' + phoneLink(e.phoneNumber) : ''}
         </div>
         <div class="search-result-detail">
-          ${[(e.salesCash || e.salesAmount) ? '현금 ' + formatWon(Number(e.salesCash) || Number(e.salesAmount) || 0) : '',
-             e.salesCard ? '카드 ' + formatWon(e.salesCard) : '',
+          ${[cashSales ? '현금 ' + formatWon(cashSales) : '',
+             cardSales ? '카드 ' + formatWon(cardSales) : '',
              e.commissionCash ? '커미션 ' + formatWon(e.commissionCash) : ''
           ].filter(Boolean).join(' · ')}
         </div>
@@ -124,6 +126,15 @@ const search = (() => {
         ${e.notes ? `<div class="search-result-detail">📝 ${escapeHTML(e.notes)}</div>` : ''}
       </div>
     `;
+  }
+
+  function _readMoney(entry, ...fieldNames) {
+    if (!entry) return 0;
+    for (const fieldName of fieldNames) {
+      const value = entry[fieldName];
+      if (value !== undefined && value !== null) return Number(value) || 0;
+    }
+    return 0;
   }
 
   function _resCard(e) {

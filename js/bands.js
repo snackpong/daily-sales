@@ -222,8 +222,15 @@ const bands = (() => {
   function getById(id) { return _all.find(b => b.id === id); }
   function invalidate() { _loaded = false; }
   function _visitSales(v) {
-    return (Number(v.salesCash) || Number(v.salesAmount) || 0) +
-      (Number(v.salesCard) || 0);
+    return _readMoney(v, 'salesCash', 'salesAmount') + _readMoney(v, 'salesCard');
+  }
+  function _readMoney(entry, ...fieldNames) {
+    if (!entry) return 0;
+    for (const fieldName of fieldNames) {
+      const value = entry[fieldName];
+      if (value !== undefined && value !== null) return Number(value) || 0;
+    }
+    return 0;
   }
 
   return { load, ensureLoaded, openModal: openForm, save, remove, showStats, getAll, getById, invalidate };

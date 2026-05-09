@@ -296,15 +296,24 @@ const home = (() => {
   }
 
   function _busCardSales(entry) {
-    return Number(entry?.salesCard) || Number(entry?.cardSalesAmount) || 0;
+    return _readMoney(entry, 'salesCard', 'cardSalesAmount');
   }
 
   function _busCashSales(entry) {
-    return Number(entry?.salesCash) || Number(entry?.cashSalesAmount) || Number(entry?.salesAmount) || 0;
+    return _readMoney(entry, 'salesCash', 'cashSalesAmount', 'salesAmount');
   }
 
   function _busTotalSales(entry) {
     return _busCashSales(entry) + _busCardSales(entry);
+  }
+
+  function _readMoney(entry, ...fieldNames) {
+    if (!entry) return 0;
+    for (const fieldName of fieldNames) {
+      const value = entry[fieldName];
+      if (value !== undefined && value !== null) return Number(value) || 0;
+    }
+    return 0;
   }
 
   function _personalSalesTotal(entry) {
