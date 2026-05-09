@@ -41,14 +41,14 @@ const dateNotes = (() => {
 
     const body = `
       <div style="font-size:14px;color:var(--text-light);margin-bottom:12px">
-        ${holName ? `<span style="color:var(--danger);font-weight:600">${holName}</span> — ` : ''}
+        ${holName ? `<span style="color:var(--danger);font-weight:600">${escapeHTML(holName)}</span> — ` : ''}
         이날에 표시할 짧은 메모를 입력하세요.<br>
         <span style="font-size:12px">(캘린더 날짜 옆에 작게 표시됩니다)</span>
       </div>
       <div class="form-group">
         <label>메모</label>
         <input type="text" id="date-note-input" class="form-control"
-          value="${current}" placeholder="예: 할인행사, 단체손님 예정..." maxlength="10"
+          value="${escapeAttr(current)}" placeholder="예: 할인행사, 단체손님 예정..." maxlength="10"
           style="font-size:16px">
       </div>
     `;

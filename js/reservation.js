@@ -178,9 +178,19 @@ const reservation = (() => {
       <button class="btn-outline btn-sm" style="margin-top:10px" onclick="reservation.openModal('${dateStr}')">+ 이날 예약 추가</button>`;
   }
 
-  function openForm(dateStr, resId) {
+  async function openForm(dateStr, resId) {
+    if (dateStr && !resId && !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      resId = dateStr;
+      dateStr = null;
+    }
     const isEdit = !!resId;
-    const r = isEdit ? _allReservations.find(x => x.id === resId) : null;
+    let r = isEdit ? _allReservations.find(x => x.id === resId) : null;
+    if (isEdit && !r) {
+      const doc = await userCol('reservations').doc(resId).get();
+      if (!doc.exists) { showToast('예약을 찾을 수 없습니다', 'error'); return; }
+      r = { id: doc.id, ...doc.data() };
+      if (r.date) dateStr = r.date;
+    }
 
     const body = `
       <form class="entry-form" id="res-form">
@@ -266,6 +276,9 @@ const reservation = (() => {
       _selectedDate = data.date;
       await _loadMonth();
       _showDayDetail(data.date);
+      document.dispatchEvent(new CustomEvent('dailySales:dataChanged', {
+        detail: { type: 'reservation', date: data.date }
+      }));
     } catch (e) {
       showToast('저장 실패: ' + e.message, 'error');
     }
@@ -283,14 +296,20 @@ const reservation = (() => {
   }
 
   async function remove(resId) {
-    if (!await confirmDialog('이 예약을 삭제하시겠습니까?')) return;
+    if (!await confirmDialog('이 예약을 삭제하시겠습니까?')) return false;
+    const target = _allReservations.find(r => r.id === resId);
     try {
       await userCol('reservations').doc(resId).delete();
       showToast('삭제되었습니다');
       await _loadMonth();
       if (_selectedDate) _showDayDetail(_selectedDate);
+      document.dispatchEvent(new CustomEvent('dailySales:dataChanged', {
+        detail: { type: 'reservation', date: target?.date || _selectedDate }
+      }));
+      return true;
     } catch (e) {
       showToast('삭제 실패: ' + e.message, 'error');
+      return false;
     }
   }
 

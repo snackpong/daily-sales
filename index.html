@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>목포 건어물 장부</title>
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/modules.css">
+  <link rel="stylesheet" href="css/base.css?v=20260509-4">
+  <link rel="stylesheet" href="css/modules.css?v=20260509-4">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🐟</text></svg>">
 </head>
 <body>
@@ -95,10 +95,6 @@
           <span class="summary-label">커미션(현금)</span>
           <span class="summary-value" id="summary-commission">0원</span>
         </div>
-        <div class="summary-item">
-          <span class="summary-label">총 인원</span>
-          <span class="summary-value" id="summary-passengers">0명</span>
-        </div>
       </div>
 
       <div class="table-wrapper">
@@ -110,12 +106,12 @@
               <th class="col-company">버스회사</th>
               <th class="col-driver">기사명</th>
               <th class="col-phone">전화번호</th>
-              <th class="col-from">출발지</th>
-              <th class="col-pax">인원</th>
-              <th class="col-amount">판매금액</th>
+              <th class="col-amount">카드매출</th>
+              <th class="col-amount">현금매출</th>
+              <th class="col-amount">총매출</th>
               <th class="col-amount">커미션(현금)</th>
               <th class="col-goods">커미션(물건)</th>
-              <th class="col-memo">메모</th>
+              <th class="col-memo">메모 및 특이사항</th>
               <th class="col-photo">사진</th>
               <th class="col-actions">관리</th>
             </tr>
@@ -239,18 +235,18 @@
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
 
-<script src="js/firebase-init.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/holidays.js"></script>
-<script src="js/date-notes.js"></script>
-<script src="js/bands.js"></script>
-<script src="js/home.js"></script>
-<script src="js/bus-ledger.js"></script>
-<script src="js/reservation.js"></script>
-<script src="js/purchase.js"></script>
-<script src="js/cashflow.js"></script>
-<script src="js/search.js"></script>
-<script src="js/app.js"></script>
+<script src="js/firebase-init.js?v=20260509-4"></script>
+<script src="js/utils.js?v=20260509-4"></script>
+<script src="js/holidays.js?v=20260509-4"></script>
+<script src="js/date-notes.js?v=20260509-4"></script>
+<script src="js/bands.js?v=20260509-4"></script>
+<script src="js/home.js?v=20260509-4"></script>
+<script src="js/bus-ledger.js?v=20260509-4"></script>
+<script src="js/reservation.js?v=20260509-4"></script>
+<script src="js/purchase.js?v=20260509-4"></script>
+<script src="js/cashflow.js?v=20260509-4"></script>
+<script src="js/search.js?v=20260509-4"></script>
+<script src="js/app.js?v=20260509-4"></script>
 
 </body>
 </html>

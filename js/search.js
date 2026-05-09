@@ -4,9 +4,9 @@ const search = (() => {
     const input = document.getElementById('search-input');
     const btn = document.getElementById('btn-search');
     btn.onclick = () => _doSearch(input.value.trim());
-    input.addEventListener('keydown', e => {
+    input.onkeydown = e => {
       if (e.key === 'Enter') _doSearch(input.value.trim());
-    });
+    };
   }
 
   async function _doSearch(keyword) {
@@ -37,7 +37,7 @@ const search = (() => {
       const matchedBus = busEntries.filter(e =>
         _m(e.busCompany, kw) || _m(e.driverName, kw) ||
         (e.phoneNumber || '').replace(/-/g, '').includes(kwPhone) ||
-        _m(e.departureFrom, kw) || _m(e.notes, kw) ||
+        _m(e.notes, kw) ||
         _bandMatch(e.bandIds, kw)
       );
 
@@ -59,7 +59,7 @@ const search = (() => {
       const total = matchedBus.length + matchedRes.length + matchedPur.length + matchedCf.length;
 
       if (total === 0) {
-        resultsEl.innerHTML = `<p class="no-results">검색 결과가 없습니다.<br><small>"${keyword}"에 해당하는 기록을 찾지 못했습니다.</small></p>`;
+        resultsEl.innerHTML = `<p class="no-results">검색 결과가 없습니다.<br><small>"${escapeHTML(keyword)}"에 해당하는 기록을 찾지 못했습니다.</small></p>`;
         return;
       }
 
@@ -112,17 +112,17 @@ const search = (() => {
       <div class="search-result-item">
         <div class="search-result-date">${formatDateKo(e.date)}</div>
         <div class="search-result-main">
-          ${e.busCompany || ''}${e.driverName ? ' · ' + e.driverName : ''}${e.phoneNumber ? ' · ' + phoneLink(e.phoneNumber) : ''}
+          ${escapeHTML(e.busCompany || '')}${e.driverName ? ' · ' + escapeHTML(e.driverName) : ''}${e.phoneNumber ? ' · ' + phoneLink(e.phoneNumber) : ''}
         </div>
         <div class="search-result-detail">
-          ${[e.departureFrom ? '출발지: ' + e.departureFrom : '',
-             e.passengerCount ? e.passengerCount + '명' : '',
-             e.salesAmount ? '판매 ' + formatWon(e.salesAmount) : '',
+          ${[e.cardSalesAmount ? '카드 ' + formatWon(e.cardSalesAmount) : '',
+             e.cashSalesAmount ? '현금 ' + formatWon(e.cashSalesAmount) : '',
+             e.salesAmount ? '총매출 ' + formatWon(e.salesAmount) : '',
              e.commissionCash ? '커미션 ' + formatWon(e.commissionCash) : ''
           ].filter(Boolean).join(' · ')}
         </div>
-        ${bandStr ? `<div class="search-result-detail">밴드: ${bandStr}</div>` : ''}
-        ${e.notes ? `<div class="search-result-detail">📝 ${e.notes}</div>` : ''}
+        ${bandStr ? `<div class="search-result-detail">밴드: ${escapeHTML(bandStr)}</div>` : ''}
+        ${e.notes ? `<div class="search-result-detail">📝 ${escapeHTML(e.notes)}</div>` : ''}
       </div>
     `;
   }
@@ -133,14 +133,14 @@ const search = (() => {
     return `
       <div class="search-result-item">
         <div class="search-result-date" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          ${formatDateKo(e.date)}${e.time ? ' ' + e.time : ''}
+          ${formatDateKo(e.date)}${e.time ? ' ' + escapeHTML(e.time) : ''}
           <span class="res-status-badge ${statusClass[e.status] || 'status-pending'}">${statusLabel[e.status] || '예약중'}</span>
         </div>
         <div class="search-result-main">
-          ${e.driverName || ''}${e.busCompany ? ' · ' + e.busCompany : ''}${e.phoneNumber ? ' · ' + phoneLink(e.phoneNumber) : ''}
+          ${escapeHTML(e.driverName || '')}${e.busCompany ? ' · ' + escapeHTML(e.busCompany) : ''}${e.phoneNumber ? ' · ' + phoneLink(e.phoneNumber) : ''}
         </div>
         ${e.estimatedPassengers ? `<div class="search-result-detail">예상 ${e.estimatedPassengers}명</div>` : ''}
-        ${e.requests ? `<div class="search-result-detail">요청: ${e.requests}</div>` : ''}
+        ${e.requests ? `<div class="search-result-detail">요청: ${escapeHTML(e.requests)}</div>` : ''}
       </div>
     `;
   }
@@ -150,9 +150,9 @@ const search = (() => {
     return `
       <div class="search-result-item">
         <div class="search-result-date">${formatDateKo(e.date)}</div>
-        <div class="search-result-main">${e.supplier || '거래처 미입력'} · ${formatWon(e.totalAmount)}</div>
-        ${itemStr ? `<div class="search-result-detail">품목: ${itemStr}</div>` : ''}
-        ${e.notes ? `<div class="search-result-detail">📝 ${e.notes}</div>` : ''}
+        <div class="search-result-main">${escapeHTML(e.supplier || '거래처 미입력')} · ${formatWon(e.totalAmount)}</div>
+        ${itemStr ? `<div class="search-result-detail">품목: ${escapeHTML(itemStr)}</div>` : ''}
+        ${e.notes ? `<div class="search-result-detail">📝 ${escapeHTML(e.notes)}</div>` : ''}
       </div>
     `;
   }
@@ -163,10 +163,10 @@ const search = (() => {
         <div class="search-result-date">${formatDateKo(e.date)}</div>
         <div class="search-result-main" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span class="cf-type-badge type-${e.type}">${e.type === 'income' ? '수입' : '지출'}</span>
-          <span>${e.category || ''}</span>
+          <span>${escapeHTML(e.category || '')}</span>
           <span style="font-weight:700;color:${e.type === 'income' ? 'var(--income)' : 'var(--expense)'}">${formatWon(e.amount)}</span>
         </div>
-        ${e.notes ? `<div class="search-result-detail">📝 ${e.notes}</div>` : ''}
+        ${e.notes ? `<div class="search-result-detail">📝 ${escapeHTML(e.notes)}</div>` : ''}
       </div>
     `;
   }

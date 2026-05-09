@@ -84,6 +84,9 @@ const busLedger = (() => {
       const phoneHTML = e.phoneNumber
         ? `<span class="driver-link" onclick="busLedger.openDriverProfile('${p}','${n}')">${escapeHTML(e.phoneNumber)}</span><button class="phone-copy-btn" onclick="event.stopPropagation();navigator.clipboard.writeText('${p}').then(()=>showToast('번호 복사됨'))" title="복사">📋</button>`
         : '-';
+      const cardSales = _cardSales(e);
+      const cashSales = _cashSales(e);
+      const totalSales = _totalSales(e);
 
       return `
         <tr>
@@ -92,9 +95,9 @@ const busLedger = (() => {
           <td>${escapeHTML(e.busCompany || '-')}</td>
           <td>${driverNameHTML}</td>
           <td>${phoneHTML}</td>
-          <td>${escapeHTML(e.departureFrom || '-')}</td>
-          <td>${e.passengerCount ? e.passengerCount + '명' : '-'}</td>
-          <td class="amount-cell">${e.salesAmount ? formatWon(e.salesAmount) : '-'}</td>
+          <td class="amount-cell">${cardSales ? formatWon(cardSales) : '-'}</td>
+          <td class="amount-cell">${cashSales ? formatWon(cashSales) : '-'}</td>
+          <td class="amount-cell">${totalSales ? formatWon(totalSales) : '-'}</td>
           <td class="amount-cell">${e.commissionCash ? formatWon(e.commissionCash) : '-'}</td>
           <td>${escapeHTML(e.commissionGoods || '-')}</td>
           <td style="text-align:left">${escapeHTML(e.notes || '-')}</td>
@@ -111,38 +114,56 @@ const busLedger = (() => {
     }).join('');
   }
 
+  function _cardSales(entry) {
+    return Number(entry?.cardSalesAmount) || 0;
+  }
+
+  function _cashSales(entry) {
+    return Number(entry?.cashSalesAmount) || 0;
+  }
+
+  function _totalSales(entry) {
+    const splitTotal = _cardSales(entry) + _cashSales(entry);
+    return splitTotal || Number(entry?.salesAmount) || 0;
+  }
+
   function _bandBadges(bandIds) {
     if (!bandIds || bandIds.length === 0) return '<span style="color:var(--text-light);font-size:11px">무소속</span>';
     return bandIds.map(bid => {
       const b = bands.getById(bid);
       if (!b) return '';
-      return b.logoURL
-        ? `<img src="${escapeAttr(b.logoURL)}" class="band-badge-img" title="${escapeAttr(b.name)}" alt="${escapeAttr(b.name)}">`
-        : `<span class="band-badge-text" title="${escapeAttr(b.name)}">${escapeHTML(b.name.slice(0, 2))}</span>`;
+      const mark = b.logoURL
+        ? `<img src="${escapeAttr(b.logoURL)}" class="band-badge-img" alt="${escapeAttr(b.name)}">`
+        : `<span class="band-badge-text">${escapeHTML(b.name.slice(0, 2))}</span>`;
+      return `<span class="band-badge-pill" title="${escapeAttr(b.name)}">${mark}<span class="band-badge-name">${escapeHTML(b.name)}</span></span>`;
     }).join('');
   }
 
   function _updateSummary() {
     document.getElementById('summary-count').textContent = _entries.length + '대';
     document.getElementById('summary-sales').textContent =
-      formatWon(_entries.reduce((s, e) => s + (Number(e.salesAmount) || 0), 0));
+      formatWon(_entries.reduce((s, e) => s + _totalSales(e), 0));
     document.getElementById('summary-commission').textContent =
       formatWon(_entries.reduce((s, e) => s + (Number(e.commissionCash) || 0), 0));
-    document.getElementById('summary-passengers').textContent =
-      _entries.reduce((s, e) => s + (Number(e.passengerCount) || 0), 0) + '명';
   }
 
   async function openEntryModal(entryId) {
     _removedPhotoUrls = new Set();
     await bands.ensureLoaded();
     const isEdit = !!entryId;
-    const entry = isEdit ? _entries.find(e => e.id === entryId) : null;
+    let entry = isEdit ? _entries.find(e => e.id === entryId) : null;
+    if (isEdit && !entry) {
+      const doc = await userCol('busEntries').doc(entryId).get();
+      if (!doc.exists) { showToast('기록을 찾을 수 없습니다', 'error'); return; }
+      entry = { id: doc.id, ...doc.data() };
+      _entries = _entries.filter(e => e.id !== entry.id).concat(entry);
+      if (entry.date) {
+        _date = entry.date;
+        const dateInput = document.getElementById('bus-date');
+        if (dateInput) dateInput.value = _date;
+      }
+    }
     const allBands = bands.getAll();
-
-    const places = _qs.departurePlaces || [];
-    const placeChips = places.length > 0
-      ? `<div class="quick-chips" id="from-chips"></div>`
-      : '';
 
     const bandChecks = allBands.length === 0
       ? `<p style="font-size:13px;color:var(--text-light)">등록된 밴드가 없습니다. 밴드 관리 탭에서 먼저 추가하세요.</p>`
@@ -183,17 +204,16 @@ const busLedger = (() => {
             <input type="tel" name="phoneNumber" value="${escapeAttr(entry?.phoneNumber || '')}" placeholder="010-0000-0000">
           </div>
           <div class="form-group">
-            <label>출발지 (관광지)</label>
-            ${placeChips}
-            <input type="text" name="departureFrom" id="input-from" value="${escapeAttr(entry?.departureFrom || '')}" placeholder="예: 해남, 강진, 완도">
+            <label>카드매출 (원)</label>
+            <input type="text" inputmode="numeric" name="cardSalesAmount" value="${_cardSales(entry) ? _cardSales(entry).toLocaleString('ko-KR') : ''}" placeholder="0">
           </div>
           <div class="form-group">
-            <label>손님 수 (명)</label>
-            <input type="number" name="passengerCount" value="${entry?.passengerCount || ''}" placeholder="0" min="0">
+            <label>현금매출 (원)</label>
+            <input type="text" inputmode="numeric" name="cashSalesAmount" value="${_cashSales(entry) ? _cashSales(entry).toLocaleString('ko-KR') : ''}" placeholder="0">
           </div>
           <div class="form-group">
-            <label>판매금액 (원)</label>
-            <input type="text" inputmode="numeric" name="salesAmount" value="${entry?.salesAmount ? Number(entry.salesAmount).toLocaleString('ko-KR') : ''}" placeholder="0">
+            <label>총매출 (원)</label>
+            <input type="text" inputmode="numeric" name="salesAmount" value="${_totalSales(entry) ? _totalSales(entry).toLocaleString('ko-KR') : ''}" placeholder="0" readonly>
           </div>
           <div class="form-group">
             <label>커미션 - 현금 (원)</label>
@@ -241,15 +261,18 @@ const busLedger = (() => {
 
     openModal(isEdit ? '버스 기록 수정' : '버스 추가', body, footer);
 
-    initMoneyInput(document.querySelector('#bus-form [name="salesAmount"]'));
+    const cardInput = document.querySelector('#bus-form [name="cardSalesAmount"]');
+    const cashInput = document.querySelector('#bus-form [name="cashSalesAmount"]');
+    const totalInput = document.querySelector('#bus-form [name="salesAmount"]');
+    const updateTotal = () => {
+      const total = parseMoneyInput(cardInput.value) + parseMoneyInput(cashInput.value);
+      totalInput.value = total ? total.toLocaleString('ko-KR') : '';
+    };
+    initMoneyInput(cardInput);
+    initMoneyInput(cashInput);
     initMoneyInput(document.querySelector('#bus-form [name="commissionCash"]'));
-
-    const chipsEl = document.getElementById('from-chips');
-    if (chipsEl && places.length > 0) {
-      renderChips(chipsEl, places, val => {
-        document.getElementById('input-from').value = val;
-      });
-    }
+    cardInput.addEventListener('input', updateTotal);
+    cashInput.addEventListener('input', updateTotal);
 
     document.getElementById('bus-photo-file').addEventListener('change', e => {
       const files = Array.from(e.target.files);
@@ -283,15 +306,19 @@ const busLedger = (() => {
       busCompany,
       driverName: form.querySelector('[name="driverName"]').value.trim(),
       phoneNumber: form.querySelector('[name="phoneNumber"]').value.trim(),
-      departureFrom: form.querySelector('[name="departureFrom"]').value.trim(),
-      passengerCount: Number(form.querySelector('[name="passengerCount"]').value) || 0,
-      salesAmount: parseMoneyInput(form.querySelector('[name="salesAmount"]').value),
+      cardSalesAmount: parseMoneyInput(form.querySelector('[name="cardSalesAmount"]').value),
+      cashSalesAmount: parseMoneyInput(form.querySelector('[name="cashSalesAmount"]').value),
       commissionCash: parseMoneyInput(form.querySelector('[name="commissionCash"]').value),
       commissionGoods: form.querySelector('[name="commissionGoods"]').value.trim(),
       bandIds,
       notes: form.querySelector('[name="notes"]').value.trim(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
+    data.salesAmount = data.cardSalesAmount + data.cashSalesAmount;
+    if (!data.salesAmount && isEdit) {
+      const existingEntry = _entries.find(e => e.id === entryId);
+      data.salesAmount = Number(existingEntry?.salesAmount) || 0;
+    }
 
     if (!isEdit) {
       data.daySequence = _entries.length + 1;
@@ -324,16 +351,9 @@ const busLedger = (() => {
         await userCol('busEntries').add(data);
         showToast('버스가 추가되었습니다');
       }
-
-      if (data.departureFrom) {
-        const places = _qs.departurePlaces || [];
-        if (!places.includes(data.departureFrom)) {
-          places.unshift(data.departureFrom);
-          _qs.departurePlaces = places.slice(0, 15);
-          saveQuickSelect({ departurePlaces: _qs.departurePlaces });
-        }
-      }
-
+      document.dispatchEvent(new CustomEvent('dailySales:dataChanged', {
+        detail: { type: 'bus', date: data.date }
+      }));
       const continueAdd = document.getElementById('continue-add');
       const shouldContinue = !isEdit && continueAdd && continueAdd.checked;
 
@@ -349,13 +369,19 @@ const busLedger = (() => {
   }
 
   async function remove(entryId) {
-    if (!await confirmDialog('이 기록을 삭제하시겠습니까?')) return;
+    if (!await confirmDialog('이 기록을 삭제하시겠습니까?')) return false;
+    const target = _entries.find(e => e.id === entryId);
     try {
       await userCol('busEntries').doc(entryId).delete();
       showToast('삭제되었습니다');
       await load();
+      document.dispatchEvent(new CustomEvent('dailySales:dataChanged', {
+        detail: { type: 'bus', date: target?.date || _date }
+      }));
+      return true;
     } catch (e) {
       showToast('삭제 실패: ' + e.message, 'error');
+      return false;
     }
   }
 
@@ -408,8 +434,48 @@ const busLedger = (() => {
     if (!entry) return;
     const photoURLs = entry.photoURLs || (entry.photoURL ? [entry.photoURL] : []);
     if (photoURLs.length === 0) return;
-    _galleryState = { urls: photoURLs, idx: 0 };
+    _galleryState = { urls: photoURLs, idx: 0, blobs: {} };
     _renderGalleryModal();
+    _prefetchBlob(0);
+  }
+
+  function _getStorageRef(url) {
+    const m = url.match(/\/o\/([^?#]+)/);
+    if (m) return storage.ref(decodeURIComponent(m[1]));
+    return storage.refFromURL(url);
+  }
+
+  function _prefetchBlob(idx) {
+    const { urls, blobs } = _galleryState;
+    if (!urls[idx] || blobs[idx]) return;
+    const url = urls[idx];
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    const _setDlBtn = (ready) => {
+      if (!isMobile) return;
+      const btn = document.getElementById('gallery-dl-btn');
+      if (!btn || _galleryState.idx !== idx) return;
+      btn.disabled = !ready;
+      btn.textContent = ready ? '⬇ 다운로드' : '⏳ 준비 중...';
+    };
+
+    const doFetch = async () => {
+      _setDlBtn(false);
+      try {
+        const ref = _getStorageRef(url);
+        const blob = typeof ref.getBlob === 'function'
+          ? await ref.getBlob()
+          : new Blob([await ref.getBytes()], { type: 'image/jpeg' });
+        if (_galleryState.blobs) _galleryState.blobs[idx] = blob;
+      } catch {
+        try {
+          const resp = await fetch(url);
+          if (resp.ok && _galleryState.blobs) _galleryState.blobs[idx] = await resp.blob();
+        } catch { /* silent */ }
+      }
+      _setDlBtn(true);
+    };
+    doFetch();
   }
 
   function _renderGalleryModal() {
@@ -425,7 +491,7 @@ const busLedger = (() => {
       </div>
     `;
     const footer = `
-      <button class="btn-outline" onclick="busLedger.downloadCurrentPhoto()">⬇ 다운로드</button>
+      <button class="btn-outline" id="gallery-dl-btn" onclick="busLedger.downloadCurrentPhoto()">⬇ 다운로드</button>
       <button class="btn-outline" onclick="closeModal()">닫기</button>
     `;
     openModal(multi ? `사진 (${idx + 1}/${urls.length})` : '사진', body, footer);
@@ -445,6 +511,7 @@ const busLedger = (() => {
         <div class="gallery-counter">${i + 1} / ${urls.length}</div>
       </div>
     `;
+    _prefetchBlob(i);
   }
 
   function _removeExistingPhoto(url, idx) {
@@ -454,32 +521,42 @@ const busLedger = (() => {
   }
 
   async function downloadCurrentPhoto() {
-    const { urls, idx } = _galleryState;
+    const { urls, idx, blobs } = _galleryState;
     const url = urls[idx];
-    showToast('다운로드 중...', 'info');
+    const filename = `photo_${idx + 1}.jpg`;
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    function _getStorageRef() {
-      const m = url.match(/\/o\/([^?#]+)/);
-      if (m) return storage.ref(decodeURIComponent(m[1]));
-      return storage.refFromURL(url);
+    // 미리 받아둔 blob이 있으면 바로 사용 (user gesture 컨텍스트 유지)
+    const cached = blobs && blobs[idx];
+    if (cached) {
+      if (isMobile && navigator.share) {
+        const file = new File([cached], filename, { type: 'image/jpeg' });
+        showToast("'이미지 저장'을 눌러 사진첩에 저장하세요", 'info');
+        try {
+          await navigator.share({ files: [file], title: filename });
+          return;
+        } catch (e) {
+          if (e.name === 'AbortError') return;
+        }
+      }
+      _triggerDownload(cached, filename);
+      showToast('다운로드 완료');
+      return;
     }
 
-    // blob 획득
+    // 캐시 없으면 기존 방식으로 fallback (blob 비동기 획득)
+    showToast('다운로드 중...', 'info');
     let blob = null;
     try {
-      const ref = _getStorageRef();
+      const ref = _getStorageRef(url);
       blob = typeof ref.getBlob === 'function'
         ? await ref.getBlob()
         : new Blob([await ref.getBytes()], { type: 'image/jpeg' });
     } catch (e1) {
-      console.warn('[download] SDK:', e1.message);
       try {
         const resp = await fetch(url);
-        if (!resp.ok) throw new Error(resp.status);
-        blob = await resp.blob();
-      } catch (e2) {
-        console.warn('[download] fetch:', e2.message);
-      }
+        if (resp.ok) blob = await resp.blob();
+      } catch { /* silent */ }
     }
 
     if (!blob) {
@@ -488,24 +565,16 @@ const busLedger = (() => {
       return;
     }
 
-    const filename = `photo_${idx + 1}.jpg`;
-
-    // 모바일: 네이티브 공유 시트 → "사진에 저장" 선택 가능
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    if (isMobile && navigator.canShare) {
+    if (isMobile && navigator.share) {
       const file = new File([blob], filename, { type: 'image/jpeg' });
-      if (navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({ files: [file] });
-          return;
-        } catch (e) {
-          if (e.name === 'AbortError') return; // 사용자가 취소
-          console.warn('[download] share:', e.message);
-        }
+      try {
+        await navigator.share({ files: [file], title: filename });
+        return;
+      } catch (e) {
+        if (e.name === 'AbortError') return;
       }
     }
 
-    // PC: 파일 직접 다운로드
     _triggerDownload(blob, filename);
     showToast('다운로드 완료');
   }
@@ -616,9 +685,10 @@ const busLedger = (() => {
          </label>`;
 
     const infoStr = [
-      v.salesAmount ? '판매 ' + formatWon(v.salesAmount) : '',
+      v.cardSalesAmount ? '카드 ' + formatWon(v.cardSalesAmount) : '',
+      v.cashSalesAmount ? '현금 ' + formatWon(v.cashSalesAmount) : '',
+      v.salesAmount ? '총매출 ' + formatWon(v.salesAmount) : '',
       v.commissionCash ? '커미션 ' + formatWon(v.commissionCash) : '',
-      v.passengerCount ? v.passengerCount + '명' : ''
     ].filter(Boolean).join('&nbsp;·&nbsp;');
 
     return `

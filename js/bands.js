@@ -40,10 +40,10 @@ const bands = (() => {
       <div class="band-card">
         <div class="band-card-top">
           ${b.logoURL
-            ? `<img src="${b.logoURL}" class="band-logo-img" alt="${b.name}">`
-            : `<div class="band-logo-placeholder">${b.name.slice(0, 2)}</div>`}
+            ? `<img src="${escapeAttr(b.logoURL)}" class="band-logo-img" alt="${escapeAttr(b.name)}">`
+            : `<div class="band-logo-placeholder">${escapeHTML(b.name.slice(0, 2))}</div>`}
           <div class="band-card-info">
-            <div class="band-card-name">${b.name}</div>
+            <div class="band-card-name">${escapeHTML(b.name)}</div>
             <span class="band-membership${b.isMember ? ' is-member' : ''}">
               ${b.isMember ? '✓ 내 밴드' : '외부/무소속'}
             </span>
@@ -68,7 +68,7 @@ const bands = (() => {
       <form class="entry-form" id="band-form">
         <div class="form-group">
           <label>밴드 이름 *</label>
-          <input type="text" name="name" value="${b?.name || ''}" placeholder="예: 우송, 처음처럼, 너와누리" required>
+          <input type="text" name="name" value="${escapeAttr(b?.name || '')}" placeholder="예: 우송, 처음처럼, 너와누리" required>
         </div>
         <div class="form-group">
           <label>
@@ -80,7 +80,7 @@ const bands = (() => {
         </div>
         <div class="form-group">
           <label>밴드 로고 이미지</label>
-          ${b?.logoURL ? `<div class="current-photo"><img src="${b.logoURL}" alt="현재 로고"><p>현재 로고</p></div>` : ''}
+          ${b?.logoURL ? `<div class="current-photo"><img src="${escapeAttr(b.logoURL)}" alt="현재 로고"><p>현재 로고</p></div>` : ''}
           <input type="file" name="logo" accept="image/*" id="band-logo-file">
           <div id="band-logo-preview" class="photo-preview"></div>
         </div>
@@ -185,9 +185,8 @@ const bands = (() => {
             <div class="visit-item">
               <span class="visit-date">${formatDateKo(v.date)}</span>
               <span class="visit-info">
-                ${v.busCompany || ''}
-                ${v.driverName ? ' · ' + v.driverName : ''}
-                ${v.passengerCount ? ' · ' + v.passengerCount + '명' : ''}
+                ${escapeHTML(v.busCompany || '')}
+                ${v.driverName ? ' · ' + escapeHTML(v.driverName) : ''}
               </span>
               <span class="visit-amount">${v.salesAmount ? formatWon(v.salesAmount) : ''}</span>
             </div>

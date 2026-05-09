@@ -6,6 +6,7 @@ const home = (() => {
   let _busEntries = [];
   let _reservations = [];
   let _cashflows = [];
+  let _dataChangeBound = false;
 
   async function load() {
     _year = new Date().getFullYear();
@@ -23,13 +24,23 @@ const home = (() => {
       _refresh();
     };
 
+    if (!_dataChangeBound) {
+      document.addEventListener('dailySales:dataChanged', () => {
+        if (_selectedDate) _refresh(true);
+      });
+      _dataChangeBound = true;
+    }
+
     await _refresh();
   }
 
-  async function _refresh() {
+  async function _refresh(keepSelected = false) {
+    const selectedBeforeRefresh = keepSelected ? _selectedDate : null;
     document.getElementById('home-month-label').textContent = `${_year}년 ${_month + 1}월`;
-    document.getElementById('home-day-detail').classList.add('hidden');
-    _selectedDate = null;
+    if (!keepSelected) {
+      document.getElementById('home-day-detail').classList.add('hidden');
+      _selectedDate = null;
+    }
 
     const startDate = `${_year}-${String(_month + 1).padStart(2, '0')}-01`;
     const endDate = `${_year}-${String(_month + 1).padStart(2, '0')}-31`;
@@ -45,7 +56,9 @@ const home = (() => {
       _reservations = resSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       _cashflows = cfSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       _renderStats();
+      if (selectedBeforeRefresh) _selectedDate = selectedBeforeRefresh;
       _renderCalendar();
+      if (selectedBeforeRefresh) _showDayDetail(selectedBeforeRefresh);
     }
 
     // 캐시에서 즉시 렌더링
@@ -201,16 +214,19 @@ const home = (() => {
     const dayRes = _reservations.filter(r => r.date === dateStr);
 
     // 버스장부 카드 (실제 방문 기록)
-    const busCards = dayBuses.map(e => `
-      <div class="hd-card hd-bus">
-        <div class="hd-card-status">✓ 방문완료</div>
-        <div class="hd-card-main">${escapeHTML([e.busCompany, e.driverName].filter(Boolean).join(' · ') || '기사 미정')}</div>
-        <div class="hd-card-meta">
-          ${e.passengerCount ? `<span>👥 ${e.passengerCount}명</span>` : ''}
-          ${e.salesAmount ? `<span>${formatWon(e.salesAmount)}</span>` : ''}
+    const busCards = dayBuses.map(e => {
+      const totalSales = _busTotalSales(e);
+      return `
+        <div class="hd-card hd-bus hd-card-clickable" onclick="home.showBusDetail('${escapeInlineJS(e.id)}')">
+          <div class="hd-card-status">✓ 방문완료</div>
+          <div class="hd-card-main">${escapeHTML([e.busCompany, e.driverName].filter(Boolean).join(' · ') || '기사 미정')}</div>
+          ${_bandChipsHTML(e.bandIds, 'hd-band-row')}
+          <div class="hd-card-meta">
+            ${totalSales ? `<span>${formatWon(totalSales)}</span>` : ''}
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     // 예약 카드 (상태별)
     const resCards = dayRes.map(r => {
@@ -221,7 +237,7 @@ const home = (() => {
                 : r.status === 'noshow'  ? '✗ 미방문'
                 : '📅 예약중';
       return `
-        <div class="hd-card ${cls}">
+        <div class="hd-card ${cls} hd-card-clickable" onclick="home.showReservationDetail('${escapeInlineJS(r.id)}')">
           <div class="hd-card-status">${lbl}</div>
           ${r.time ? `<div class="hd-card-time">${escapeHTML(r.time)}</div>` : ''}
           <div class="hd-card-main">${escapeHTML([r.driverName, r.busCompany].filter(Boolean).join(' / ') || '기사 미정')}</div>
@@ -239,9 +255,138 @@ const home = (() => {
       : '<p style="color:var(--text-light);font-size:14px">이날 기록이 없습니다.</p>';
   }
 
+  function _bandChipsHTML(bandIds, className = '') {
+    if (!bandIds || bandIds.length === 0) return '';
+    const chips = bandIds.map(bid => {
+      const b = bands.getById(bid);
+      if (!b) return '';
+      const mark = b.logoURL
+        ? `<img src="${escapeAttr(b.logoURL)}" class="hd-band-logo" alt="${escapeAttr(b.name)}">`
+        : `<span class="hd-band-initials">${escapeHTML(b.name.slice(0, 2))}</span>`;
+      return `<span class="hd-band-chip">${mark}<span>${escapeHTML(b.name)}</span></span>`;
+    }).filter(Boolean).join('');
+    return chips ? `<div class="${className}">${chips}</div>` : '';
+  }
+
+  function _detailRowsHTML(rows) {
+    return `
+      <table class="home-detail-table">
+        ${rows.map(([label, val]) => `
+          <tr>
+            <td>${escapeHTML(label)}</td>
+            <td>${val || '-'}</td>
+          </tr>
+        `).join('')}
+      </table>
+    `;
+  }
+
+  function _busCardSales(entry) {
+    return Number(entry?.cardSalesAmount) || 0;
+  }
+
+  function _busCashSales(entry) {
+    return Number(entry?.cashSalesAmount) || 0;
+  }
+
+  function _busTotalSales(entry) {
+    return _busCardSales(entry) + _busCashSales(entry) || Number(entry?.salesAmount) || 0;
+  }
+
+  function showBusDetail(entryId) {
+    const e = _busEntries.find(x => x.id === entryId);
+    if (!e) return;
+
+    const photoURLs = e.photoURLs || (e.photoURL ? [e.photoURL] : []);
+    const photoHTML = photoURLs.length > 0
+      ? `<div class="home-detail-photos">${photoURLs.slice(0, 4).map(url =>
+          `<img src="${escapeAttr(url)}" alt="버스 사진" onclick="busLedger.viewPhoto('${escapeInlineJS(url)}')">`
+        ).join('')}</div>`
+      : '';
+
+    const body = `
+      ${_bandChipsHTML(e.bandIds, 'home-detail-bands')}
+      ${_detailRowsHTML([
+        ['날짜', formatDateKo(e.date)],
+        ['버스회사', escapeHTML(e.busCompany || '-')],
+        ['기사명', escapeHTML(e.driverName || '-')],
+        ['전화번호', e.phoneNumber ? phoneLink(e.phoneNumber) : '-'],
+        ['카드매출', _busCardSales(e) ? formatWon(_busCardSales(e)) : '-'],
+        ['현금매출', _busCashSales(e) ? formatWon(_busCashSales(e)) : '-'],
+        ['총매출', _busTotalSales(e) ? formatWon(_busTotalSales(e)) : '-'],
+        ['커미션 현금', e.commissionCash ? formatWon(e.commissionCash) : '-'],
+        ['커미션 물건', escapeHTML(e.commissionGoods || '-')],
+        ['메모', escapeHTML(e.notes || '-')],
+      ])}
+      ${photoHTML}
+    `;
+
+    openModal('버스 방문 상세', body, `
+      <button class="btn-outline" onclick="closeModal()">닫기</button>
+      <button class="btn-primary" onclick="home.editBusFromDetail('${escapeInlineJS(entryId)}')">수정</button>
+      <button class="btn-danger" onclick="home.deleteBusFromDetail('${escapeInlineJS(entryId)}')">삭제</button>
+    `);
+  }
+
+  function showReservationDetail(resId) {
+    const r = _reservations.find(x => x.id === resId);
+    if (!r) return;
+
+    const statusLabel = { pending: '예약중', visited: '방문완료', noshow: '미방문' };
+    const status = r.status || 'pending';
+    const body = `
+      <div class="home-detail-status status-${escapeAttr(status)}">${statusLabel[status] || '예약중'}</div>
+      ${_detailRowsHTML([
+        ['날짜', formatDateKo(r.date)],
+        ['시간', escapeHTML(r.time || '-')],
+        ['기사명', escapeHTML(r.driverName || '-')],
+        ['버스회사', escapeHTML(r.busCompany || '-')],
+        ['전화번호', r.phoneNumber ? phoneLink(r.phoneNumber) : '-'],
+        ['예상 인원', r.estimatedPassengers ? `${Number(r.estimatedPassengers)}명` : '-'],
+        ['요청사항', escapeHTML(r.requests || '-')],
+      ])}
+    `;
+
+    openModal('예약 상세', body, `
+      <button class="btn-outline" onclick="closeModal()">닫기</button>
+      <button class="btn-primary" onclick="home.editReservationFromDetail('${escapeInlineJS(resId)}')">수정</button>
+      <button class="btn-danger" onclick="home.deleteReservationFromDetail('${escapeInlineJS(resId)}')">삭제</button>
+    `);
+  }
+
+  async function editBusFromDetail(entryId) {
+    closeModal();
+    await busLedger.openEntryModal(entryId);
+  }
+
+  async function deleteBusFromDetail(entryId) {
+    const deleted = await busLedger.remove(entryId);
+    if (deleted) {
+      closeModal();
+      await _refresh(true);
+    }
+  }
+
+  async function editReservationFromDetail(resId) {
+    closeModal();
+    await reservation.openModal(resId);
+  }
+
+  async function deleteReservationFromDetail(resId) {
+    const deleted = await reservation.remove(resId);
+    if (deleted) {
+      closeModal();
+      await _refresh(true);
+    }
+  }
+
   function editNote(dateStr) {
     dateNotes.openEditor(dateStr, () => _renderCalendar());
   }
 
-  return { load, selectDate, editNote };
+  return {
+    load, selectDate, editNote, showBusDetail, showReservationDetail,
+    editBusFromDetail, deleteBusFromDetail,
+    editReservationFromDetail, deleteReservationFromDetail
+  };
 })();

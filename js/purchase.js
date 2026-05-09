@@ -10,16 +10,12 @@ const purchase = (() => {
     _month = el.value || _month;
 
     document.getElementById('pur-prev-month').onclick = () => {
-      const d = new Date(_month + '-01');
-      d.setMonth(d.getMonth() - 1);
-      _month = getMonthStr(d);
+      _month = addMonths(_month, -1);
       el.value = _month;
       _fetch();
     };
     document.getElementById('pur-next-month').onclick = () => {
-      const d = new Date(_month + '-01');
-      d.setMonth(d.getMonth() + 1);
-      _month = getMonthStr(d);
+      _month = addMonths(_month, 1);
       el.value = _month;
       _fetch();
     };
@@ -59,8 +55,8 @@ const purchase = (() => {
     list.innerHTML = _entries.map(e => {
       const itemRows = (e.items || []).map(it =>
         `<tr>
-          <td class="name-cell">${it.name || '-'}</td>
-          <td>${it.unit || '-'}</td>
+          <td class="name-cell">${escapeHTML(it.name || '-')}</td>
+          <td>${escapeHTML(it.unit || '-')}</td>
           <td>${it.quantity || '-'}</td>
           <td>${it.unitPrice ? formatWon(it.unitPrice) : '-'}</td>
           <td style="font-weight:700;color:var(--primary)">${it.amount ? formatWon(it.amount) : '-'}</td>
@@ -72,7 +68,7 @@ const purchase = (() => {
           <div class="entry-card-header">
             <div>
               <div class="entry-date">${formatDateKo(e.date)}</div>
-              <div class="entry-supplier">${e.supplier || '거래처 미입력'}</div>
+              <div class="entry-supplier">${escapeHTML(e.supplier || '거래처 미입력')}</div>
             </div>
             <div style="display:flex;align-items:center;gap:10px">
               <div class="entry-total">${formatWon(e.totalAmount)}</div>
@@ -88,7 +84,7 @@ const purchase = (() => {
               <tbody>${itemRows}</tbody>
             </table>
           ` : ''}
-          ${e.notes ? `<p style="font-size:13px;color:var(--text-light);margin-top:6px">📝 ${e.notes}</p>` : ''}
+          ${e.notes ? `<p style="font-size:13px;color:var(--text-light);margin-top:6px">📝 ${escapeHTML(e.notes)}</p>` : ''}
         </div>
       `;
     }).join('');
@@ -112,7 +108,7 @@ const purchase = (() => {
           </div>
           <div class="form-group">
             <label>거래처 (공급업체)</label>
-            <input type="text" name="supplier" value="${e?.supplier || ''}" placeholder="예: 청풍운, 남해수산">
+            <input type="text" name="supplier" value="${escapeAttr(e?.supplier || '')}" placeholder="예: 청풍운, 남해수산">
           </div>
         </div>
 
@@ -130,7 +126,7 @@ const purchase = (() => {
 
         <div class="form-group full">
           <label>메모</label>
-          <textarea name="notes" placeholder="특이사항">${e?.notes || ''}</textarea>
+          <textarea name="notes" placeholder="특이사항">${escapeHTML(e?.notes || '')}</textarea>
         </div>
 
         <div class="form-group full">
@@ -167,8 +163,8 @@ const purchase = (() => {
   function _itemRowHTML(item, idx) {
     return `
       <div class="purchase-item-row" id="item-row-${idx}">
-        <input type="text" class="item-name" placeholder="품목명" value="${item.name || ''}" oninput="purchase._calcTotal()">
-        <input type="text" class="item-unit" placeholder="단위" value="${item.unit || ''}">
+        <input type="text" class="item-name" placeholder="품목명" value="${escapeAttr(item.name || '')}" oninput="purchase._calcTotal()">
+        <input type="text" class="item-unit" placeholder="단위" value="${escapeAttr(item.unit || '')}">
         <input type="number" class="item-qty" placeholder="수량" value="${item.quantity || ''}" min="0" oninput="purchase._calcRowAmount(this)">
         <input type="text" inputmode="numeric" class="item-price" placeholder="단가" value="${item.unitPrice ? Number(item.unitPrice).toLocaleString('ko-KR') : ''}" oninput="purchase._onPriceInput(this)">
         <div class="auto-amount" id="row-amount-${idx}">${item.amount ? formatWon(item.amount) : '-'}</div>

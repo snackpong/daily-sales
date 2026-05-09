@@ -489,6 +489,8 @@
 /* 홈 날짜 상세 카드 그리드 */
 .hd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .hd-card { border-radius: var(--radius); padding: 11px 13px; border: 1.5px solid; display: flex; flex-direction: column; gap: 3px; }
+.hd-card-clickable { cursor: pointer; transition: transform 0.12s, box-shadow 0.12s; }
+.hd-card-clickable:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
 .hd-bus     { border-color: #1a7a46; background: #f0faf5; }
 .hd-res-done{ border-color: #a8d5bb; background: #f6fdf9; opacity: 0.75; }
 .hd-pending { border-color: #f0a800; background: #fffbf0; }
@@ -502,6 +504,21 @@
 .hd-card-main { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hd-card-meta { display: flex; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--text-light); margin-top: 2px; }
 .hd-card-note { font-size: 11px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+.hd-band-row, .home-detail-bands { display: flex; flex-wrap: wrap; gap: 4px; margin: 2px 0; }
+.hd-band-chip { display: inline-flex; align-items: center; gap: 4px; min-width: 0; max-width: 100%; padding: 2px 7px 2px 3px; border: 1px solid var(--border); border-radius: 14px; background: white; color: var(--primary); font-size: 11px; font-weight: 700; }
+.hd-band-logo { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; }
+.hd-band-initials { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); color: white; font-size: 8px; font-weight: 700; flex-shrink: 0; }
+.hd-band-chip span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home-detail-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.home-detail-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.home-detail-table td:first-child { width: 92px; color: var(--text-light); font-weight: 700; }
+.home-detail-photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 12px; }
+.home-detail-photos img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); cursor: pointer; }
+.home-detail-status { display: inline-block; padding: 4px 12px; border-radius: 14px; font-size: 12px; font-weight: 700; margin-bottom: 10px; }
+.home-detail-status.status-pending { background: #fff3cd; color: #856404; }
+.home-detail-status.status-visited { background: #d1e7dd; color: #0a3622; }
+.home-detail-status.status-noshow { background: #e2e3e5; color: #383d41; }
+.band-badge-name { display: inline-block !important; visibility: visible !important; }
 @media (max-width: 600px) {
   .hd-grid { grid-template-columns: 1fr 1fr; }
 

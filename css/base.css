@@ -311,8 +311,6 @@ table { border-collapse: collapse; width: 100%; }
 .col-company { width: 110px; }
 .col-driver { width: 80px; }
 .col-phone { width: 110px; }
-.col-from { width: 80px; }
-.col-pax { width: 55px; }
 .col-amount { width: 130px; }
 .col-goods { width: 120px; text-align: left !important; }
 .col-memo { width: 130px; text-align: left !important; }
@@ -336,21 +334,33 @@ table { border-collapse: collapse; width: 100%; }
 .loading-row td { padding: 24px; color: var(--text-light); text-align: center; }
 
 /* 밴드 배지 */
-.band-badges { display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; }
-.band-badge-img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); }
+.band-badges { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+.band-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 110px;
+  padding: 2px 7px 2px 3px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: white;
+}
+.band-badge-img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; }
 .band-badge-text {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 28px;
-  height: 28px;
+  min-width: 22px;
+  height: 22px;
   background: var(--primary);
   color: white;
   border-radius: 50%;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 700;
-  padding: 0 4px;
+  padding: 0 3px;
+  flex-shrink: 0;
 }
+.band-badge-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; font-weight: 700; color: var(--text); }
 
 /* 사진 썸네일 */
 .photo-thumb { width: 48px; height: 36px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 1px solid var(--border); }

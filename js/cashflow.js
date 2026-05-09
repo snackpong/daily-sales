@@ -9,9 +9,9 @@ const cashflow = (() => {
   async function load() {
     document.getElementById('cf-date').value = _date;
 
-    document.getElementById('cf-date').addEventListener('change', e => {
+    document.getElementById('cf-date').onchange = e => {
       _date = e.target.value; _fetch();
-    });
+    };
     document.getElementById('cf-prev-day').onclick = () => {
       _date = addDays(_date, -1);
       document.getElementById('cf-date').value = _date;
@@ -29,15 +29,11 @@ const cashflow = (() => {
     };
 
     document.getElementById('cf-prev-month').onclick = () => {
-      const d = new Date(_viewMonth + '-01');
-      d.setMonth(d.getMonth() - 1);
-      _viewMonth = getMonthStr(d);
+      _viewMonth = addMonths(_viewMonth, -1);
       _fetchMonth();
     };
     document.getElementById('cf-next-month').onclick = () => {
-      const d = new Date(_viewMonth + '-01');
-      d.setMonth(d.getMonth() + 1);
-      _viewMonth = getMonthStr(d);
+      _viewMonth = addMonths(_viewMonth, 1);
       _fetchMonth();
     };
 
@@ -133,8 +129,8 @@ const cashflow = (() => {
             <div class="cf-month-entry">
               <span class="cf-type-badge type-${e.type}">${e.type === 'income' ? '수입' : '지출'}</span>
               <div class="cf-month-entry-info">
-                <span class="cf-month-entry-cat">${e.category || ''}</span>
-                ${e.notes ? `<span class="cf-month-entry-memo">${e.notes}</span>` : ''}
+                <span class="cf-month-entry-cat">${escapeHTML(e.category || '')}</span>
+                ${e.notes ? `<span class="cf-month-entry-memo">${escapeHTML(e.notes)}</span>` : ''}
               </div>
               <span class="cf-amount ${e.type}">${formatWon(e.amount)}</span>
             </div>
@@ -190,8 +186,8 @@ const cashflow = (() => {
       <div class="cf-entry-card">
         <span class="cf-type-badge type-${e.type}">${e.type === 'income' ? '수입' : '지출'}</span>
         <div class="cf-info">
-          <div class="cf-category">${e.category || '항목 미입력'}</div>
-          ${e.notes ? `<div class="cf-memo-text">${e.notes}</div>` : ''}
+          <div class="cf-category">${escapeHTML(e.category || '항목 미입력')}</div>
+          ${e.notes ? `<div class="cf-memo-text">${escapeHTML(e.notes)}</div>` : ''}
         </div>
         <div class="cf-amount ${e.type}">${formatWon(e.amount)}</div>
         <div class="cf-entry-btns">
@@ -227,7 +223,7 @@ const cashflow = (() => {
         <div class="form-group full">
           <label>카테고리 / 항목명</label>
           <div class="quick-chips" id="cf-cat-chips"></div>
-          <input type="text" name="category" value="${e?.category || ''}" placeholder="예: 판매수입, 전기세, 포장재">
+          <input type="text" name="category" value="${escapeAttr(e?.category || '')}" placeholder="예: 판매수입, 전기세, 포장재">
         </div>
         <div class="form-group">
           <label>금액 (원)</label>
@@ -235,7 +231,7 @@ const cashflow = (() => {
         </div>
         <div class="form-group full">
           <label>메모</label>
-          <input type="text" name="notes" value="${e?.notes || ''}" placeholder="간단한 메모">
+          <input type="text" name="notes" value="${escapeAttr(e?.notes || '')}" placeholder="간단한 메모">
         </div>
       </form>
     `;
