@@ -178,6 +178,7 @@ function switchTab(tab) {
       if (tab === 'home') home.load();
       if (tab === 'personal') personalSales.load();
       if (tab === 'bus') busLedger.load();
+      if (tab === 'drivers') drivers.load();
     }
     return;
   }
@@ -188,6 +189,7 @@ function switchTab(tab) {
   switch (tab) {
     case 'personal': personalSales.load(); break;
     case 'bus': busLedger.init(); break;
+    case 'drivers': drivers.load(); break;
     case 'reservation': reservation.load(); break;
     case 'purchase': purchase.load(); break;
     case 'cashflow': cashflow.load(); break;

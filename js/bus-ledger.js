@@ -706,6 +706,22 @@ const busLedger = (() => {
       const feedHTML = visits.length === 0
         ? '<p class="empty-msg">방문 기록이 없습니다.</p>'
         : visits.map(v => _visitCardHTML(v)).join('');
+      const memoSection = `
+        <div class="dp-memo-section">
+          <div class="dp-memo-group">
+            <label class="dp-memo-label">특이사항 / 메모</label>
+            <textarea id="dp-notes" class="dp-memo-area" rows="2" maxlength="500" placeholder="자주 오는 시간, 선호 품목 등">${escapeHTML(profile.notes || '')}</textarea>
+          </div>
+          <div class="dp-memo-group">
+            <label class="dp-memo-label">사건사고</label>
+            <textarea id="dp-incidents" class="dp-memo-area" rows="2" maxlength="500" placeholder="환불, 분쟁, 주의사항 등">${escapeHTML(profile.incidents || '')}</textarea>
+          </div>
+          <div class="dp-memo-group">
+            <label class="dp-memo-label">예약 메모</label>
+            <textarea id="dp-reservation" class="dp-memo-area" rows="2" maxlength="500" placeholder="예약 일정, 특별 요청 등">${escapeHTML(profile.reservationMemo || '')}</textarea>
+          </div>
+          <button class="btn-primary" style="margin-top:8px" onclick="busLedger._saveDriverMemo('${escapedKey}')">메모 저장</button>
+        </div>`;
 
       const body = `
         <div class="driver-profile">
@@ -724,6 +740,8 @@ const busLedger = (() => {
               평균 커미션 ${formatWon(avgComm)}
             </div>
           </div>
+
+          ${memoSection}
 
           <div class="dp-feed">
             <div class="dp-feed-title">방문 기록</div>
@@ -818,6 +836,24 @@ const busLedger = (() => {
     _goSlide(id, (cur + dir + slides.length) % slides.length);
   }
 
+  async function _saveDriverMemo(profileKey) {
+    const notes = document.getElementById('dp-notes')?.value.trim() || '';
+    const incidents = document.getElementById('dp-incidents')?.value.trim() || '';
+    const reservationMemo = document.getElementById('dp-reservation')?.value.trim() || '';
+    if (!profileKey) {
+      showToast('저장할 기사 정보를 찾을 수 없습니다', 'error');
+      return;
+    }
+    try {
+      await userCol('driverProfiles').doc(profileKey).set(
+        { notes, incidents, reservationMemo }, { merge: true }
+      );
+      showToast('저장되었습니다');
+    } catch (e) {
+      showToast('저장 실패: ' + e.message, 'error');
+    }
+  }
+
   async function _onBizCardChange(profileKey, input) {
     const file = input.files[0];
     if (!file) return;
@@ -887,6 +923,6 @@ const busLedger = (() => {
     init, load, openEntryModal, save, remove, generatePost, viewPhoto,
     viewPhotos, _galleryNav, downloadCurrentPhoto, _removeExistingPhoto,
     openDetailModal, openDriverProfile, _prevSlide, _nextSlide, _goSlide,
-    _onBizCardChange, _onVisitPhotoChange, _editFromProfile
+    _saveDriverMemo, _onBizCardChange, _onVisitPhotoChange, _editFromProfile
   };
 })();
