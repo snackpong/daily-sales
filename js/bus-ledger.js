@@ -70,7 +70,7 @@ const busLedger = (() => {
       const bandHTML = _bandBadges(e.bandIds);
       const photoURLs = e.photoURLs || (e.photoURL ? [e.photoURL] : []);
       const photoHTML = photoURLs.length > 0
-        ? `<div class="photo-thumb-wrap" onclick="busLedger.viewPhotos('${escapeInlineJS(e.id)}')">
+        ? `<div class="photo-thumb-wrap" onclick="event.stopPropagation();busLedger.viewPhotos('${escapeInlineJS(e.id)}')">
              <img src="${escapeAttr(photoURLs[0])}" class="photo-thumb" alt="사진">
              ${photoURLs.length > 1 ? `<span class="photo-count-badge">+${photoURLs.length - 1}</span>` : ''}
            </div>`
@@ -79,17 +79,17 @@ const busLedger = (() => {
       const p = escapeInlineJS(e.phoneNumber || '');
       const n = escapeInlineJS(e.driverName || '');
       const driverNameHTML = e.driverName
-        ? `<span class="driver-link" onclick="busLedger.openDriverProfile('${p}','${n}')">${escapeHTML(e.driverName)}</span>`
+        ? `<span class="driver-link" onclick="event.stopPropagation();busLedger.openDriverProfile('${p}','${n}')">${escapeHTML(e.driverName)}</span>`
         : '-';
       const phoneHTML = e.phoneNumber
-        ? `<span class="driver-link" onclick="busLedger.openDriverProfile('${p}','${n}')">${escapeHTML(e.phoneNumber)}</span><button class="phone-copy-btn" onclick="event.stopPropagation();navigator.clipboard.writeText('${p}').then(()=>showToast('번호 복사됨'))" title="복사">📋</button>`
+        ? `<span class="driver-link" onclick="event.stopPropagation();busLedger.openDriverProfile('${p}','${n}')">${escapeHTML(e.phoneNumber)}</span><button class="phone-copy-btn" onclick="event.stopPropagation();navigator.clipboard.writeText('${p}').then(()=>showToast('번호 복사됨'))" title="복사">📋</button>`
         : '-';
       const cashSales = _cashSales(e);
       const cardSales = _cardSales(e);
       const totalSales = cashSales + cardSales;
 
       return `
-        <tr>
+        <tr class="bus-entry-row" onclick="busLedger.openDetailModal('${escapeInlineJS(e.id)}')">
           <td><span class="seq-badge">${i + 1}</span></td>
           <td><div class="band-badges">${bandHTML}</div></td>
           <td>${escapeHTML(e.busCompany || '-')}</td>
@@ -99,15 +99,15 @@ const busLedger = (() => {
           <td class="amount-cell">${cardSales ? formatWon(cardSales) : '-'}</td>
           <td class="amount-cell total-sales">${totalSales ? formatWon(totalSales) : '-'}</td>
           <td class="amount-cell">${e.commissionCash ? formatWon(e.commissionCash) : '-'}</td>
-          <td>${escapeHTML(e.commissionGoods || '-')}</td>
-          <td style="text-align:left">${escapeHTML(e.notes || '-')}</td>
+          <td title="${escapeAttr(e.commissionGoods || '')}">${escapeHTML(e.commissionGoods || '-')}</td>
+          <td style="text-align:left" title="${escapeAttr(e.notes || '')}">${escapeHTML(e.notes || '-')}</td>
           <td class="photo-time-cell">${_photoUploadedAtText(photoURLs[0])}</td>
           <td>${photoHTML}</td>
           <td>
             <div class="action-btns">
-              <button class="btn-sm btn-primary" onclick="busLedger.openEntryModal('${e.id}')">수정</button>
-              <button class="btn-sm btn-outline" onclick="busLedger.generatePost('${e.id}')" title="밴드 게시 문구 생성">밴드글</button>
-              <button class="btn-sm btn-danger" onclick="busLedger.remove('${e.id}')">삭제</button>
+              <button class="btn-sm btn-primary" onclick="event.stopPropagation();busLedger.openEntryModal('${e.id}')">수정</button>
+              <button class="btn-sm btn-outline" onclick="event.stopPropagation();busLedger.generatePost('${e.id}')" title="밴드 게시 문구 생성">밴드글</button>
+              <button class="btn-sm btn-danger" onclick="event.stopPropagation();busLedger.remove('${e.id}')">삭제</button>
             </div>
           </td>
         </tr>
@@ -174,6 +174,60 @@ const busLedger = (() => {
       formatWon(_entries.reduce((s, e) => s + _totalSales(e), 0));
     document.getElementById('summary-commission').textContent =
       formatWon(_entries.reduce((s, e) => s + (Number(e.commissionCash) || 0), 0));
+  }
+
+  function _detailField(label, value, extraClass = '') {
+    return `
+      <div class="bus-detail-field ${extraClass}">
+        <span>${escapeHTML(label)}</span>
+        <strong>${escapeHTML(value || '-')}</strong>
+      </div>
+    `;
+  }
+
+  function openDetailModal(entryId) {
+    const e = _entries.find(x => x.id === entryId);
+    if (!e) return;
+
+    const cashSales = _cashSales(e);
+    const cardSales = _cardSales(e);
+    const totalSales = _totalSales(e);
+    const selectedBands = (e.bandIds || []).map(bid => bands.getById(bid)).filter(Boolean);
+    const bandNames = selectedBands.map(b => b.name).join(', ') || '무소속';
+    const photoURLs = e.photoURLs || (e.photoURL ? [e.photoURL] : []);
+    const photosHTML = photoURLs.length
+      ? `<div class="bus-detail-photos">${photoURLs.map((url, i) => `
+          <img src="${escapeAttr(url)}" alt="버스 사진 ${i + 1}" onclick="busLedger.viewPhotos('${escapeInlineJS(e.id)}')">
+        `).join('')}</div>`
+      : '<div class="bus-detail-empty">등록된 사진 없음</div>';
+
+    const body = `
+      <div class="bus-detail">
+        <div class="bus-detail-grid">
+          ${_detailField('날짜', formatDateKo(e.date || _date))}
+          ${_detailField('밴드', bandNames)}
+          ${_detailField('버스회사', e.busCompany)}
+          ${_detailField('기사명', e.driverName)}
+          ${_detailField('전화번호', e.phoneNumber)}
+          ${_detailField('현금매출', cashSales ? formatWon(cashSales) : '0원')}
+          ${_detailField('카드매출', cardSales ? formatWon(cardSales) : '0원')}
+          ${_detailField('총매출', totalSales ? formatWon(totalSales) : '0원')}
+          ${_detailField('커미션(현금)', e.commissionCash ? formatWon(e.commissionCash) : '0원')}
+          ${_detailField('사진 일시', _photoUploadedAtText(photoURLs[0]))}
+          ${_detailField('커미션(물건)', e.commissionGoods, 'wide')}
+          ${_detailField('메모 및 특이사항', e.notes, 'wide')}
+        </div>
+        ${photosHTML}
+      </div>
+    `;
+
+    const footer = `
+      <button class="btn-outline" onclick="closeModal()">닫기</button>
+      <button class="btn-outline" onclick="busLedger.generatePost('${escapeInlineJS(e.id)}')">밴드글</button>
+      <button class="btn-primary" onclick="busLedger.openEntryModal('${escapeInlineJS(e.id)}')">수정</button>
+    `;
+
+    openModal('버스 상세 정보', body, footer);
   }
 
   async function openEntryModal(entryId) {
@@ -832,7 +886,7 @@ const busLedger = (() => {
   return {
     init, load, openEntryModal, save, remove, generatePost, viewPhoto,
     viewPhotos, _galleryNav, downloadCurrentPhoto, _removeExistingPhoto,
-    openDriverProfile, _prevSlide, _nextSlide, _goSlide,
+    openDetailModal, openDriverProfile, _prevSlide, _nextSlide, _goSlide,
     _onBizCardChange, _onVisitPhotoChange, _editFromProfile
   };
 })();

@@ -373,6 +373,55 @@ table { border-collapse: collapse; width: 100%; }
 
 /* 액션 버튼들 */
 .action-btns { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
+.bus-entry-row { cursor: pointer; }
+.bus-detail { display: flex; flex-direction: column; gap: 14px; }
+.bus-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.bus-detail-field {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--bg);
+  min-width: 0;
+}
+.bus-detail-field.wide { grid-column: 1 / -1; }
+.bus-detail-field span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-light);
+  font-size: 12px;
+  font-weight: 700;
+}
+.bus-detail-field strong {
+  display: block;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.bus-detail-photos {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+.bus-detail-photos img {
+  width: 96px;
+  height: 72px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.bus-detail-empty {
+  color: var(--text-light);
+  font-size: 13px;
+}
 
 /* ===== 모달 ===== */
 .modal-overlay {
@@ -569,10 +618,7 @@ table { border-collapse: collapse; width: 100%; }
   }
   #bus-table td:nth-child(10),
   #bus-table td:nth-child(11) {
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    line-height: 1.35;
+    white-space: nowrap;
   }
   #bus-table .col-seq { width: 38px; }
   #bus-table .col-band { width: 108px; }
@@ -596,6 +642,7 @@ table { border-collapse: collapse; width: 100%; }
 @media (max-width: 600px) {
   /* 탭 패널 좌우 패딩 축소 */
   .tab-panel { padding: 12px; }
+  .bus-detail-grid { grid-template-columns: 1fr; }
 
   /* 버스장부 테이블은 모바일에서 카드형 목록으로 전환 */
   #bus-table {
