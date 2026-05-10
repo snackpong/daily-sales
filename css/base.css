@@ -564,6 +564,15 @@ table { border-collapse: collapse; width: 100%; }
   #bus-table td {
     padding: 8px 7px;
     font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #bus-table td:nth-child(10),
+  #bus-table td:nth-child(11) {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.35;
   }
   #bus-table .col-seq { width: 38px; }
   #bus-table .col-band { width: 108px; }
