@@ -424,11 +424,24 @@
 .dp-feed-title { font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
 
 .dp-visit-card { border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 14px; background: white; }
+.dp-reservation-card { border-color: #b8d4ef; }
 .dp-visit-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg); border-bottom: 1px solid var(--border); }
 .dp-visit-date { font-size: 14px; font-weight: 600; color: var(--primary); }
 .dp-visit-info { padding: 8px 14px 4px; font-size: 13px; color: var(--text); }
 .dp-visit-memo { padding: 0 14px 8px; font-size: 13px; color: var(--text-light); }
 .dp-photo-area { padding: 8px 14px 12px; }
+.dp-type-badge {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: white;
+  vertical-align: 1px;
+}
+.dp-type-badge.visit { background: var(--primary); }
+.dp-type-badge.reservation { background: #2f80c4; }
 
 .dp-add-photo-btn {
   display: flex;

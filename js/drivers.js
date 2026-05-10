@@ -1,35 +1,56 @@
 const drivers = (() => {
   let _list = [];
 
+  function _driverKey(v) {
+    return (v.phoneNumber || '').replace(/\D/g, '') || v.driverName || '';
+  }
+
+  function _ensureDriver(map, v) {
+    const key = _driverKey(v);
+    if (!key) return null;
+    if (!map.has(key)) {
+      map.set(key, {
+        key,
+        name: v.driverName || '',
+        phone: v.phoneNumber || '',
+        busCompany: v.busCompany || '',
+        lastDate: v.date || '',
+        visits: 0,
+        reservations: 0,
+        totalComm: 0,
+      });
+    }
+    const r = map.get(key);
+    if (!r.name && v.driverName) r.name = v.driverName;
+    if (!r.phone && v.phoneNumber) r.phone = v.phoneNumber;
+    if (!r.busCompany && v.busCompany) r.busCompany = v.busCompany;
+    if ((v.date || '') > r.lastDate) r.lastDate = v.date;
+    return r;
+  }
+
   async function load() {
     const container = document.getElementById('drivers-list');
     container.innerHTML = '<p class="loading-msg">불러오는 중...</p>';
     try {
-      const snap = await userCol('busEntries').get();
+      const [busSnap, resSnap] = await Promise.all([
+        userCol('busEntries').get(),
+        userCol('reservations').get()
+      ]);
       const map = new Map();
 
-      snap.docs.forEach(d => {
+      busSnap.docs.forEach(d => {
         const v = { id: d.id, ...d.data() };
-        const key = (v.phoneNumber || '').replace(/\D/g, '') || v.driverName || '';
-        if (!key) return;
-        if (!map.has(key)) {
-          map.set(key, {
-            key,
-            name: v.driverName || '',
-            phone: v.phoneNumber || '',
-            busCompany: v.busCompany || '',
-            lastDate: v.date || '',
-            visits: 0,
-            totalComm: 0,
-          });
-        }
-        const r = map.get(key);
-        if (!r.name && v.driverName) r.name = v.driverName;
-        if (!r.phone && v.phoneNumber) r.phone = v.phoneNumber;
-        if (!r.busCompany && v.busCompany) r.busCompany = v.busCompany;
-        if ((v.date || '') > r.lastDate) r.lastDate = v.date;
+        const r = _ensureDriver(map, v);
+        if (!r) return;
         r.visits++;
         r.totalComm += Number(v.commissionCash) || 0;
+      });
+
+      resSnap.docs.forEach(d => {
+        const v = { id: d.id, ...d.data() };
+        const r = _ensureDriver(map, v);
+        if (!r) return;
+        r.reservations++;
       });
 
       const profiles = await userCol('driverProfiles').get();
@@ -82,8 +103,9 @@ const drivers = (() => {
           <div class="driver-card-name">${escapeHTML(d.name || '이름 없음')}</div>
           <div class="driver-card-sub">${escapeHTML(d.busCompany || '-')} ${escapeHTML(d.phone || '-')}</div>
           <div class="driver-card-meta">
-            마지막 방문: ${d.lastDate ? formatDateKo(d.lastDate) : '-'} &nbsp;&nbsp;
-            총 ${d.visits}회 &nbsp;&nbsp;
+            최근 기록: ${d.lastDate ? formatDateKo(d.lastDate) : '-'} &nbsp;&nbsp;
+            방문 ${d.visits}회 &nbsp;&nbsp;
+            예약 ${d.reservations}건 &nbsp;&nbsp;
             커미션 평균 ${d.visits ? formatWon(Math.round(d.totalComm / d.visits)) : '-'}
           </div>
           ${d.incidents ? `<div class="driver-card-incident">${escapeHTML(d.incidents.slice(0, 40))}${d.incidents.length > 40 ? '...' : ''}</div>` : ''}

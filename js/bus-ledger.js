@@ -658,6 +658,17 @@ const busLedger = (() => {
 
   // ===== 기사 프로필 =====
 
+  function _sameDriverRecord(record, phone, name) {
+    const phoneDigits = (phone || '').replace(/\D/g, '');
+    const recordDigits = (record.phoneNumber || '').replace(/\D/g, '');
+    if (phoneDigits && recordDigits && phoneDigits === recordDigits) return true;
+    return !!name && !!record.driverName && record.driverName === name;
+  }
+
+  function _timelineKey(item) {
+    return `${item.date || ''} ${item.time || '99:99'}`;
+  }
+
   async function openDriverProfile(phone, name) {
     openModal(name ? name + ' 기사님' : '기사 프로필',
       '<p class="loading-msg">불러오는 중...</p>',
@@ -673,21 +684,25 @@ const busLedger = (() => {
         if (doc.exists) profile = doc.data();
       }
 
-      let snap;
-      if (phone) {
-        snap = await userCol('busEntries').where('phoneNumber', '==', phone).get();
-      } else {
-        snap = await userCol('busEntries').where('driverName', '==', name).get();
-      }
-      const visits = snap.docs
+      const [busSnap, resSnap] = await Promise.all([
+        userCol('busEntries').get(),
+        userCol('reservations').get()
+      ]);
+      const visits = busSnap.docs
         .map(d => ({ id: d.id, ...d.data() }))
-        .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+        .filter(v => _sameDriverRecord(v, phone, name))
+        .sort((a, b) => _timelineKey(b).localeCompare(_timelineKey(a)));
+      const reservations = resSnap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(r => _sameDriverRecord(r, phone, name))
+        .sort((a, b) => _timelineKey(b).localeCompare(_timelineKey(a)));
 
       const totalVisits = visits.length;
+      const totalReservations = reservations.length;
       const totalSales = visits.reduce((s, v) => s + _totalSales(v), 0);
       const totalComm = visits.reduce((s, v) => s + (Number(v.commissionCash) || 0), 0);
       const avgComm = totalVisits > 0 ? Math.round(totalComm / totalVisits) : 0;
-      const displayName = name || visits[0]?.driverName || '이름 미상';
+      const displayName = name || visits[0]?.driverName || reservations[0]?.driverName || '이름 미상';
 
       const escapedKey = escapeInlineJS(profileKey || '');
 
@@ -703,9 +718,15 @@ const busLedger = (() => {
              <div style="font-size:12px;opacity:0.6;margin-top:2px">클릭하여 업로드</div>
            </div>`;
 
-      const feedHTML = visits.length === 0
-        ? '<p class="empty-msg">방문 기록이 없습니다.</p>'
-        : visits.map(v => _visitCardHTML(v)).join('');
+      const timeline = [
+        ...visits.map(v => ({ type: 'visit', ...v })),
+        ...reservations.map(r => ({ type: 'reservation', ...r }))
+      ].sort((a, b) => _timelineKey(b).localeCompare(_timelineKey(a)));
+      const feedHTML = timeline.length === 0
+        ? '<p class="empty-msg">방문/예약 기록이 없습니다.</p>'
+        : timeline.map(item => item.type === 'visit'
+          ? _visitCardHTML(item)
+          : _reservationCardHTML(item)).join('');
       const memoSection = `
         <div class="dp-memo-section">
           <div class="dp-memo-group">
@@ -736,6 +757,7 @@ const busLedger = (() => {
             ${phone ? `<div class="dp-phone">📞 ${phoneLink(phone)}</div>` : ''}
             <div class="dp-stats">
               총 ${totalVisits}회 방문 &nbsp;·&nbsp;
+              예약 ${totalReservations}건 &nbsp;·&nbsp;
               누적 판매 ${formatWon(totalSales)} &nbsp;·&nbsp;
               평균 커미션 ${formatWon(avgComm)}
             </div>
@@ -744,7 +766,7 @@ const busLedger = (() => {
           ${memoSection}
 
           <div class="dp-feed">
-            <div class="dp-feed-title">방문 기록</div>
+            <div class="dp-feed-title">방문 / 예약 이력</div>
             ${feedHTML}
           </div>
         </div>
@@ -770,15 +792,17 @@ const busLedger = (() => {
          </label>`;
 
     const infoStr = [
+      v.busCompany ? escapeHTML(v.busCompany) : '',
       _cashSales(v) ? '현금 ' + formatWon(_cashSales(v)) : '',
       _cardSales(v) ? '카드 ' + formatWon(_cardSales(v)) : '',
       v.commissionCash ? '커미션 ' + formatWon(v.commissionCash) : '',
+      v.commissionGoods ? '물건 ' + escapeHTML(v.commissionGoods) : '',
     ].filter(Boolean).join('&nbsp;·&nbsp;');
 
     return `
       <div class="dp-visit-card" id="dp-card-${v.id}">
         <div class="dp-visit-header">
-          <span class="dp-visit-date">${formatDateKo(v.date)}</span>
+          <span class="dp-visit-date"><span class="dp-type-badge visit">방문</span>${formatDateKo(v.date)}</span>
           <button class="btn-sm btn-outline"
             onclick="busLedger._editFromProfile('${v.id}','${v.date}')">수정</button>
         </div>
@@ -789,6 +813,28 @@ const busLedger = (() => {
         </div>
         <input type="file" id="dp-vp-${v.id}" accept="image/*" style="display:none"
           onchange="busLedger._onVisitPhotoChange('${v.id}', this)">
+      </div>
+    `;
+  }
+
+  function _reservationCardHTML(r) {
+    const statusLabel = { pending: '예약중', visited: '방문완료', noshow: '미방문' }[r.status || 'pending'] || '예약중';
+    const infoStr = [
+      r.time ? '시간 ' + escapeHTML(r.time) : '',
+      r.busCompany ? escapeHTML(r.busCompany) : '',
+      r.estimatedPassengers ? '예상 ' + Number(r.estimatedPassengers) + '명' : '',
+      '상태 ' + statusLabel,
+    ].filter(Boolean).join('&nbsp;·&nbsp;');
+
+    return `
+      <div class="dp-visit-card dp-reservation-card" id="dp-res-${r.id}">
+        <div class="dp-visit-header">
+          <span class="dp-visit-date"><span class="dp-type-badge reservation">예약</span>${formatDateKo(r.date)}</span>
+          <button class="btn-sm btn-outline"
+            onclick="closeModal();switchTab('reservation');reservation.openModal('${r.date}','${r.id}')">수정</button>
+        </div>
+        ${infoStr ? `<div class="dp-visit-info">${infoStr}</div>` : ''}
+        ${r.requests ? `<div class="dp-visit-memo">📝 ${escapeHTML(r.requests)}</div>` : ''}
       </div>
     `;
   }
