@@ -10,6 +10,21 @@ const ALLOWED_EMAILS = [
 let _tabInitialized = {};
 let _tabLastLoad = {};
 const _TAB_STALE_MS = 30 * 1000;
+const _ALLOWED_EMAIL_SET = new Set(ALLOWED_EMAILS.map(_normalizeEmail).filter(Boolean));
+
+function _normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+
+function _isAllowedUser(user) {
+  return _ALLOWED_EMAIL_SET.has(_normalizeEmail(user && user.email));
+}
+
+function _makeGoogleProvider() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+  return provider;
+}
 
 function _checkInAppBrowser() {
   const ua = navigator.userAgent || '';
@@ -45,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
 
-  // 구글 로그인 (모바일은 redirect, 데스크탑은 popup)
+  // 구글 로그인 (popup 우선, 모바일에서 막히면 redirect fallback)
   const _isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
   auth.getRedirectResult().catch(e => {
     if (e.code && e.code !== 'auth/no-auth-event') {
@@ -54,16 +69,24 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btn-google-login').addEventListener('click', () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    if (_isMobile) {
-      auth.signInWithRedirect(provider).catch(e => {
-        showToast('로그인 실패: ' + e.message, 'error');
-      });
-    } else {
-      auth.signInWithPopup(provider).catch(e => {
-        showToast('로그인 실패: ' + e.message, 'error');
-      });
-    }
+    const provider = _makeGoogleProvider();
+    const btn = document.getElementById('btn-google-login');
+    btn.disabled = true;
+    auth.signInWithPopup(provider).catch(e => {
+      const canFallbackToRedirect = _isMobile && [
+        'auth/popup-blocked',
+        'auth/operation-not-supported-in-this-environment',
+        'auth/cancelled-popup-request'
+      ].includes(e.code);
+
+      if (canFallbackToRedirect) {
+        return auth.signInWithRedirect(provider);
+      }
+
+      showToast('로그인 실패: ' + e.message, 'error');
+    }).finally(() => {
+      btn.disabled = false;
+    });
   });
 
   // 로그아웃
@@ -80,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Auth 상태 감지
   auth.onAuthStateChanged(user => {
     if (user) {
-      if (!ALLOWED_EMAILS.filter(Boolean).includes(user.email)) {
+      if (!_isAllowedUser(user)) {
         auth.signOut();
         _showAccessDenied(user.email);
         return;
