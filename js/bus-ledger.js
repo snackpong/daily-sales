@@ -166,6 +166,10 @@ const busLedger = (() => {
 
   function _updateSummary() {
     document.getElementById('summary-count').textContent = _entries.length + '대';
+    document.getElementById('summary-cash-sales').textContent =
+      formatWon(_entries.reduce((s, e) => s + _cashSales(e), 0));
+    document.getElementById('summary-card-sales').textContent =
+      formatWon(_entries.reduce((s, e) => s + _cardSales(e), 0));
     document.getElementById('summary-sales').textContent =
       formatWon(_entries.reduce((s, e) => s + _totalSales(e), 0));
     document.getElementById('summary-commission').textContent =
