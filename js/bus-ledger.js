@@ -78,11 +78,12 @@ const busLedger = (() => {
 
       const p = escapeInlineJS(e.phoneNumber || '');
       const n = escapeInlineJS(e.driverName || '');
+      const c = escapeInlineJS(e.busCompany || '');
       const driverNameHTML = e.driverName
-        ? `<span class="driver-link" onclick="event.stopPropagation();busLedger.openDriverProfile('${p}','${n}')">${escapeHTML(e.driverName)}</span>`
+        ? `<span class="driver-link" onclick="event.stopPropagation();busLedger.openDriverProfile('${p}','${n}','${c}')">${escapeHTML(e.driverName)}</span>`
         : '-';
       const phoneHTML = e.phoneNumber
-        ? `<span class="driver-link" onclick="event.stopPropagation();busLedger.openDriverProfile('${p}','${n}')">${escapeHTML(e.phoneNumber)}</span><button class="phone-copy-btn" onclick="event.stopPropagation();navigator.clipboard.writeText('${p}').then(()=>showToast('번호 복사됨'))" title="복사">📋</button>`
+        ? `<span class="driver-link" onclick="event.stopPropagation();busLedger.openDriverProfile('${p}','${n}','${c}')">${escapeHTML(e.phoneNumber)}</span><button class="phone-copy-btn" onclick="event.stopPropagation();navigator.clipboard.writeText('${p}').then(()=>showToast('번호 복사됨'))" title="복사">📋</button>`
         : '-';
       const cashSales = _cashSales(e);
       const cardSales = _cardSales(e);
@@ -658,25 +659,34 @@ const busLedger = (() => {
 
   // ===== 기사 프로필 =====
 
-  function _sameDriverRecord(record, phone, name) {
+  function _normalizeDriverText(value) {
+    return String(value || '').trim().toLowerCase();
+  }
+
+  function _sameDriverRecord(record, phone, name, busCompany) {
     const phoneDigits = (phone || '').replace(/\D/g, '');
     const recordDigits = (record.phoneNumber || '').replace(/\D/g, '');
     if (phoneDigits && recordDigits && phoneDigits === recordDigits) return true;
-    return !!name && !!record.driverName && record.driverName === name;
+    const normalizedName = _normalizeDriverText(name);
+    const recordName = _normalizeDriverText(record.driverName);
+    if (normalizedName && recordName && normalizedName === recordName) return true;
+    const normalizedCompany = _normalizeDriverText(busCompany);
+    const recordCompany = _normalizeDriverText(record.busCompany);
+    return !!normalizedCompany && !!recordCompany && normalizedCompany === recordCompany;
   }
 
   function _timelineKey(item) {
     return `${item.date || ''} ${item.time || '99:99'}`;
   }
 
-  async function openDriverProfile(phone, name) {
+  async function openDriverProfile(phone, name, busCompany = '') {
     openModal(name ? name + ' 기사님' : '기사 프로필',
       '<p class="loading-msg">불러오는 중...</p>',
       '<button class="btn-outline" onclick="closeModal()">닫기</button>');
     document.querySelector('.modal-box').style.maxWidth = '760px';
 
     try {
-      const profileKey = phone ? phone.replace(/\D/g, '') : name;
+      const profileKey = phone ? phone.replace(/\D/g, '') : (name || busCompany);
 
       let profile = {};
       if (profileKey) {
@@ -690,11 +700,11 @@ const busLedger = (() => {
       ]);
       const visits = busSnap.docs
         .map(d => ({ id: d.id, ...d.data() }))
-        .filter(v => _sameDriverRecord(v, phone, name))
+        .filter(v => _sameDriverRecord(v, phone, name, busCompany))
         .sort((a, b) => _timelineKey(b).localeCompare(_timelineKey(a)));
       const reservations = resSnap.docs
         .map(d => ({ id: d.id, ...d.data() }))
-        .filter(r => _sameDriverRecord(r, phone, name))
+        .filter(r => _sameDriverRecord(r, phone, name, busCompany))
         .sort((a, b) => _timelineKey(b).localeCompare(_timelineKey(a)));
 
       const totalVisits = visits.length;
@@ -702,7 +712,7 @@ const busLedger = (() => {
       const totalSales = visits.reduce((s, v) => s + _totalSales(v), 0);
       const totalComm = visits.reduce((s, v) => s + (Number(v.commissionCash) || 0), 0);
       const avgComm = totalVisits > 0 ? Math.round(totalComm / totalVisits) : 0;
-      const displayName = name || visits[0]?.driverName || reservations[0]?.driverName || '이름 미상';
+      const displayName = name || visits[0]?.driverName || reservations[0]?.driverName || busCompany || '이름 미상';
 
       const escapedKey = escapeInlineJS(profileKey || '');
 

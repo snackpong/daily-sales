@@ -2,7 +2,7 @@ const drivers = (() => {
   let _list = [];
 
   function _driverKey(v) {
-    return (v.phoneNumber || '').replace(/\D/g, '') || v.driverName || '';
+    return (v.phoneNumber || '').replace(/\D/g, '') || v.driverName || v.busCompany || '';
   }
 
   function _ensureDriver(map, v) {
@@ -93,7 +93,7 @@ const drivers = (() => {
       return;
     }
     container.innerHTML = list.map(d => `
-      <div class="driver-card" onclick="busLedger.openDriverProfile('${escapeInlineJS(d.phone)}','${escapeInlineJS(d.name)}')">
+      <div class="driver-card" onclick="busLedger.openDriverProfile('${escapeInlineJS(d.phone)}','${escapeInlineJS(d.name)}','${escapeInlineJS(d.busCompany)}')">
         <div class="driver-card-left">
           ${d.businessCardURL
             ? `<img src="${escapeAttr(d.businessCardURL)}" class="driver-card-thumb" alt="명함">`
